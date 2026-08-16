@@ -13,6 +13,13 @@ const OrderItem = ({ order }) => {
 
     const { ratings } = useSelector(state => state.rating);
 
+    const statusStyles = {
+        ORDER_PLACED: 'text-yellow-500 bg-yellow-100',
+        PROCESSING: 'text-blue-500 bg-blue-100',
+        SHIPPED: 'text-blue-500 bg-blue-100',
+        DELIVERED: 'text-green-500 bg-green-100',
+    }
+
     return (
         <>
             <tr className="text-sm">
@@ -55,12 +62,7 @@ const OrderItem = ({ order }) => {
 
                 <td className="text-left space-y-2 text-sm max-md:hidden">
                     <div
-                        className={`flex items-center justify-center gap-1 rounded-full p-1 ${order.status === 'confirmed'
-                            ? 'text-yellow-500 bg-yellow-100'
-                            : order.status === 'delivered'
-                                ? 'text-green-500 bg-green-100'
-                                : 'text-slate-500 bg-slate-100'
-                            }`}
+                        className={`flex items-center justify-center gap-1 rounded-full p-1 ${statusStyles[order.status] || 'text-slate-500 bg-slate-100'}`}
                     >
                         <DotIcon size={10} className="scale-250" />
                         {order.status.split('_').join(' ').toLowerCase()}
@@ -75,7 +77,7 @@ const OrderItem = ({ order }) => {
                     <p>{order.address.phone}</p>
                     <br />
                     <div className="flex items-center">
-                        <span className='text-center mx-auto px-6 py-1.5 rounded bg-green-100 text-green-700' >
+                        <span className={`text-center mx-auto px-6 py-1.5 rounded ${statusStyles[order.status] || 'bg-slate-100 text-slate-700'}`}>
                             {order.status.replace(/_/g, ' ').toLowerCase()}
                         </span>
                     </div>
