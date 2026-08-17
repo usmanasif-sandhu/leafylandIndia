@@ -1,17 +1,17 @@
 'use client'
-import { Leaf, TreePine, Flower2, Fence, Shovel, Droplets, FlaskConical, Home as HomeIcon, Scissors, Package } from 'lucide-react'
+import { Leaf, TreePine, Flower2, Fence, Shovel, Droplets, FlaskConical, Home as HomeIcon, Scissors, Package, Sprout, FlowerIcon, Apple } from 'lucide-react'
 
 const categories = [
     { name: 'All', icon: Package },
-    { name: 'Indoor Plants', icon: Leaf },
-    { name: 'Outdoor Plants', icon: TreePine },
-    { name: 'Seeds', icon: Flower2 },
-    { name: 'Pots & Planters', icon: Fence },
-    { name: 'Garden Tools', icon: Shovel },
-    { name: 'Irrigation', icon: Droplets },
-    { name: 'Fertilizers', icon: FlaskConical },
-    { name: 'Services', icon: Scissors },
-    { name: 'Properties', icon: HomeIcon },
+    { name: 'Big Plant', icon: TreePine },
+    { name: 'Bulbs', icon: Flower2 },
+    { name: 'Fruit Plant', icon: Apple },
+    { name: 'Gardening', icon: Shovel },
+    { name: 'Indoor Greenary', icon: Leaf },
+    { name: 'Planters', icon: Fence },
+    { name: 'Plants', icon: Sprout },
+    { name: 'Seeds', icon: FlowerIcon },
+    { name: 'Soil & Fertilizers', icon: FlaskConical },
 ]
 
 const CategoriesStrip = ({ activeCategory, onSelect }) => {

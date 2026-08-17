@@ -46,10 +46,15 @@ export default function Home() {
     const dailyServices = services.filter(s => s.category === 'Daily Needs Services').slice(0, 6)
     const homeServices = services.filter(s => s.category === 'Home Services').slice(0, 6)
 
-    const indoorPlants = products.filter(p => p.category === 'Indoor Plants').slice(0, 8)
-    const outdoorPlants = products.filter(p => p.category === 'Outdoor Plants').slice(0, 8)
-    const toolsAndAccessories = products.filter(p => ['Pots & Planters', 'Garden Tools', 'Fertilizers', 'Irrigation'].includes(p.category)).slice(0, 8)
+    const bigPlants = products.filter(p => p.category === 'Big Plant').slice(0, 8)
+    const indoorGreenary = products.filter(p => p.category === 'Indoor Greenary').slice(0, 8)
+    const fruitPlants = products.filter(p => p.category === 'Fruit Plant').slice(0, 8)
+    const gardening = products.filter(p => p.category === 'Gardening').slice(0, 8)
+    const planters = products.filter(p => p.category === 'Planters').slice(0, 8)
+    const plants = products.filter(p => p.category === 'Plants').slice(0, 8)
     const seeds = products.filter(p => p.category === 'Seeds').slice(0, 8)
+    const soilFertilizers = products.filter(p => p.category === 'Soil & Fertilizers').slice(0, 8)
+    const bulbs = products.filter(p => p.category === 'Bulbs').slice(0, 8)
 
     const showSection = (categoryMatch) => {
         if (activeCategory === 'All') return true
@@ -68,7 +73,7 @@ export default function Home() {
                             <div className="relative z-10">
                                 <p className="text-emerald-100 text-xs font-medium mb-1">NEW ARRIVALS</p>
                                 <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">Premium Indoor<br />Plant Collection</h2>
-                                <p className="text-emerald-200 text-xs mt-2">Starting from ₹299</p>
+                                <p className="text-emerald-200 text-xs mt-2">Starting from ₹99</p>
                                 <span className="inline-flex items-center gap-1 text-white text-xs font-semibold mt-3 group-hover:gap-2 transition-all">
                                     Shop Now <ChevronRight size={14} />
                                 </span>
@@ -93,7 +98,7 @@ export default function Home() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 {/* Popular Plants */}
-                {showSection(['Indoor Plants', 'Outdoor Plants', 'Seeds', 'Pots & Planters', 'Garden Tools', 'Fertilizers', 'Irrigation'].includes(activeCategory)) && (
+                {showSection(['Indoor Greenary', 'Plants', 'Seeds', 'Planters', 'Gardening', 'Soil & Fertilizers', 'Big Plant', 'Bulbs', 'Fruit Plant'].includes(activeCategory)) && (
                     <FeaturedSection
                         title="Popular Plants"
                         items={featuredProducts.length > 0 ? featuredProducts : allProducts}
@@ -102,22 +107,52 @@ export default function Home() {
                     />
                 )}
 
-                {/* Indoor Plants */}
-                {showSection(activeCategory === 'Indoor Plants') && indoorPlants.length > 0 && (
+                {/* Indoor Greenary */}
+                {showSection(activeCategory === 'Indoor Greenary') && indoorGreenary.length > 0 && (
                     <FeaturedSection
-                        title="Indoor Plants"
-                        items={indoorPlants}
-                        viewAllLink="/products?category=Indoor+Plants"
+                        title="Indoor Greenary"
+                        items={indoorGreenary}
+                        viewAllLink="/products?category=Indoor+Greenary"
                         renderItem={(product) => <ProductCard product={product} />}
                     />
                 )}
 
-                {/* Outdoor Plants */}
-                {showSection(activeCategory === 'Outdoor Plants') && outdoorPlants.length > 0 && (
+                {/* Big Plant */}
+                {showSection(activeCategory === 'Big Plant') && bigPlants.length > 0 && (
+                    <FeaturedSection
+                        title="Big Plants"
+                        items={bigPlants}
+                        viewAllLink="/products?category=Big+Plant"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                )}
+
+                {/* Plants (Outdoor) */}
+                {showSection(activeCategory === 'Plants') && plants.length > 0 && (
                     <FeaturedSection
                         title="Outdoor Plants"
-                        items={outdoorPlants}
-                        viewAllLink="/products?category=Outdoor+Plants"
+                        items={plants}
+                        viewAllLink="/products?category=Plants"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                )}
+
+                {/* Fruit Plant */}
+                {showSection(activeCategory === 'Fruit Plant') && fruitPlants.length > 0 && (
+                    <FeaturedSection
+                        title="Fruit Plants"
+                        items={fruitPlants}
+                        viewAllLink="/products?category=Fruit+Plant"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                )}
+
+                {/* Bulbs */}
+                {showSection(activeCategory === 'Bulbs') && bulbs.length > 0 && (
+                    <FeaturedSection
+                        title="Bulbs"
+                        items={bulbs}
+                        viewAllLink="/products?category=Bulbs"
                         renderItem={(product) => <ProductCard product={product} />}
                     />
                 )}
@@ -133,7 +168,7 @@ export default function Home() {
                 )}
 
                 {/* Daily Needs Services */}
-                {showSection(activeCategory === 'Services') && dailyServices.length > 0 && (
+                {showSection(activeCategory === 'Gardening') && dailyServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -165,7 +200,7 @@ export default function Home() {
                 )}
 
                 {/* Home Services */}
-                {showSection(activeCategory === 'Services') && homeServices.length > 0 && (
+                {showSection(activeCategory === 'Gardening') && homeServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -196,18 +231,38 @@ export default function Home() {
                     </section>
                 )}
 
-                {/* Tools & Accessories */}
-                {showSection(['Pots & Planters', 'Garden Tools', 'Fertilizers', 'Irrigation'].includes(activeCategory)) && toolsAndAccessories.length > 0 && (
+                {/* Planters */}
+                {showSection(activeCategory === 'Planters') && planters.length > 0 && (
                     <FeaturedSection
-                        title="Tools & Accessories"
-                        items={toolsAndAccessories}
-                        viewAllLink="/products?category=Garden+Tools"
+                        title="Planters"
+                        items={planters}
+                        viewAllLink="/products?category=Planters"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                )}
+
+                {/* Soil & Fertilizers */}
+                {showSection(activeCategory === 'Soil & Fertilizers') && soilFertilizers.length > 0 && (
+                    <FeaturedSection
+                        title="Soil & Fertilizers"
+                        items={soilFertilizers}
+                        viewAllLink="/products?category=Soil+%26+Fertilizers"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                )}
+
+                {/* Gardening */}
+                {showSection(activeCategory === 'Gardening') && gardening.length > 0 && (
+                    <FeaturedSection
+                        title="Gardening Tools"
+                        items={gardening}
+                        viewAllLink="/products?category=Gardening"
                         renderItem={(product) => <ProductCard product={product} />}
                     />
                 )}
 
                 {/* Farmhouses & Land */}
-                {showSection(activeCategory === 'Properties') && (
+                {showSection(false) && (
                     <FeaturedSection
                         title="Farmhouses & Land"
                         items={featuredProperties}
