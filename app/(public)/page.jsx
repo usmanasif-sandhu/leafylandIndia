@@ -7,14 +7,14 @@ import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, ShieldCheck as PestIcon, Recycle, Flower2, Wrench, Package, Home, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
 import Link from "next/link";
 
 const serviceIcons = {
     'Plant Watering': Droplets,
     'Lawn Mowing': Scissors,
     'Garden Cleaning': Sparkles,
-    'Pest Control': PestIcon,
+    'Pest Control': ShieldCheck,
     'Waste Recycling': Recycle,
     'Indoor Plant Care': Leaf,
     'Soil Replacement': Flower2,
@@ -31,7 +31,7 @@ const serviceIcons = {
     'Electrical': Zap,
     'Painting': Paintbrush,
     'Carpentry': Hammer,
-    'Waterproofing': PestIcon,
+    'Waterproofing': ShieldCheck,
     'CCTV': Camera,
     'Shifting': Package,
     'Junk Removal': Trash2,
