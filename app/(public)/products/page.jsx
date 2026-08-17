@@ -1,11 +1,11 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
 import { products, productCategories } from "@/lib/data/products"
 import { Search, X } from 'lucide-react'
 
-const ProductsPage = () => {
+function ProductsContent() {
     const searchParams = useSearchParams()
     const urlCategory = searchParams.get('category') || 'All'
     const urlSearch = searchParams.get('search') || ''
@@ -94,5 +94,11 @@ const ProductsPage = () => {
         </div>
     )
 }
+
+const ProductsPage = () => (
+    <Suspense fallback={null}>
+        <ProductsContent />
+    </Suspense>
+)
 
 export default ProductsPage
