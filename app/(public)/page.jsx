@@ -1,5 +1,4 @@
 'use client'
-import Hero from "@/components/Hero";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import ServiceCard from "@/components/ServiceCard";
@@ -7,95 +6,121 @@ import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
-    const featuredProducts = products.filter(p => p.featured).slice(0, 8)
-    const featuredServices = services.filter(s => s.featured).slice(0, 6)
-    const featuredProperties = properties.filter(p => p.featured).slice(0, 4)
+    const featuredProducts = products.filter(p => p.featured).slice(0, 10)
+    const allProducts = products.slice(0, 10)
+    const featuredServices = services.filter(s => s.featured).slice(0, 8)
+    const featuredProperties = properties.filter(p => p.featured).slice(0, 6)
+
+    // Group products by category for Zepto-style sections
+    const indoorPlants = products.filter(p => p.category === 'Indoor Plants').slice(0, 8)
+    const outdoorPlants = products.filter(p => p.category === 'Outdoor Plants').slice(0, 8)
+    const toolsAndAccessories = products.filter(p => ['Pots & Planters', 'Garden Tools', 'Fertilizers'].includes(p.category)).slice(0, 8)
 
     return (
-        <div>
-            <Hero />
+        <div className="bg-slate-50/50">
+            {/* Promo Banners — Zepto style side-by-side */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <Link href="/products" className="relative bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 sm:p-8 overflow-hidden group hover:shadow-lg transition-shadow">
+                        <div className="relative z-10">
+                            <p className="text-emerald-100 text-xs font-medium mb-1">NEW ARRIVALS</p>
+                            <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">Premium Indoor<br />Plant Collection</h2>
+                            <p className="text-emerald-200 text-xs mt-2">Starting from ₹299</p>
+                            <span className="inline-flex items-center gap-1 text-white text-xs font-semibold mt-3 group-hover:gap-2 transition-all">
+                                Shop Now <ChevronRight size={14} />
+                            </span>
+                        </div>
+                        <Leaf className="absolute -bottom-4 -right-4 w-32 h-32 text-emerald-400/30 group-hover:rotate-12 transition-transform duration-500" strokeWidth={1} />
+                    </Link>
 
+                    <Link href="/services" className="relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 sm:p-8 overflow-hidden group hover:shadow-lg transition-shadow">
+                        <div className="relative z-10">
+                            <p className="text-blue-100 text-xs font-medium mb-1">BOOK NOW</p>
+                            <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">Landscaping<br />Services</h2>
+                            <p className="text-blue-200 text-xs mt-2">Trusted professionals near you</p>
+                            <span className="inline-flex items-center gap-1 text-white text-xs font-semibold mt-3 group-hover:gap-2 transition-all">
+                                Explore <ChevronRight size={14} />
+                            </span>
+                        </div>
+                        <Truck className="absolute -bottom-4 -right-4 w-32 h-32 text-blue-400/30 group-hover:rotate-12 transition-transform duration-500" strokeWidth={1} />
+                    </Link>
+                </div>
+            </div>
+
+            {/* Popular Plants — horizontal scroll (Zepto "Laundry Care" style) */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                {/* Featured Products */}
                 <FeaturedSection
-                    title="Popular Plants & Products"
-                    items={featuredProducts}
+                    title="Popular Plants"
+                    items={featuredProducts.length > 0 ? featuredProducts : allProducts}
                     viewAllLink="/products"
                     renderItem={(product) => <ProductCard product={product} />}
                 />
+            </div>
 
-                {/* Featured Services */}
+            {/* Indoor Plants section */}
+            {indoorPlants.length > 0 && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <FeaturedSection
+                        title="Indoor Plants"
+                        items={indoorPlants}
+                        viewAllLink="/products?category=Indoor+Plants"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                </div>
+            )}
+
+            {/* Trending Services — horizontal scroll */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <FeaturedSection
                     title="Trending Services"
                     items={featuredServices}
                     viewAllLink="/services"
-                    viewAllText="View All"
                     renderItem={(service) => <ServiceCard service={service} />}
                 />
+            </div>
 
-                {/* Featured Properties */}
+            {/* Tools & Accessories section */}
+            {toolsAndAccessories.length > 0 && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6">
+                    <FeaturedSection
+                        title="Tools & Accessories"
+                        items={toolsAndAccessories}
+                        viewAllLink="/products"
+                        renderItem={(product) => <ProductCard product={product} />}
+                    />
+                </div>
+            )}
+
+            {/* Farmhouses & Land — horizontal scroll */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <FeaturedSection
                     title="Farmhouses & Land"
                     items={featuredProperties}
                     viewAllLink="/properties"
-                    viewAllText="Browse All"
                     renderItem={(property) => <PropertyCard property={property} />}
                 />
+            </div>
 
-                {/* Trust / How It Works Section */}
-                <section className="my-12 sm:my-16">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-800 text-center mb-8">Why LeafyLand?</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 text-center">
-                            <div className="w-12 h-12 mx-auto bg-emerald-100 rounded-xl flex items-center justify-center mb-3">
-                                <ShieldCheck className="w-6 h-6 text-emerald-600" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 text-sm">Vetted Vendors</h3>
-                            <p className="text-xs text-slate-500 mt-1">Every seller is reviewed before listing</p>
+            {/* Why LeafyLand — trust signals */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 my-8">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                        { icon: ShieldCheck, label: 'Vetted Vendors', sub: 'Quality checked', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+                        { icon: Truck, label: 'Fast Delivery', sub: 'Pan-India shipping', color: 'bg-blue-50 text-blue-600 border-blue-100' },
+                        { icon: Leaf, label: 'Quality Promise', sub: 'Healthy plants guaranteed', color: 'bg-green-50 text-green-600 border-green-100' },
+                        { icon: Star, label: 'Expert Advice', sub: 'Free gardening tips', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+                    ].map((item, i) => (
+                        <div key={i} className={`flex flex-col items-center text-center p-4 rounded-2xl border ${item.color}`}>
+                            <item.icon size={22} className="mb-2" />
+                            <p className="text-xs font-semibold text-slate-800">{item.label}</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">{item.sub}</p>
                         </div>
-                        <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-center">
-                            <div className="w-12 h-12 mx-auto bg-blue-100 rounded-xl flex items-center justify-center mb-3">
-                                <Truck className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 text-sm">Secure Delivery</h3>
-                            <p className="text-xs text-slate-500 mt-1">Plants delivered safely to your door</p>
-                        </div>
-                        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 text-center">
-                            <div className="w-12 h-12 mx-auto bg-amber-100 rounded-xl flex items-center justify-center mb-3">
-                                <Leaf className="w-6 h-6 text-amber-600" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 text-sm">Quality Guarantee</h3>
-                            <p className="text-xs text-slate-500 mt-1">Healthy plants or your money back</p>
-                        </div>
-                        <div className="bg-purple-50 border border-purple-100 rounded-2xl p-6 text-center">
-                            <div className="w-12 h-12 mx-auto bg-purple-100 rounded-xl flex items-center justify-center mb-3">
-                                <Star className="w-6 h-6 text-purple-600" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 text-sm">Expert Advice</h3>
-                            <p className="text-xs text-slate-500 mt-1">Free gardening tips from our pros</p>
-                        </div>
-                    </div>
-                </section>
-
-                {/* CTA Banner */}
-                <section className="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-3xl p-8 sm:p-12 text-center mb-12">
-                    <h2 className="text-xl sm:text-2xl font-bold text-white">Ready to transform your space?</h2>
-                    <p className="text-emerald-100 text-sm sm:text-base mt-2 max-w-lg mx-auto">
-                        Whether you need a single plant or a complete landscape overhaul, LeafyLand connects you with the right vendors and professionals.
-                    </p>
-                    <div className="flex flex-wrap justify-center gap-3 mt-6">
-                        <Link href="/products" className="bg-white text-emerald-700 font-semibold text-sm px-6 py-3 rounded-xl hover:bg-emerald-50 transition">
-                            Browse Products
-                        </Link>
-                        <Link href="/services" className="border border-emerald-300 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:bg-emerald-500 transition">
-                            Find a Professional
-                        </Link>
-                    </div>
-                </section>
+                    ))}
+                </div>
             </div>
         </div>
     );

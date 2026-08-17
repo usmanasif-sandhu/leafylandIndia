@@ -1,14 +1,13 @@
 'use client'
-import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
+import CategoriesStrip from "@/components/CategoriesStrip";
 import Footer from "@/components/Footer";
 
 export default function PublicLayout({ children }) {
-
     return (
         <>
-            <Banner />
             <Navbar />
+            <CategoriesStrip />
             {children}
             <Footer />
         </>
