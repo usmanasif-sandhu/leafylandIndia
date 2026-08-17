@@ -24,7 +24,7 @@ const slides = [
                 <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-teal-100/50 blur-2xl" />
                 <div className="absolute top-1/3 left-1/4 w-40 h-40 rounded-full bg-lime-100/40 blur-2xl" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center relative z-10">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-8 lg:py-0">
                         <div className="flex flex-col justify-center">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 leading-tight">
@@ -70,7 +70,7 @@ const slides = [
                 <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex flex-col justify-center py-8 relative z-10">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col justify-center py-8 relative z-10">
                     <div className="text-center mb-6">
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800">Browse by Category</h2>
                         <p className="text-base text-slate-500 mt-2">Find exactly what you need</p>
@@ -108,7 +108,7 @@ const slides = [
                 <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
                 <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-indigo-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center py-8 relative z-10">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center py-8 relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
                         <div className="flex flex-col justify-center">
                             <p className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">24/7 Available</p>
@@ -151,7 +151,7 @@ const slides = [
                 <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-orange-200/30 blur-3xl" />
                 <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-yellow-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex flex-col justify-center py-8 relative z-10">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col justify-center py-8 relative z-10">
                     <div className="text-center mb-6">
                         <p className="text-sm font-bold text-amber-600 uppercase tracking-wider mb-2">Premium</p>
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800">Expert Services</h2>
@@ -191,7 +191,7 @@ const slides = [
                 {/* Grid pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center relative z-10">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-8">
                         <div className="flex flex-col justify-center">
                             <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
