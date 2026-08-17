@@ -73,7 +73,6 @@ const slides = [
                 { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
                 { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
             ]
-            const SHIFT = 80
             return (
                 <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #e8f5e9 0%, #e0f2f1 50%, #f1f8e9 100%)' }}>
                     <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-200/30 blur-3xl" />
@@ -101,9 +100,7 @@ const slides = [
                                             className="relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
                                             style={{
                                                 padding: isHovered ? '24px 24px 24px 24px' : '24px 128px 24px 24px',
-                                                marginLeft: i === 0
-                                                    ? (isAfter ? SHIFT : 0)
-                                                    : (isHovered ? 0 : isBefore ? -180 - SHIFT : isAfter ? -180 + SHIFT : -180),
+                                                marginLeft: isHovered ? 0 : -180,
                                                 zIndex: isHovered ? 50 : i + 1,
                                                 boxShadow: isHovered ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
                                             }}
