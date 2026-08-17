@@ -75,9 +75,9 @@ const ServicesPage = () => {
                                 <Link
                                     key={service.id}
                                     href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
+                                    className="flex flex-col items-center gap-3 p-5 bg-[#c8e6c9] rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
                                         <Icon size={22} className="text-emerald-600" />
                                     </div>
                                     <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
@@ -100,9 +100,9 @@ const ServicesPage = () => {
                                 <Link
                                     key={service.id}
                                     href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
+                                    className="flex flex-col items-center gap-3 p-5 bg-[#c8e6c9] rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
                                         <Icon size={22} className="text-emerald-600" />
                                     </div>
                                     <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
