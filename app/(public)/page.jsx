@@ -7,7 +7,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck, Sprout, TreePine } from "lucide-react";
 import Link from "next/link";
 
 const serviceIcons = {
@@ -65,32 +65,53 @@ export default function Home() {
         <div className="bg-slate-50/50">
             <CategoriesStrip activeCategory={activeCategory} onSelect={setActiveCategory} />
 
-            {/* Promo Banners */}
+            {/* Main Category Cards */}
             {showSection(false) && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                        <Link href="/products" className="relative bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 sm:p-8 overflow-hidden group hover:shadow-lg transition-shadow">
-                            <div className="relative z-10">
-                                <p className="text-emerald-100 text-xs font-medium mb-1">NEW ARRIVALS</p>
-                                <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">Premium Indoor<br />Plant Collection</h2>
-                                <p className="text-emerald-200 text-xs mt-2">Starting from ₹99</p>
-                                <span className="inline-flex items-center gap-1 text-white text-xs font-semibold mt-3 group-hover:gap-2 transition-all">
-                                    Shop Now <ChevronRight size={14} />
-                                </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <Link href="/products" className="bg-[#e8f5e9] rounded-2xl p-5 sm:p-6 hover:shadow-md transition-all group relative overflow-hidden">
+                            <div>
+                                <p className="text-base sm:text-lg font-bold text-slate-800">Products</p>
+                                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Plants, tools & more</p>
                             </div>
-                            <Leaf className="absolute -bottom-4 -right-4 w-32 h-32 text-emerald-400/30 group-hover:rotate-12 transition-transform duration-500" strokeWidth={1} />
-                        </Link>
-
-                        <Link href="/services" className="relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 sm:p-8 overflow-hidden group hover:shadow-lg transition-shadow">
-                            <div className="relative z-10">
-                                <p className="text-blue-100 text-xs font-medium mb-1">BOOK NOW</p>
-                                <h2 className="text-white text-lg sm:text-xl font-bold leading-tight">Landscaping<br />Services</h2>
-                                <p className="text-blue-200 text-xs mt-2">Trusted professionals near you</p>
-                                <span className="inline-flex items-center gap-1 text-white text-xs font-semibold mt-3 group-hover:gap-2 transition-all">
+                            <div className="mt-6">
+                                <span className="text-xs font-semibold text-slate-600 group-hover:text-emerald-600 transition-colors flex items-center gap-1">
                                     Explore <ChevronRight size={14} />
                                 </span>
                             </div>
-                            <Truck className="absolute -bottom-4 -right-4 w-32 h-32 text-blue-400/30 group-hover:rotate-12 transition-transform duration-500" strokeWidth={1} />
+                            <div className="absolute top-4 right-4 w-11 h-11 bg-[#2e7d32] rounded-xl flex items-center justify-center">
+                                <Sprout size={22} className="text-white" />
+                            </div>
+                        </Link>
+
+                        <Link href="/properties" className="bg-[#fff8e1] rounded-2xl p-5 sm:p-6 hover:shadow-md transition-all group relative overflow-hidden">
+                            <div>
+                                <p className="text-base sm:text-lg font-bold text-slate-800">Properties</p>
+                                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Farmhouses & land</p>
+                            </div>
+                            <div className="mt-6">
+                                <span className="text-xs font-semibold text-slate-600 group-hover:text-amber-600 transition-colors flex items-center gap-1">
+                                    Explore <ChevronRight size={14} />
+                                </span>
+                            </div>
+                            <div className="absolute top-4 right-4 w-11 h-11 bg-[#f9a825] rounded-xl flex items-center justify-center">
+                                <HomeIcon size={22} className="text-white" />
+                            </div>
+                        </Link>
+
+                        <Link href="/services" className="bg-[#e0f7fa] rounded-2xl p-5 sm:p-6 hover:shadow-md transition-all group relative overflow-hidden">
+                            <div>
+                                <p className="text-base sm:text-lg font-bold text-slate-800">Services</p>
+                                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Landscaping & care</p>
+                            </div>
+                            <div className="mt-6">
+                                <span className="text-xs font-semibold text-slate-600 group-hover:text-teal-600 transition-colors flex items-center gap-1">
+                                    Explore <ChevronRight size={14} />
+                                </span>
+                            </div>
+                            <div className="absolute top-4 right-4 w-11 h-11 bg-[#00897b] rounded-xl flex items-center justify-center">
+                                <TreePine size={22} className="text-white" />
+                            </div>
                         </Link>
                     </div>
                 </div>
