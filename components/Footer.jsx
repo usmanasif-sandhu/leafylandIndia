@@ -25,7 +25,7 @@ const Footer = () => {
         {
             title: "COMPANY",
             links: [
-                { text: "About Leafyland", path: '/about', icon: null },
+                { text: "About LeafyLand", path: '/about', icon: null },
                 { text: "How It Works", path: '/how-it-works', icon: null },
                 { text: "Seller Policy", path: '/seller-policy', icon: null },
                 { text: "Terms & Conditions", path: '/terms', icon: null },
@@ -35,9 +35,9 @@ const Footer = () => {
         {
             title: "CONTACT",
             links: [
-                { text: "+1-212-456-7890", path: 'tel:+12124567890', icon: PhoneIcon },
-                { text: "contact@leafyland.com", path: 'mailto:contact@leafyland.com', icon: MailIcon },
-                { text: "794 Francisco, 94102", path: '/', icon: MapPinIcon }
+                { text: "+91 22 2490 0099", path: 'tel:+912224900099', icon: PhoneIcon },
+                { text: "info@leafyland.com", path: 'mailto:info@leafyland.com', icon: MailIcon },
+                { text: "Worli, Mumbai 400030", path: '/', icon: MapPinIcon }
             ]
         }
     ];

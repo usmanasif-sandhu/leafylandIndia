@@ -1,40 +1,83 @@
+'use client'
+import { useState } from 'react'
 import ProductCard from "@/components/ProductCard"
-import PageTitle from "@/components/PageTitle"
+import { products, productCategories } from "@/lib/data/products"
+import { Search, SlidersHorizontal, X } from 'lucide-react'
 
-// TEMP: dummy data until DATABASE_URL/DIRECT_URL are set.
-// Swap this block for a Prisma fetch once a real DB is connected.
-const dummyStore = {
-    id: "store_1", name: "Leafy Nursery", username: "leafynursery",
-    logo: "https://placehold.co/100x100/16a34a/white?text=LN",
-}
+const ProductsPage = () => {
+    const [search, setSearch] = useState('')
+    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [sortBy, setSortBy] = useState('featured')
 
-const products = [
-    {
-        id: "prod_1", name: "Money Plant", price: 8, mrp: 12,
-        images: ["https://placehold.co/400x400/86efac/166534?text=Money+Plant"],
-        category: "Plants", store: dummyStore, rating: [],
-    },
-    {
-        id: "prod_2", name: "Terracotta Pot", price: 15, mrp: 20,
-        images: ["https://placehold.co/400x400/fca5a5/7c2d12?text=Pot"],
-        category: "Pots & Planters", store: dummyStore, rating: [],
-    },
-    {
-        id: "prod_3", name: "Drip Irrigation Kit", price: 45, mrp: 60,
-        images: ["https://placehold.co/400x400/93c5fd/1e3a8a?text=Irrigation"],
-        category: "Irrigation", store: dummyStore, rating: [],
-    },
-]
+    const filtered = products.filter(p => {
+        const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
+        const matchCategory = selectedCategory === 'All' || p.category === selectedCategory
+        return matchSearch && matchCategory
+    }).sort((a, b) => {
+        if (sortBy === 'price-low') return a.price - b.price
+        if (sortBy === 'price-high') return b.price - a.price
+        return 0
+    })
 
-const ProductsPage = async () => {
     return (
-        <div className="mx-6 max-w-7xl mx-auto min-h-[60vh]">
-            <PageTitle heading="Products" text={`${products.length} products found`} />
-            {products.length === 0 ? (
-                <p className="text-slate-500 py-20 text-center">No products yet — check back soon.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
+            {/* Header */}
+            <div className="mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Products</h1>
+                <p className="text-sm text-slate-500 mt-1">{filtered.length} products found</p>
+            </div>
+
+            {/* Search & Filters Bar */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                <div className="relative flex-1">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                        type="text"
+                        placeholder="Search plants, tools, accessories..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500 focus:bg-white transition"
+                    />
+                </div>
+                <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:border-emerald-500"
+                >
+                    <option value="featured">Featured</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                </select>
+            </div>
+
+            {/* Category Pills */}
+            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-4">
+                {['All', ...productCategories].map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition ${
+                            selectedCategory === cat
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                    >
+                        {cat}
+                    </button>
+                ))}
+            </div>
+
+            {/* Product Grid */}
+            {filtered.length === 0 ? (
+                <div className="text-center py-20">
+                    <p className="text-slate-500 text-sm">No products found matching your criteria.</p>
+                    <button onClick={() => { setSearch(''); setSelectedCategory('All') }} className="mt-3 text-emerald-600 text-sm font-medium hover:underline">
+                        Clear filters
+                    </button>
+                </div>
             ) : (
-                <div className="grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 pb-20">
-                    {products.map((product) => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+                    {filtered.map(product => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>

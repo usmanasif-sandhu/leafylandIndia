@@ -6,8 +6,8 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata = {
-    title: "GoCart. - Shop smarter",
-    description: "GoCart. - Shop smarter",
+    title: "LeafyLand — Plants, Properties & Landscaping Services",
+    description: "LeafyLand is your marketplace for plants, garden products, farmhouses, land, and professional landscaping services.",
 };
 
 export default function RootLayout({ children }) {

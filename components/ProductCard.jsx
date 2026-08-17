@@ -1,31 +1,52 @@
 'use client'
-import { StarIcon } from 'lucide-react'
+import { ShoppingCart, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
 
 const ProductCard = ({ product }) => {
-
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
-
-    // calculate the average rating of the product
-    const rating = Math.round(product.rating.reduce((acc, curr) => acc + curr.rating, 0) / product.rating.length);
+    const currency = '₹'
+    const discount = product.mrp ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0
+    const rating = product.rating?.length
+        ? Math.round(product.rating.reduce((acc, curr) => acc + curr.rating, 0) / product.rating.length)
+        : 0
 
     return (
-        <Link href={`/product/${product.id}`} className=' group max-xl:mx-auto'>
-            <div className='bg-[#F5F5F5] h-40  sm:w-60 sm:h-68 rounded-lg flex items-center justify-center'>
-                <Image width={500} height={500} className='max-h-30 sm:max-h-40 w-auto group-hover:scale-115 transition duration-300' src={product.images[0]} alt="" />
-            </div>
-            <div className='flex justify-between gap-3 text-sm text-slate-800 pt-2 max-w-60'>
-                <div>
-                    <p>{product.name}</p>
-                    <div className='flex'>
-                        {Array(5).fill('').map((_, index) => (
-                            <StarIcon key={index} size={14} className='text-transparent mt-0.5' fill={rating >= index + 1 ? "#00C950" : "#D1D5DB"} />
-                        ))}
-                    </div>
+        <Link href={`/products/${product.id}`} className="group block w-48 sm:w-52">
+            <div className="bg-slate-50 rounded-2xl overflow-hidden relative">
+                <div className="aspect-square flex items-center justify-center p-3">
+                    <Image
+                        width={200}
+                        height={200}
+                        className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-300"
+                        src={product.images?.[0] || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=200&h=200&fit=crop'}
+                        alt={product.name}
+                    />
                 </div>
-                <p>{currency}{product.price}</p>
+                {discount > 0 && (
+                    <span className="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                        {discount}% OFF
+                    </span>
+                )}
+            </div>
+            <div className="pt-2.5 px-1">
+                <p className="text-xs text-slate-500 truncate">{product.category}</p>
+                <p className="text-sm font-medium text-slate-800 truncate mt-0.5">{product.name}</p>
+                <div className="flex items-center gap-1 mt-1">
+                    <span className="text-sm font-bold text-slate-800">{currency}{product.price.toLocaleString()}</span>
+                    {product.mrp && product.mrp > product.price && (
+                        <span className="text-xs text-slate-400 line-through">{currency}{product.mrp.toLocaleString()}</span>
+                    )}
+                </div>
+                {rating > 0 && (
+                    <div className="flex items-center gap-0.5 mt-1">
+                        <Star size={11} fill="#059669" className="text-emerald-600" />
+                        <span className="text-[11px] text-slate-600 font-medium">{rating}</span>
+                    </div>
+                )}
+                <button className="mt-2 w-full flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-xl transition active:scale-95">
+                    <ShoppingCart size={13} />
+                    Add to Cart
+                </button>
             </div>
         </Link>
     )
