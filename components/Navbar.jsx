@@ -62,25 +62,25 @@ const Navbar = () => {
                     <div ref={locationRef} className="relative hidden sm:block">
                         <button
                             onClick={() => setLocationOpen(!locationOpen)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 hover:text-emerald-600 hover:bg-white/60 rounded-lg transition-colors"
+                            className="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 hover:bg-white/60 rounded-lg transition-colors"
                         >
-                            <MapPin size={14} className="text-emerald-600 shrink-0" />
-                            <span className="truncate max-w-[100px]">{location}</span>
-                            <ChevronDown size={12} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
+                            <MapPin size={16} className="text-emerald-600 shrink-0" />
+                            <span className="truncate max-w-[120px]">{location}</span>
+                            <ChevronDown size={14} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {locationOpen && (
-                            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-slate-100 z-50 overflow-hidden">
-                                <div className="p-3 border-b border-slate-100">
-                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Location</p>
-                                    <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
-                                        <Search size={14} className="text-slate-400 shrink-0" />
+                            <div className="absolute top-full left-0 mt-1 w-72 bg-white rounded-xl shadow-xl border border-slate-100 z-50 overflow-hidden">
+                                <div className="p-3.5 border-b border-slate-100">
+                                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Location</p>
+                                    <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2.5">
+                                        <Search size={15} className="text-slate-400 shrink-0" />
                                         <input
                                             type="text"
                                             placeholder="Search city..."
                                             value={locationSearch}
                                             onChange={(e) => setLocationSearch(e.target.value)}
-                                            className="w-full bg-transparent outline-none text-xs text-slate-700 placeholder-slate-400"
+                                            className="w-full bg-transparent outline-none text-sm text-slate-700 placeholder-slate-400"
                                         />
                                     </div>
                                 </div>
@@ -92,13 +92,13 @@ const Navbar = () => {
                                             <button
                                                 key={city}
                                                 onClick={() => { setLocation(city); setLocationOpen(false); setLocationSearch('') }}
-                                                className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs transition-colors text-left ${
+                                                className={`w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors text-left ${
                                                     location === city
                                                         ? 'bg-emerald-50 text-emerald-700 font-semibold'
                                                         : 'text-slate-600 hover:bg-slate-50'
                                                 }`}
                                             >
-                                                <MapPin size={12} className={location === city ? 'text-emerald-600' : 'text-slate-300'} />
+                                                <MapPin size={14} className={location === city ? 'text-emerald-600' : 'text-slate-300'} />
                                                 {city}
                                             </button>
                                         ))
