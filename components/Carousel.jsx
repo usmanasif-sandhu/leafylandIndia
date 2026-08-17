@@ -19,7 +19,7 @@ const slides = [
         id: 1,
         render: () => (
             <div className="relative w-full h-full overflow-hidden">
-                <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover blur-[0.5px] scale-105" />
+                <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-105" />
                 <div className="absolute inset-0 bg-emerald-900/10" />
                 <div className="absolute inset-0 bg-white/50" />
                 {/* Decorative circles */}
