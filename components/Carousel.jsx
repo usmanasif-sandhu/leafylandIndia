@@ -30,18 +30,18 @@ const slides = [
                 <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-8 lg:py-0">
                         <div className="flex flex-col justify-center">
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 leading-tight">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
                                 Shop, Hire Experts &<br />Grow —<br />
-                                <span className="text-emerald-700">All in One Place.</span>
+                                <span className="text-emerald-300">All in One Place.</span>
                             </h1>
-                            <p className="text-sm sm:text-base text-slate-500 mt-4 max-w-md leading-relaxed">
+                            <p className="text-sm sm:text-base text-white/80 mt-4 max-w-md leading-relaxed drop-shadow">
                                 Products, services, verified professionals, communities & franchise — India's integrated green ecosystem.
                             </p>
                             <div className="flex flex-wrap gap-3 mt-6">
-                                <Link href="/products" className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-200">
+                                <Link href="/products" className="inline-flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-900/30">
                                     Explore Products <ArrowRight size={16} />
                                 </Link>
-                                <Link href="/services" className="inline-flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200 transition-colors">
+                                <Link href="/services" className="inline-flex items-center gap-2 px-6 py-2.5 bg-white/90 hover:bg-white text-slate-800 text-sm font-semibold rounded-xl border border-white/50 transition-colors shadow-lg">
                                     Book a Service <ArrowRight size={16} />
                                 </Link>
                             </div>
