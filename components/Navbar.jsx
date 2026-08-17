@@ -130,10 +130,10 @@ const Navbar = () => {
                             />
                         </form>
 
-                        <button className="flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
+                        <Link href="/login" className="flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
                             <User size={18} />
                             <span className="hidden md:inline text-xs">Login</span>
-                        </button>
+                        </Link>
 
                         <Link href="/cart" className="relative flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
                             <ShoppingCart size={18} />
