@@ -1,5 +1,5 @@
 'use client'
-import { Search, ShoppingCart, User, Menu, X, MapPin } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
@@ -22,50 +22,47 @@ const Navbar = () => {
     return (
         <nav className="sticky top-0 z-50 glass-navbar">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex items-center h-14 sm:h-16 gap-4">
+                <div className="flex items-center h-14 sm:h-16 gap-3">
 
                     {/* Logo — far left */}
                     <Link href="/" className="flex items-center shrink-0 hover:opacity-90 transition-opacity">
-                        <span className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                            <span className="text-emerald-600">leafy</span>
-                            <span className="text-slate-800">land</span>
-                        </span>
+                        <Image
+                            src={assets.logo}
+                            alt="LeafyLand"
+                            width={140}
+                            height={35}
+                            className="h-8 sm:h-9 w-auto object-contain"
+                            priority
+                        />
                     </Link>
 
-                    {/* Location (desktop only) */}
-                    <div className="hidden lg:flex items-center gap-1 text-xs text-slate-500 shrink-0 cursor-pointer hover:text-emerald-600 transition-colors">
-                        <MapPin size={14} className="text-emerald-600" />
-                        <div>
-                            <p className="font-semibold text-slate-700 leading-tight">Mumbai</p>
-                            <p className="text-[10px] text-slate-400 leading-tight">Delivery in 2-4 days</p>
-                        </div>
-                    </div>
+                    {/* Spacer */}
+                    <div className="flex-1" />
 
-                    {/* Search Bar — center, wide */}
-                    <form
-                        onSubmit={handleSearch}
-                        className="flex-1 max-w-xl flex items-center gap-2 bg-slate-100/80 hover:bg-slate-100 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/30 px-4 py-2 rounded-xl transition-all"
-                    >
-                        <Search size={18} className="text-slate-400 shrink-0" />
-                        <input
-                            className="w-full bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
-                            type="text"
-                            placeholder="Search for plants, tools, services..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </form>
+                    {/* Search + Icons — right aligned */}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <form
+                            onSubmit={handleSearch}
+                            className="hidden sm:flex items-center gap-2 bg-slate-100 hover:bg-slate-200/80 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 w-52 lg:w-72 px-3 py-2 rounded-xl transition-all"
+                        >
+                            <Search size={16} className="text-slate-400 shrink-0" />
+                            <input
+                                className="w-full bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
+                                type="text"
+                                placeholder="Search plants, tools..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </form>
 
-                    {/* Right actions — login + cart */}
-                    <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                        <button className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/60">
+                        <button className="flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
                             <User size={18} />
-                            <span className="hidden sm:inline">Login</span>
+                            <span className="hidden md:inline text-xs">Login</span>
                         </button>
 
-                        <Link href="/cart" className="relative flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/60">
+                        <Link href="/cart" className="relative flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
                             <ShoppingCart size={18} />
-                            <span className="hidden sm:inline">Cart</span>
+                            <span className="hidden md:inline text-xs">Cart</span>
                             {cartCount > 0 && (
                                 <span className="absolute -top-0.5 -right-0.5 text-[10px] font-bold text-white bg-emerald-600 min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1">
                                     {cartCount}
@@ -76,9 +73,9 @@ const Navbar = () => {
                         {/* Mobile menu toggle */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="p-2 text-slate-700 hover:text-emerald-600 lg:hidden rounded-lg hover:bg-white/60 transition-colors"
+                            className="p-2 text-slate-700 hover:text-emerald-600 lg:hidden rounded-lg hover:bg-white/50 transition-colors"
                         >
-                            <Menu size={22} />
+                            <Menu size={20} />
                         </button>
                     </div>
                 </div>
@@ -98,10 +95,7 @@ const Navbar = () => {
             }`}>
                 <div className="flex flex-col h-full p-6">
                     <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                        <span className="text-xl font-extrabold tracking-tight">
-                            <span className="text-emerald-600">leafy</span>
-                            <span className="text-slate-800">land</span>
-                        </span>
+                        <Image src={assets.logo} alt="LeafyLand" width={120} height={30} className="h-7 w-auto object-contain" />
                         <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors">
                             <X size={20} />
                         </button>
