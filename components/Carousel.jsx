@@ -86,17 +86,18 @@ const slides = [
                         </div>
 
                         <div className="flex-1 flex items-center justify-center overflow-hidden">
-                            <div className="flex items-center" style={{ marginLeft: 'calc(50% - 460px)' }}>
+                            <div className="flex items-center" style={{ marginLeft: 'calc(50% - 360px)' }}>
                                 {cards.map((cat, i) => {
                                     const isHovered = hoveredIdx === i
                                     const isMiddle = i === 2
+                                    const iconRight = i >= 3
                                     return (
                                         <Link
                                             key={i}
                                             href={cat.href}
                                             onMouseEnter={() => setHoveredIdx(i)}
                                             onMouseLeave={() => setHoveredIdx(null)}
-                                            className="relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
+                                            className={`relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group ${iconRight ? 'flex-row-reverse' : ''}`}
                                             style={{
                                                 padding: isHovered ? '24px 24px 24px 24px' : '24px 128px 24px 24px',
                                                 marginLeft: isHovered ? 0 : -180,
