@@ -279,23 +279,32 @@ export default function Home() {
                         <h2 className="text-lg sm:text-xl font-bold text-slate-800">Expert Services</h2>
                         <p className="text-sm text-slate-500 mt-1">Professional guidance for all your gardening needs</p>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         {[
-                            { icon: Compass, label: 'Hire Landscape Architects', sub: 'Custom garden & landscape design', color: 'from-emerald-500 to-emerald-600', href: '/services' },
-                            { icon: Bot, label: 'Consult Plant Doctor AI', sub: 'Instant plant health diagnosis', color: 'from-teal-500 to-teal-600', href: '/services' },
-                            { icon: CalendarCheck, label: 'Schedule Onsite Agronomist', sub: 'Expert farm & soil consultation', color: 'from-green-500 to-green-600', href: '/services' },
-                            { icon: BadgeCheck, label: 'Verified Garden Contractors', sub: 'Trusted & rated professionals', color: 'from-lime-500 to-lime-600', href: '/services' },
+                            { icon: Compass, label: 'Hire Landscape Architects', sub: 'Custom garden & landscape design', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#2e7d32]', iconColor: 'text-white', href: '/services' },
+                            { icon: Bot, label: 'Consult Plant Doctor AI', sub: 'Instant plant health diagnosis', bg: 'bg-[#fff8e1]', iconBg: 'bg-[#f9a825]', iconColor: 'text-white', href: '/services' },
+                            { icon: CalendarCheck, label: 'Schedule Onsite Agronomist', sub: 'Expert farm & soil consultation', bg: 'bg-[#e0f2f1]', iconBg: 'bg-[#00897b]', iconColor: 'text-white', href: '/services' },
+                            { icon: BadgeCheck, label: 'Verified Garden Contractors', sub: 'Trusted & rated professionals', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#388e3c]', iconColor: 'text-white', href: '/services' },
                         ].map((item, i) => (
                             <Link
                                 key={i}
                                 href={item.href}
-                                className={`relative flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl bg-gradient-to-br ${item.color} text-white hover:shadow-lg hover:scale-[1.02] transition-all overflow-hidden group`}
+                                className={`relative ${item.bg} rounded-2xl p-5 sm:p-6 hover:shadow-md transition-all group overflow-hidden`}
                             >
-                                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors">
-                                    <item.icon size={24} />
+                                <div className="flex flex-col h-full">
+                                    <div>
+                                        <p className="text-base sm:text-lg font-bold text-slate-800">{item.label}</p>
+                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">{item.sub}</p>
+                                    </div>
+                                    <div className="mt-auto pt-6">
+                                        <span className="text-xs font-semibold text-slate-600 group-hover:text-emerald-600 transition-colors flex items-center gap-1">
+                                            Explore <ChevronRight size={14} />
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-xs sm:text-sm font-bold leading-tight">{item.label}</p>
-                                <p className="text-[10px] sm:text-xs text-white/80 mt-1">{item.sub}</p>
+                                <div className={`absolute top-4 right-4 w-11 h-11 ${item.iconBg} rounded-xl flex items-center justify-center`}>
+                                    <item.icon size={22} className={item.iconColor} />
+                                </div>
                             </Link>
                         ))}
                     </div>
