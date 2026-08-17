@@ -62,6 +62,15 @@ export default function Home() {
         return categoryMatch
     }
 
+    // Main category groupings
+    const isPlants = activeCategory === 'Plants'
+    const isGardenTools = activeCategory === 'Garden Tools'
+    const isIrrigation = activeCategory === 'Irrigation'
+    const isFarmhouses = activeCategory === 'Farmhouses'
+    const isLandscaping = activeCategory === 'Landscaping'
+    const isFertilizers = activeCategory === 'Fertilizers'
+    const isPots = activeCategory === 'Pots'
+
     return (
         <div className="bg-slate-50/50">
             <CategoriesStrip activeCategory={activeCategory} onSelect={setActiveCategory} />
@@ -75,7 +84,7 @@ export default function Home() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 {/* Popular Plants */}
-                {showSection(['Indoor Greenary', 'Plants', 'Seeds', 'Planters', 'Gardening', 'Soil & Fertilizers', 'Big Plant', 'Bulbs', 'Fruit Plant'].includes(activeCategory)) && (
+                {showSection(isPlants) && (
                     <FeaturedSection
                         title="Popular Plants"
                         items={featuredProducts.length > 0 ? featuredProducts : allProducts}
@@ -85,7 +94,7 @@ export default function Home() {
                 )}
 
                 {/* Indoor Greenary */}
-                {showSection(activeCategory === 'Indoor Greenary') && indoorGreenary.length > 0 && (
+                {showSection(isPlants) && indoorGreenary.length > 0 && (
                     <FeaturedSection
                         title="Indoor Greenary"
                         items={indoorGreenary}
@@ -95,7 +104,7 @@ export default function Home() {
                 )}
 
                 {/* Big Plant */}
-                {showSection(activeCategory === 'Big Plant') && bigPlants.length > 0 && (
+                {showSection(isPlants) && bigPlants.length > 0 && (
                     <FeaturedSection
                         title="Big Plants"
                         items={bigPlants}
@@ -105,7 +114,7 @@ export default function Home() {
                 )}
 
                 {/* Plants (Outdoor) */}
-                {showSection(activeCategory === 'Plants') && plants.length > 0 && (
+                {showSection(isPlants) && plants.length > 0 && (
                     <FeaturedSection
                         title="Outdoor Plants"
                         items={plants}
@@ -115,7 +124,7 @@ export default function Home() {
                 )}
 
                 {/* Fruit Plant */}
-                {showSection(activeCategory === 'Fruit Plant') && fruitPlants.length > 0 && (
+                {showSection(isPlants) && fruitPlants.length > 0 && (
                     <FeaturedSection
                         title="Fruit Plants"
                         items={fruitPlants}
@@ -125,7 +134,7 @@ export default function Home() {
                 )}
 
                 {/* Bulbs */}
-                {showSection(activeCategory === 'Bulbs') && bulbs.length > 0 && (
+                {showSection(isPlants) && bulbs.length > 0 && (
                     <FeaturedSection
                         title="Bulbs"
                         items={bulbs}
@@ -135,7 +144,7 @@ export default function Home() {
                 )}
 
                 {/* Seeds */}
-                {showSection(activeCategory === 'Seeds') && seeds.length > 0 && (
+                {showSection(isPlants) && seeds.length > 0 && (
                     <FeaturedSection
                         title="Seeds"
                         items={seeds}
@@ -145,7 +154,7 @@ export default function Home() {
                 )}
 
                 {/* Daily Needs Services */}
-                {showSection(activeCategory === 'Gardening') && dailyServices.length > 0 && (
+                {showSection(isLandscaping) && dailyServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -177,7 +186,7 @@ export default function Home() {
                 )}
 
                 {/* Home Services */}
-                {showSection(activeCategory === 'Gardening') && homeServices.length > 0 && (
+                {showSection(isLandscaping) && homeServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -209,7 +218,7 @@ export default function Home() {
                 )}
 
                 {/* Planters */}
-                {showSection(activeCategory === 'Planters') && planters.length > 0 && (
+                {showSection(isPots) && planters.length > 0 && (
                     <FeaturedSection
                         title="Planters"
                         items={planters}
@@ -219,7 +228,7 @@ export default function Home() {
                 )}
 
                 {/* Soil & Fertilizers */}
-                {showSection(activeCategory === 'Soil & Fertilizers') && soilFertilizers.length > 0 && (
+                {showSection(isFertilizers) && soilFertilizers.length > 0 && (
                     <FeaturedSection
                         title="Soil & Fertilizers"
                         items={soilFertilizers}
@@ -228,8 +237,8 @@ export default function Home() {
                     />
                 )}
 
-                {/* Gardening */}
-                {showSection(activeCategory === 'Gardening') && gardening.length > 0 && (
+                {/* Gardening Tools */}
+                {showSection(isGardenTools || isIrrigation) && gardening.length > 0 && (
                     <FeaturedSection
                         title="Gardening Tools"
                         items={gardening}
@@ -239,7 +248,7 @@ export default function Home() {
                 )}
 
                 {/* Farmhouses & Land */}
-                {showSection(false) && (
+                {showSection(isFarmhouses) && (
                     <FeaturedSection
                         title="Farmhouses & Land"
                         items={featuredProperties}
