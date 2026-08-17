@@ -7,7 +7,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck } from "lucide-react";
 import Link from "next/link";
 
 const serviceIcons = {
@@ -271,6 +271,36 @@ export default function Home() {
                     />
                 )}
             </div>
+
+            {/* Expert Options */}
+            {activeCategory === 'All' && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+                    <div className="text-center mb-6">
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-800">Expert Services</h2>
+                        <p className="text-sm text-slate-500 mt-1">Professional guidance for all your gardening needs</p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {[
+                            { icon: Compass, label: 'Hire Landscape Architects', sub: 'Custom garden & landscape design', color: 'from-emerald-500 to-emerald-600', href: '/services' },
+                            { icon: Bot, label: 'Consult Plant Doctor AI', sub: 'Instant plant health diagnosis', color: 'from-teal-500 to-teal-600', href: '/services' },
+                            { icon: CalendarCheck, label: 'Schedule Onsite Agronomist', sub: 'Expert farm & soil consultation', color: 'from-green-500 to-green-600', href: '/services' },
+                            { icon: BadgeCheck, label: 'Verified Garden Contractors', sub: 'Trusted & rated professionals', color: 'from-lime-500 to-lime-600', href: '/services' },
+                        ].map((item, i) => (
+                            <Link
+                                key={i}
+                                href={item.href}
+                                className={`relative flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl bg-gradient-to-br ${item.color} text-white hover:shadow-lg hover:scale-[1.02] transition-all overflow-hidden group`}
+                            >
+                                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors">
+                                    <item.icon size={24} />
+                                </div>
+                                <p className="text-xs sm:text-sm font-bold leading-tight">{item.label}</p>
+                                <p className="text-[10px] sm:text-xs text-white/80 mt-1">{item.sub}</p>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Why LeafyLand — trust signals */}
             {activeCategory === 'All' && (
