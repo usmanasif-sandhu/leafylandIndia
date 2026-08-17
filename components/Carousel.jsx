@@ -79,14 +79,14 @@ const slides = [
                     <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
 
-                    <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col py-8 relative z-10">
-                        <div className="text-center mb-2">
+                    <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col py-4 relative z-10">
+                        <div className="text-center mb-0">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800">Browse by Category</h1>
-                            <p className="text-base text-slate-500 mt-2">Find exactly what you need</p>
+                            <p className="text-base text-slate-500 mt-1">Find exactly what you need</p>
                         </div>
 
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="flex items-center">
+                        <div className="flex-1 flex items-center justify-center overflow-hidden">
+                            <div className="flex items-center" style={{ marginLeft: 'calc(50% - 460px)' }}>
                                 {cards.map((cat, i) => {
                                     const isHovered = hoveredIdx === i
                                     const isMiddle = i === 2
