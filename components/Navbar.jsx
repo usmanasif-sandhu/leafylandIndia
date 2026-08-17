@@ -1,17 +1,39 @@
 'use client'
-import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, MapPin, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
+
+const cities = [
+    'Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai',
+    'Pune', 'Ahmedabad', 'Kolkata', 'Jaipur', 'Lucknow',
+    'Chandigarh', 'Bhopal', 'Indore', 'Nagpur', 'Surat',
+]
 
 const Navbar = () => {
     const router = useRouter();
     const [search, setSearch] = useState('');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [location, setLocation] = useState('Mumbai');
+    const [locationOpen, setLocationOpen] = useState(false);
+    const [locationSearch, setLocationSearch] = useState('');
+    const locationRef = useRef(null);
     const cartCount = useSelector(state => state.cart.total);
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (locationRef.current && !locationRef.current.contains(e.target)) {
+                setLocationOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClick)
+        return () => document.removeEventListener('mousedown', handleClick)
+    }, [])
+
+    const filteredCities = cities.filter(c => c.toLowerCase().includes(locationSearch.toLowerCase()))
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -24,7 +46,7 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="flex items-center h-14 sm:h-16 gap-3">
 
-                    {/* Logo — far left */}
+                    {/* Logo */}
                     <Link href="/" className="flex items-center shrink-0 hover:opacity-90 transition-opacity">
                         <Image
                             src={assets.logo}
@@ -35,6 +57,56 @@ const Navbar = () => {
                             priority
                         />
                     </Link>
+
+                    {/* Location Selector */}
+                    <div ref={locationRef} className="relative hidden sm:block">
+                        <button
+                            onClick={() => setLocationOpen(!locationOpen)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 hover:text-emerald-600 hover:bg-white/60 rounded-lg transition-colors"
+                        >
+                            <MapPin size={14} className="text-emerald-600 shrink-0" />
+                            <span className="truncate max-w-[100px]">{location}</span>
+                            <ChevronDown size={12} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {locationOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-xl shadow-xl border border-slate-100 z-50 overflow-hidden">
+                                <div className="p-3 border-b border-slate-100">
+                                    <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Location</p>
+                                    <div className="flex items-center gap-2 bg-slate-50 rounded-lg px-3 py-2">
+                                        <Search size={14} className="text-slate-400 shrink-0" />
+                                        <input
+                                            type="text"
+                                            placeholder="Search city..."
+                                            value={locationSearch}
+                                            onChange={(e) => setLocationSearch(e.target.value)}
+                                            className="w-full bg-transparent outline-none text-xs text-slate-700 placeholder-slate-400"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="max-h-52 overflow-y-auto">
+                                    {filteredCities.length === 0 ? (
+                                        <p className="px-4 py-6 text-xs text-slate-400 text-center">No cities found</p>
+                                    ) : (
+                                        filteredCities.map(city => (
+                                            <button
+                                                key={city}
+                                                onClick={() => { setLocation(city); setLocationOpen(false); setLocationSearch('') }}
+                                                className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-xs transition-colors text-left ${
+                                                    location === city
+                                                        ? 'bg-emerald-50 text-emerald-700 font-semibold'
+                                                        : 'text-slate-600 hover:bg-slate-50'
+                                                }`}
+                                            >
+                                                <MapPin size={12} className={location === city ? 'text-emerald-600' : 'text-slate-300'} />
+                                                {city}
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Spacer */}
                     <div className="flex-1" />
