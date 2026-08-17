@@ -8,6 +8,9 @@ const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
 export const metadata = {
     title: "LeafyLand — Plants, Properties & Landscaping Services",
     description: "LeafyLand is your marketplace for plants, garden products, farmhouses, land, and professional landscaping services.",
+    icons: {
+        icon: "/favicon.svg",
+    },
 };
 
 export default function RootLayout({ children }) {

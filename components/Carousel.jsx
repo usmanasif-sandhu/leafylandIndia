@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, Sprout, TreePine, Flower2, Leaf, Shovel, FlaskConical, Package, Home as HomeIcon, ArrowRight, Truck, ShieldCheck, Star, Compass, Bot, CalendarCheck, BadgeCheck, Droplets, Scissors, Hammer, Zap, Sparkles, Building } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Sprout, TreePine, Flower2, Leaf, Shovel, FlaskConical, Package, Home as HomeIcon, ArrowRight, Truck, ShieldCheck, Star, Compass, Bot, CalendarCheck, BadgeCheck, Droplets, Scissors, Hammer, Zap, Sparkles, Building, Wrench, Fence } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -64,76 +64,92 @@ const slides = [
     // Slide 2 — Categories
     {
         id: 2,
-        render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #e8f5e9 0%, #e0f2f1 50%, #f1f8e9 100%)' }}>
-                <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-200/30 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
+        render: () => {
+            const cards = [
+                { name: 'Plants', icon: Leaf, href: '/products?category=Plants', color: 'bg-emerald-500' },
+                { name: 'Garden Tools', icon: Wrench, href: '/products?category=Gardening', color: 'bg-lime-500' },
+                { name: 'Farmhouses', icon: HomeIcon, href: '/properties', color: 'bg-orange-500' },
+                { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
+                { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
+            ]
+            return (
+                <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #e8f5e9 0%, #e0f2f1 50%, #f1f8e9 100%)' }}>
+                    <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-200/30 blur-3xl" />
+                    <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col justify-center py-8 relative z-10">
-                    <div className="text-center mb-6">
-                        <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800">Browse by Category</h2>
-                        <p className="text-base text-slate-500 mt-2">Find exactly what you need</p>
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-3">
-                        {[
-                            { name: 'Big Plant', icon: TreePine, href: '/products?category=Big+Plant', color: 'bg-emerald-500' },
-                            { name: 'Bulbs', icon: Flower2, href: '/products?category=Bulbs', color: 'bg-pink-500' },
-                            { name: 'Fruit Plant', icon: Sprout, href: '/products?category=Fruit+Plant', color: 'bg-amber-500' },
-                            { name: 'Gardening', icon: Shovel, href: '/products?category=Gardening', color: 'bg-green-600' },
-                            { name: 'Indoor Greenary', icon: Leaf, href: '/products?category=Indoor+Greenary', color: 'bg-teal-500' },
-                            { name: 'Planters', icon: Package, href: '/products?category=Planters', color: 'bg-orange-500' },
-                            { name: 'Plants', icon: Sprout, href: '/products?category=Plants', color: 'bg-lime-600' },
-                            { name: 'Seeds', icon: Flower2, href: '/products?category=Seeds', color: 'bg-yellow-500' },
-                            { name: 'Soil & Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-amber-700' },
-                        ].map((cat, i) => (
-                            <Link key={i} href={cat.href} className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-xl hover:shadow-lg hover:scale-105 transition-all group">
-                                <div className={`w-12 h-12 ${cat.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                    <cat.icon size={22} className="text-white" />
-                                </div>
-                                <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{cat.name}</span>
-                            </Link>
-                        ))}
+                    <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col py-8 relative z-10">
+                        <div className="text-center mb-6">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800">Browse by Category</h1>
+                            <p className="text-base text-slate-500 mt-2">Find exactly what you need</p>
+                        </div>
+
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="flex items-center">
+                                {cards.map((cat, i) => (
+                                    <Link
+                                        key={i}
+                                        href={cat.href}
+                                        className="relative flex items-center gap-4 p-6 pr-32 bg-white rounded-3xl shadow-lg transition-all duration-300 hover:z-50 hover:pr-6 hover:shadow-2xl group"
+                                        style={{
+                                            marginLeft: i === 0 ? 0 : '-180px',
+                                            zIndex: i + 1,
+                                        }}
+                                    >
+                                        <div className={`w-20 h-20 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                            <cat.icon size={36} className="text-white" />
+                                        </div>
+                                        <span className="text-lg font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        ),
+            )
+        },
     },
     // Slide 3 — Services
     {
         id: 3,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #e3f2fd 0%, #e0f7fa 50%, #e8eaf6 100%)' }}>
-                <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-blue-200/30 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-cyan-200/30 blur-3xl" />
-                <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-indigo-200/20 blur-3xl" />
+            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #e0f2f1 100%)' }}>
+                <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-emerald-200/30 blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-teal-200/30 blur-3xl" />
+                <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-lime-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center py-8 relative z-10">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
-                        <div className="flex flex-col justify-center">
-                            <p className="text-sm font-bold text-blue-600 uppercase tracking-wider mb-2">24/7 Available</p>
-                            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800 leading-tight">
-                                Professional<br />Home & Garden<br /><span className="text-blue-600">Services</span>
-                            </h2>
-                            <p className="text-base text-slate-500 mt-3 max-w-sm">From plant care to home repairs — book trusted professionals in minutes.</p>
-                            <Link href="/services" className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-blue-200 mt-5 w-fit">
-                                View All Services <ArrowRight size={16} />
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col py-8 relative z-10">
+                    <div className="text-center mb-5">
+                        <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800">Our Services</h2>
+                        <p className="text-base text-slate-500 mt-2">Trusted professionals at your doorstep</p>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center justify-center gap-3">
+                        <div className="grid grid-cols-4 gap-4 w-full max-w-3xl">
                             {[
-                                { icon: Droplets, name: 'Plant Watering' },
-                                { icon: Scissors, name: 'Lawn Mowing' },
-                                { icon: Building, name: 'Housekeeping' },
-                                { icon: Hammer, name: 'Plumbing' },
-                                { icon: Zap, name: 'Electrical' },
-                                { icon: Sparkles, name: 'Deep Cleaning' },
+                                { icon: Droplets, name: 'Plant Watering', href: '/services' },
+                                { icon: Scissors, name: 'Lawn Mowing', href: '/services' },
+                                { icon: Building, name: 'Housekeeping', href: '/services' },
+                                { icon: Hammer, name: 'Plumbing', href: '/services' },
                             ].map((s, i) => (
-                                <Link key={i} href="/services" className="flex flex-col items-center gap-2 p-4 bg-white/80 backdrop-blur rounded-xl hover:bg-white hover:shadow-lg transition-all group">
-                                    <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                                        <s.icon size={22} className="text-blue-600" />
+                                <Link key={i} href={s.href} className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
+                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                                        <s.icon size={26} className="text-white" />
                                     </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center">{s.name}</span>
+                                    <span className="text-sm font-bold text-slate-700 text-center leading-tight">{s.name}</span>
+                                </Link>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 w-full max-w-3xl">
+                            {[
+                                { icon: Zap, name: 'Electrical', href: '/services' },
+                                { icon: Sparkles, name: 'Deep Cleaning', href: '/services' },
+                                { icon: Leaf, name: 'Garden Maintenance', href: '/services' },
+                            ].map((s, i) => (
+                                <Link key={i} href={s.href} className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
+                                    <div className="w-14 h-14 rounded-2xl bg-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                                        <s.icon size={26} className="text-white" />
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-700 text-center leading-tight">{s.name}</span>
                                 </Link>
                             ))}
                         </div>
@@ -146,35 +162,42 @@ const slides = [
     {
         id: 4,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #fff8e1 0%, #fff3e0 50%, #fce4ec 100%)' }}>
-                <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-amber-200/30 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-orange-200/30 blur-3xl" />
-                <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-yellow-200/20 blur-3xl" />
+            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #f1f8e9 0%, #e8f5e9 50%, #e0f2f1 100%)' }}>
+                <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-emerald-200/30 blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
+                <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-lime-200/20 blur-3xl" />
 
-                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col justify-center py-8 relative z-10">
-                    <div className="text-center mb-6">
-                        <p className="text-sm font-bold text-amber-600 uppercase tracking-wider mb-2">Premium</p>
-                        <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-800">Expert Services</h2>
-                        <p className="text-base text-slate-500 mt-2">Connect with verified professionals</p>
-                    </div>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {[
-                            { icon: Compass, label: 'Landscape Architects', sub: 'Custom garden design', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#2e7d32]', href: '/services' },
-                            { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant diagnosis', bg: 'bg-[#fff8e1]', iconBg: 'bg-[#f9a825]', href: '/services' },
-                            { icon: CalendarCheck, label: 'Onsite Agronomist', sub: 'Farm consultation', bg: 'bg-[#e0f2f1]', iconBg: 'bg-[#00897b]', href: '/services' },
-                            { icon: BadgeCheck, label: 'Garden Contractors', sub: 'Verified & rated', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#388e3c]', href: '/services' },
-                        ].map((item, i) => (
-                            <Link key={i} href={item.href} className={`${item.bg} rounded-2xl p-5 hover:shadow-lg transition-all group relative overflow-hidden`}>
-                                <div className={`absolute top-4 right-4 w-10 h-10 ${item.iconBg} rounded-xl flex items-center justify-center`}>
-                                    <item.icon size={20} className="text-white" />
-                                </div>
-                                <p className="text-base font-bold text-slate-800 pr-14">{item.label}</p>
-                                <p className="text-sm text-slate-500 mt-1">{item.sub}</p>
-                                <span className="text-sm font-semibold text-slate-600 group-hover:text-emerald-600 transition-colors flex items-center gap-1 mt-4">
-                                    Explore <ArrowRight size={14} />
-                                </span>
+                <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center py-8 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 w-full">
+                        <div className="flex flex-col justify-center">
+                            <h2 className="text-4xl sm:text-5xl font-extrabold text-slate-800 leading-tight">
+                                Book Trusted <span className="text-emerald-600">Experts</span> for Any Job
+                            </h2>
+                            <p className="text-lg text-slate-500 mt-4 max-w-md">
+                                From landscape architects to plant doctors — connect with verified professionals who deliver quality results.
+                            </p>
+                            <Link href="/services" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-200 mt-6 w-fit">
+                                Explore All <ArrowRight size={16} />
                             </Link>
-                        ))}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            {[
+                                { icon: Compass, label: 'Landscape Architects', sub: 'Custom garden design', color: 'bg-emerald-500', href: '/services' },
+                                { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant diagnosis', color: 'bg-teal-500', href: '/services' },
+                                { icon: CalendarCheck, label: 'Onsite Agronomist', sub: 'Farm consultation', color: 'bg-emerald-600', href: '/services' },
+                                { icon: BadgeCheck, label: 'Garden Contractors', sub: 'Verified & rated', color: 'bg-lime-600', href: '/services' },
+                            ].map((item, i) => (
+                                <Link key={i} href={item.href} className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
+                                    <div className={`w-14 h-14 ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                        <item.icon size={26} className="text-white" />
+                                    </div>
+                                    <div className="text-center">
+                                        <span className="text-sm font-bold text-slate-700 leading-tight block">{item.label}</span>
+                                        <span className="text-xs text-slate-500 mt-1 block">{item.sub}</span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
