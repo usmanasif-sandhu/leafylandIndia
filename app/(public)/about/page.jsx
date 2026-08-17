@@ -67,7 +67,7 @@ const AboutPage = () => {
                     </div>
                     <div>
                         <p className="font-medium text-slate-700">Contact</p>
-                        <p className="mt-1">Tel: +91 22 2490 0099<br />+91 98679 09355<br />info@leafyland.com</p>
+                        <p className="mt-1">Tel: +91 98679 09355<br />hello@leafyland.com</p>
                     </div>
                 </div>
             </section>

@@ -34,14 +34,14 @@ const ContactPage = () => {
                         <Phone size={18} className="text-emerald-600 mt-0.5 shrink-0" />
                         <div>
                             <p className="text-sm font-semibold text-slate-800">Phone</p>
-                            <p className="text-xs text-slate-500 mt-1">+91 22 2490 0099<br />+91 98679 09355</p>
+                            <p className="text-xs text-slate-500 mt-1">+91 98679 09355</p>
                         </div>
                     </div>
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl">
                         <Mail size={18} className="text-emerald-600 mt-0.5 shrink-0" />
                         <div>
                             <p className="text-sm font-semibold text-slate-800">Email</p>
-                            <p className="text-xs text-slate-500 mt-1">info@leafyland.com</p>
+                            <p className="text-xs text-slate-500 mt-1">hello@leafyland.com</p>
                         </div>
                     </div>
                 </div>

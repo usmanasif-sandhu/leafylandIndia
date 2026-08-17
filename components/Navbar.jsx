@@ -62,11 +62,14 @@ const Navbar = () => {
                     <div ref={locationRef} className="relative hidden sm:block">
                         <button
                             onClick={() => setLocationOpen(!locationOpen)}
-                            className="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 hover:bg-white/60 rounded-lg transition-colors"
+                            className="flex flex-col items-start px-3.5 py-1 hover:bg-white/60 rounded-lg transition-colors cursor-pointer"
                         >
-                            <MapPin size={16} className="text-emerald-600 shrink-0" />
-                            <span className="truncate max-w-[120px]">{location}</span>
-                            <ChevronDown size={14} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
+                            <span className="text-[10px] text-slate-400 font-medium leading-tight">Select your location</span>
+                            <div className="flex items-center gap-1.5">
+                                <MapPin size={15} className="text-emerald-600 shrink-0" />
+                                <span className="text-sm font-semibold text-slate-700 truncate max-w-[110px]">{location}</span>
+                                <ChevronDown size={13} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
+                            </div>
                         </button>
 
                         {locationOpen && (

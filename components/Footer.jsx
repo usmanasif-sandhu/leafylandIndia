@@ -36,8 +36,8 @@ const Footer = () => {
         {
             title: "CONTACT",
             links: [
-                { text: "+91 22 2490 0099", path: 'tel:+912224900099', icon: PhoneIcon },
-                { text: "info@leafyland.com", path: 'mailto:info@leafyland.com', icon: MailIcon },
+                { text: "+91 98679 09355", path: 'tel:+919867909355', icon: PhoneIcon },
+                { text: "hello@leafyland.com", path: 'mailto:hello@leafyland.com', icon: MailIcon },
                 { text: "Worli, Mumbai 400030", path: '/', icon: MapPinIcon }
             ]
         }
