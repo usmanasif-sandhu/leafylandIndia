@@ -65,6 +65,7 @@ const slides = [
     {
         id: 2,
         render: () => {
+            const [hoveredIdx, setHoveredIdx] = useState(null)
             const cards = [
                 { name: 'Plants', icon: Leaf, href: '/products?category=Plants', color: 'bg-emerald-500' },
                 { name: 'Garden Tools', icon: Wrench, href: '/products?category=Gardening', color: 'bg-lime-500' },
@@ -72,6 +73,7 @@ const slides = [
                 { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
                 { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
             ]
+            const SHIFT = 80
             return (
                 <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #e8f5e9 0%, #e0f2f1 50%, #f1f8e9 100%)' }}>
                     <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-200/30 blur-3xl" />
@@ -86,22 +88,33 @@ const slides = [
 
                         <div className="flex-1 flex items-center justify-center">
                             <div className="flex items-center">
-                                {cards.map((cat, i) => (
-                                    <Link
-                                        key={i}
-                                        href={cat.href}
-                                        className="relative flex items-center gap-4 p-6 pr-32 bg-white rounded-3xl shadow-lg transition-all duration-300 hover:z-50 hover:pr-6 hover:shadow-2xl group"
-                                        style={{
-                                            marginLeft: i === 0 ? 0 : '-180px',
-                                            zIndex: i + 1,
-                                        }}
-                                    >
-                                        <div className={`w-20 h-20 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                            <cat.icon size={36} className="text-white" />
-                                        </div>
-                                        <span className="text-lg font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
-                                    </Link>
-                                ))}
+                                {cards.map((cat, i) => {
+                                    const isHovered = hoveredIdx === i
+                                    const isBefore = hoveredIdx !== null && i < hoveredIdx
+                                    const isAfter = hoveredIdx !== null && i > hoveredIdx
+                                    return (
+                                        <Link
+                                            key={i}
+                                            href={cat.href}
+                                            onMouseEnter={() => setHoveredIdx(i)}
+                                            onMouseLeave={() => setHoveredIdx(null)}
+                                            className="relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
+                                            style={{
+                                                padding: isHovered ? '24px 24px 24px 24px' : '24px 128px 24px 24px',
+                                                marginLeft: i === 0
+                                                    ? (isAfter ? SHIFT : 0)
+                                                    : (isHovered ? 0 : isBefore ? -180 - SHIFT : isAfter ? -180 + SHIFT : -180),
+                                                zIndex: isHovered ? 50 : i + 1,
+                                                boxShadow: isHovered ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
+                                            }}
+                                        >
+                                            <div className={`w-20 h-20 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                                <cat.icon size={36} className="text-white" />
+                                            </div>
+                                            <span className="text-lg font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
+                                        </Link>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>
