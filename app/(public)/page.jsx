@@ -3,21 +3,48 @@ import { useState } from 'react'
 import CategoriesStrip from "@/components/CategoriesStrip";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
-import ServiceCard from "@/components/ServiceCard";
 import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star, ChevronRight } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, ShieldCheck as PestIcon, Recycle, Flower2, Wrench, Package, Home, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
 import Link from "next/link";
+
+const serviceIcons = {
+    'Plant Watering': Droplets,
+    'Lawn Mowing': Scissors,
+    'Garden Cleaning': Sparkles,
+    'Pest Control': PestIcon,
+    'Waste Recycling': Recycle,
+    'Indoor Plant Care': Leaf,
+    'Soil Replacement': Flower2,
+    'Irrigation Repair': Wrench,
+    'Compost Pickup': Truck,
+    'Balcony Setup': Home,
+    'Emergency Garden': AlertTriangle,
+    'Plant Replacement': RefreshCw,
+    'Housekeeping': Building,
+    'Deep Cleaning': Sparkles,
+    'AC Service': Zap,
+    'Appliance Repair': Wrench,
+    'Plumbing': Droplet,
+    'Electrical': Zap,
+    'Painting': Paintbrush,
+    'Carpentry': Hammer,
+    'Waterproofing': PestIcon,
+    'CCTV': Camera,
+    'Shifting': Package,
+    'Junk Removal': Trash2,
+}
 
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All')
 
     const featuredProducts = products.filter(p => p.featured).slice(0, 10)
     const allProducts = products.slice(0, 10)
-    const featuredServices = services.filter(s => s.featured).slice(0, 8)
     const featuredProperties = properties.filter(p => p.featured).slice(0, 6)
+    const dailyServices = services.filter(s => s.category === 'Daily Needs Services').slice(0, 6)
+    const homeServices = services.filter(s => s.category === 'Home Services').slice(0, 6)
 
     const indoorPlants = products.filter(p => p.category === 'Indoor Plants').slice(0, 8)
     const outdoorPlants = products.filter(p => p.category === 'Outdoor Plants').slice(0, 8)
@@ -105,14 +132,68 @@ export default function Home() {
                     />
                 )}
 
-                {/* Trending Services */}
-                {showSection(activeCategory === 'Services') && (
-                    <FeaturedSection
-                        title="Trending Services"
-                        items={featuredServices}
-                        viewAllLink="/services"
-                        renderItem={(service) => <ServiceCard service={service} />}
-                    />
+                {/* Daily Needs Services */}
+                {showSection(activeCategory === 'Services') && dailyServices.length > 0 && (
+                    <section className="py-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <div>
+                                <h2 className="text-base sm:text-lg font-bold text-slate-800">Daily Needs Services</h2>
+                                <p className="text-xs text-slate-500 mt-0.5">On-demand green & home services at your doorstep</p>
+                            </div>
+                            <Link href="/services" className="text-emerald-600 text-xs font-semibold hover:text-emerald-700 flex items-center gap-0.5 transition-colors">
+                                See All <ChevronRight size={14} />
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                            {dailyServices.map(service => {
+                                const Icon = serviceIcons[service.name] || Leaf
+                                return (
+                                    <Link
+                                        key={service.id}
+                                        href={`/services/${service.slug}`}
+                                        className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group"
+                                    >
+                                        <div className="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                            <Icon size={20} className="text-emerald-600" />
+                                        </div>
+                                        <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </section>
+                )}
+
+                {/* Home Services */}
+                {showSection(activeCategory === 'Services') && homeServices.length > 0 && (
+                    <section className="py-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <div>
+                                <h2 className="text-base sm:text-lg font-bold text-slate-800">Home Services</h2>
+                                <p className="text-xs text-slate-500 mt-0.5">Professional home maintenance and repair</p>
+                            </div>
+                            <Link href="/services" className="text-emerald-600 text-xs font-semibold hover:text-emerald-700 flex items-center gap-0.5 transition-colors">
+                                See All <ChevronRight size={14} />
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                            {homeServices.map(service => {
+                                const Icon = serviceIcons[service.name] || Leaf
+                                return (
+                                    <Link
+                                        key={service.id}
+                                        href={`/services/${service.slug}`}
+                                        className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group"
+                                    >
+                                        <div className="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                                            <Icon size={20} className="text-emerald-600" />
+                                        </div>
+                                        <span className="text-[11px] font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </section>
                 )}
 
                 {/* Tools & Accessories */}
