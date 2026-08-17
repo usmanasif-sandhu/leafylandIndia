@@ -80,7 +80,7 @@ const slides = [
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
 
                     <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex flex-col py-8 relative z-10">
-                        <div className="text-center mb-6">
+                        <div className="text-center mb-2">
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800">Browse by Category</h1>
                             <p className="text-base text-slate-500 mt-2">Find exactly what you need</p>
                         </div>
@@ -89,8 +89,7 @@ const slides = [
                             <div className="flex items-center">
                                 {cards.map((cat, i) => {
                                     const isHovered = hoveredIdx === i
-                                    const isBefore = hoveredIdx !== null && i < hoveredIdx
-                                    const isAfter = hoveredIdx !== null && i > hoveredIdx
+                                    const isMiddle = i === 2
                                     return (
                                         <Link
                                             key={i}
@@ -101,8 +100,8 @@ const slides = [
                                             style={{
                                                 padding: isHovered ? '24px 24px 24px 24px' : '24px 128px 24px 24px',
                                                 marginLeft: isHovered ? 0 : -180,
-                                                zIndex: isHovered ? 50 : i + 1,
-                                                boxShadow: isHovered ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
+                                                zIndex: isHovered ? 60 : isMiddle ? 50 : i === 1 || i === 3 ? 10 : 1,
+                                                boxShadow: isHovered || isMiddle ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
                                             }}
                                         >
                                             <div className={`w-20 h-20 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
