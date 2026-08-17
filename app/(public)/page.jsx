@@ -7,7 +7,7 @@ import PropertyCard from "@/components/PropertyCard";
 import { products } from "@/lib/data/products";
 import { services } from "@/lib/data/services";
 import { properties } from "@/lib/data/properties";
-import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
+import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap } from "lucide-react";
 import Link from "next/link";
 
 const serviceIcons = {
@@ -20,7 +20,7 @@ const serviceIcons = {
     'Soil Replacement': Flower2,
     'Irrigation Repair': Wrench,
     'Compost Pickup': Truck,
-    'Balcony Setup': Home,
+    'Balcony Setup': HomeIcon,
     'Emergency Garden': AlertTriangle,
     'Plant Replacement': RefreshCw,
     'Housekeeping': Building,
