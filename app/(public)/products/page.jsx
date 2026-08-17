@@ -1,13 +1,26 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
 import { products, productCategories } from "@/lib/data/products"
-import { Search, SlidersHorizontal, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 
 const ProductsPage = () => {
-    const [search, setSearch] = useState('')
-    const [selectedCategory, setSelectedCategory] = useState('All')
+    const searchParams = useSearchParams()
+    const urlCategory = searchParams.get('category') || 'All'
+    const urlSearch = searchParams.get('search') || ''
+
+    const [search, setSearch] = useState(urlSearch)
+    const [selectedCategory, setSelectedCategory] = useState(urlCategory)
     const [sortBy, setSortBy] = useState('featured')
+
+    useEffect(() => {
+        setSelectedCategory(urlCategory)
+    }, [urlCategory])
+
+    useEffect(() => {
+        setSearch(urlSearch)
+    }, [urlSearch])
 
     const filtered = products.filter(p => {
         const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
@@ -21,13 +34,11 @@ const ProductsPage = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
-            {/* Header */}
             <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Products</h1>
                 <p className="text-sm text-slate-500 mt-1">{filtered.length} products found</p>
             </div>
 
-            {/* Search & Filters Bar */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <div className="relative flex-1">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -50,7 +61,6 @@ const ProductsPage = () => {
                 </select>
             </div>
 
-            {/* Category Pills */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-4">
                 {['All', ...productCategories].map(cat => (
                     <button
@@ -67,7 +77,6 @@ const ProductsPage = () => {
                 ))}
             </div>
 
-            {/* Product Grid */}
             {filtered.length === 0 ? (
                 <div className="text-center py-20">
                     <p className="text-slate-500 text-sm">No products found matching your criteria.</p>
