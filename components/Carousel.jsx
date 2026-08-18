@@ -94,6 +94,7 @@ const slides = [
         render: () => (
             <div className="relative w-full h-full overflow-hidden">
                 <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-105" />
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
 
                 <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center relative z-10`}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full py-6 sm:py-8 lg:py-0">
