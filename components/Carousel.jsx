@@ -20,12 +20,6 @@ const slides = [
         render: () => (
             <div className="relative w-full h-full overflow-hidden">
                 <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-105" />
-                <div className="absolute inset-0 bg-emerald-900/10" />
-                <div className="absolute inset-0 bg-white/50" />
-                {/* Decorative circles */}
-                <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-emerald-100/50 blur-2xl" />
-                <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-teal-100/50 blur-2xl" />
-                <div className="absolute top-1/3 left-1/4 w-40 h-40 rounded-full bg-lime-100/40 blur-2xl" />
 
                 <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 h-full flex items-center relative z-10">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-8 lg:py-0">
