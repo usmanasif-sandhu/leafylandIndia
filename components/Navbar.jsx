@@ -3,7 +3,7 @@ import { Search, ShoppingCart, User, Menu, X, MapPin, ChevronDown } from "lucide
 import Link from "next/link";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -15,6 +15,7 @@ const cities = [
 
 const Navbar = () => {
     const router = useRouter();
+    const pathname = usePathname();
     const [search, setSearch] = useState('');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [location, setLocation] = useState('Mumbai');
@@ -109,6 +110,28 @@ const Navbar = () => {
                                 </div>
                             </div>
                         )}
+                    </div>
+
+                    {/* Desktop Nav Links */}
+                    <div className="hidden lg:flex items-center gap-1">
+                        {[
+                            { href: '/', label: 'Home' },
+                            { href: '/products', label: 'Products' },
+                            { href: '/services', label: 'Services' },
+                            { href: '/properties', label: 'Properties' },
+                        ].map(link => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                                    pathname === link.href
+                                        ? 'text-emerald-600 bg-emerald-50'
+                                        : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'
+                                }`}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
 
                     {/* Spacer */}
