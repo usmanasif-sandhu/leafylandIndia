@@ -36,50 +36,73 @@ function CategorySlide() {
                     <p className="text-sm sm:text-base text-slate-500 mt-1">Find exactly what you need</p>
                 </div>
 
-                <div className="flex-1 flex items-center justify-center overflow-hidden min-h-0">
-                    {/* Compact cards — same look, no overlap (phones / tablets) */}
-                    <div className="lg:hidden grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-lg">
+                <div className="flex-1 flex flex-col items-center justify-center">
+                    {/* Mobile grid — always 1 column, cards stack vertically */}
+                    <div className="lg:hidden w-full grid grid-cols-1 gap-4 px-4">
                         {cards.map((cat, i) => (
                             <Link
                                 key={i}
                                 href={cat.href}
-                                className={`flex items-center gap-3 bg-white rounded-3xl shadow-lg p-3 sm:p-4 group ${i === 4 ? 'col-span-2 sm:col-span-1 max-w-[calc(50%-0.375rem)] sm:max-w-none mx-auto w-full' : ''}`}
+                                className={`flex flex-col items-center gap-3 bg-white rounded-3xl shadow-lg p-4 transition-all duration-300 group`}
                             >
-                                <div className={`w-12 h-12 sm:w-14 sm:h-14 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                <div className={`w-14 h-14 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
                                     <cat.icon size={28} className="text-white" />
                                 </div>
-                                <span className="text-sm sm:text-base font-bold text-slate-700 leading-tight">{cat.name}</span>
+                                <span className="text-sm font-bold text-slate-700 text-center leading-tight">{cat.name}</span>
                             </Link>
                         ))}
                     </div>
 
-                    {/* Original overlapping fan — desktop */}
-                    <div className="hidden lg:flex items-center" style={{ marginLeft: 'calc(50% - 360px)' }}>
-                        {cards.map((cat, i) => {
-                            const isHovered = hoveredIdx === i
-                            const isMiddle = i === 2
-                            const iconRight = i >= 3
-                            return (
-                                <Link
-                                    key={i}
-                                    href={cat.href}
-                                    onMouseEnter={() => setHoveredIdx(i)}
-                                    onMouseLeave={() => setHoveredIdx(null)}
-                                    className={`relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group ${iconRight ? 'flex-row-reverse' : ''}`}
-style={{
-                                        padding: isHovered ? '24px 24px 24px 24px' : '24px 64px 24px 24px',
-                                        marginLeft: isHovered ? 0 : -100,
-                                        zIndex: isHovered ? 60 : isMiddle ? 50 : i === 1 || i === 3 ? 10 : 1,
-                                        boxShadow: isHovered || isMiddle ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
-                                    }}
-                                >
-                                    <div className={`w-20 h-20 shrink-0 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                        <cat.icon size={36} className="text-white" />
-                                    </div>
-                                    <span className="text-lg font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
-                                </Link>
-                            )
-                        })}
+                    {/* Desktop grid — 2 columns on lg+, adjusts down to 1 column */}
+                    <div className="hidden lg:flex lg:items-center gap-8">
+                        {/* Overlap container with responsive width */}
+                        <div className="relative flex w-full gap-8">
+                            {/* First card — no negative margin, full width visible */}
+                            <Link
+                                key={0}
+                                href={cards[0].href}
+                                className="relative flex items-center gap-3 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
+                                style={{
+                                    width: 'minmax(180px, 250px)',
+                                    padding: '24px 32px 24px 24px',
+                                    marginLeft: 0,
+                                    zIndex: 5,
+                                }}
+                            >
+                                <div className={`w-14 h-14 ${cards[0].color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                    <cat.icon size={36} className="text-white" />
+                                </div>
+                                <span className="text-sm font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cards[0].name}</span>
+                            </Link>
+
+                            {/* Remaining cards — with responsive overlap */}
+                            {cards.slice(1).map((cat, idx) => {
+                                const i = idx + 1 // original index
+                                const isHovered = hoveredIdx === i
+                                const isMiddle = i === 2
+                                return (
+                                    <Link
+                                        key={i}
+                                        href={cat.href}
+                                        onMouseEnter={() => setHoveredIdx(i)}
+                                        onMouseLeave={() => setHoveredIdx(null)}
+                                        className="relative flex items-center gap-3 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
+                                        style={{
+                                            flex: '0 0 minmax(180px, 250px)',
+                                            padding: isHovered ? '24px 32px 24px 24px' : '24px 48px 24px 24px',
+                                            marginLeft: isHovered ? 0 : -60,
+                                            zIndex: isHovered ? 50 : i,
+                                            boxShadow: isHovered ? '0 20px 40px -12px rgba(0,0,0,0.15)' : undefined,
+                                        }}
+                                    >
+                                        <div className={`w-14 h-14 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                            <cat.icon size={30} className="text-white" />
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
