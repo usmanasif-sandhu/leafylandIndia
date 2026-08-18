@@ -1,5 +1,5 @@
 'use client'
-import { Search, ShoppingCart, User, Menu, X, MapPin, ChevronDown } from "lucide-react";
+import { Search, ShoppingCart, User, Menu, X, MapPin, ChevronDown, Store } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { assets } from "@/assets/assets";
@@ -137,6 +137,19 @@ const Navbar = () => {
                     {/* Spacer */}
                     <div className="flex-1" />
 
+                    {/* Sell on LeafyLand CTA — desktop */}
+                    <Link
+                        href="/become-seller"
+                        className={`hidden lg:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors border ${
+                            pathname === '/become-seller'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm shadow-emerald-200'
+                        }`}
+                    >
+                        <Store size={15} />
+                        Sell on LeafyLand
+                    </Link>
+
                     {/* Search + Icons — right aligned */}
                     <div className="flex items-center gap-2 sm:gap-3">
                         <form
@@ -221,18 +234,22 @@ const Navbar = () => {
                             { href: '/how-it-works', label: 'How It Works' },
                         ].map(link => (
                             <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}
-                                className="py-2.5 px-3 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
+                                className={`py-2.5 px-3 rounded-lg transition-colors ${pathname === link.href ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-emerald-50 hover:text-emerald-600'}`}>
                                 {link.label}
                             </Link>
                         ))}
                     </div>
 
                     <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-2">
+                        <Link href="/become-seller" onClick={() => setMobileMenuOpen(false)}
+                            className="flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                            <Store size={16} /> Sell on LeafyLand
+                        </Link>
                         <Link href="/cart" onClick={() => setMobileMenuOpen(false)}
                             className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <ShoppingCart size={18} /> Cart {cartCount > 0 && `(${cartCount})`}
                         </Link>
-                        <button className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm transition-colors">
+                        <button className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-xl text-sm transition-colors">
                             Login / Sign Up
                         </button>
                     </div>
