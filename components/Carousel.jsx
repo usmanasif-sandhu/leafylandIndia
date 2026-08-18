@@ -66,9 +66,9 @@ function CategorySlide() {
                                     onMouseEnter={() => setHoveredIdx(i)}
                                     onMouseLeave={() => setHoveredIdx(null)}
                                     className={`relative flex items-center gap-4 bg-white rounded-3xl shadow-lg transition-all duration-300 group ${iconRight ? 'flex-row-reverse' : ''}`}
-                                    style={{
-                                        padding: isHovered ? '24px 24px 24px 24px' : '24px 128px 24px 24px',
-                                        marginLeft: isHovered ? 0 : -180,
+style={{
+                                        padding: isHovered ? '24px 24px 24px 24px' : '24px 64px 24px 24px',
+                                        marginLeft: isHovered ? 0 : -100,
                                         zIndex: isHovered ? 60 : isMiddle ? 50 : i === 1 || i === 3 ? 10 : 1,
                                         boxShadow: isHovered || isMiddle ? '0 25px 50px -12px rgba(0,0,0,0.25)' : undefined,
                                     }}
