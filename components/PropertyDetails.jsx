@@ -65,7 +65,7 @@ const PropertyDetails = ({ property }) => {
                 <p className="text-slate-600 mt-6 max-w-xl">{property.description}</p>
 
                 <div className="flex gap-4 mt-8">
-                    <button onClick={() => setShowVisitModal(true)} className="flex items-center gap-2 bg-slate-800 text-white px-8 py-3 text-sm font-medium rounded hover:bg-slate-900 active:scale-95 transition">
+                    <button onClick={() => setShowVisitModal(true)} className="flex items-center gap-2 bg-emerald-900 text-white px-8 py-3 text-sm font-medium rounded hover:bg-emerald-950 active:scale-95 transition">
                         <CalendarIcon size={16} /> Schedule Visit
                     </button>
                     <button className="border border-slate-300 text-slate-700 px-8 py-3 text-sm font-medium rounded hover:bg-slate-50 active:scale-95 transition">

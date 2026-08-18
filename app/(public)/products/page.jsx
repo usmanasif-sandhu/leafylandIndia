@@ -3,7 +3,7 @@ import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
 import { products, productCategories } from "@/lib/data/products"
-import { Search, X } from 'lucide-react'
+import { Search, X, Leaf, Store } from 'lucide-react'
 
 function ProductsContent() {
     const searchParams = useSearchParams()
@@ -22,7 +22,7 @@ function ProductsContent() {
         setSearch(urlSearch)
     }, [urlSearch])
 
-    const filtered = products.filter(p => {
+    const allFiltered = products.filter(p => {
         const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
         const matchCategory = selectedCategory === 'All' || p.category === selectedCategory
         return matchSearch && matchCategory
@@ -32,11 +32,25 @@ function ProductsContent() {
         return 0
     })
 
+    // Pin LeafyLand items at top, marketplace below
+    const filtered = [
+        ...allFiltered.filter(p => !p.marketplace),
+        ...allFiltered.filter(p => p.marketplace),
+    ]
+
+    const leafyCount = filtered.filter(p => !p.marketplace).length
+    const marketplaceCount = filtered.filter(p => p.marketplace).length
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
             <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Products</h1>
-                <p className="text-sm text-slate-500 mt-1">{filtered.length} products found</p>
+                <p className="text-sm text-slate-500 mt-1">
+                    {leafyCount > 0 && <span className="text-emerald-600 font-medium">{leafyCount} LeafyLand</span>}
+                    {leafyCount > 0 && marketplaceCount > 0 && <span> + </span>}
+                    {marketplaceCount > 0 && <span className="text-blue-600 font-medium">{marketplaceCount} Marketplace</span>}
+                    {' '}products found
+                </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -85,10 +99,40 @@ function ProductsContent() {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-                    {filtered.map(product => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
+                <div className="space-y-6">
+                    {/* LeafyLand Products */}
+                    {leafyCount > 0 && (
+                        <div>
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
+                                    <Leaf size={12} /> LeafyLand
+                                </span>
+                                <div className="flex-1 h-px bg-emerald-100" />
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+                                {filtered.filter(p => !p.marketplace).map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Marketplace Products */}
+                    {marketplaceCount > 0 && (
+                        <div>
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+                                    <Store size={12} /> Marketplace
+                                </span>
+                                <div className="flex-1 h-px bg-blue-100" />
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+                                {filtered.filter(p => p.marketplace).map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

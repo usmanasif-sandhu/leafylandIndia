@@ -55,7 +55,7 @@ const ServiceDetails = ({ service }) => {
 
                 <p className="text-slate-600 max-w-xl">{service.description}</p>
 
-                <button onClick={() => setShowBookModal(true)} className="bg-slate-800 text-white px-10 py-3 text-sm font-medium rounded hover:bg-slate-900 active:scale-95 transition mt-8">
+                <button onClick={() => setShowBookModal(true)} className="bg-emerald-900 text-white px-10 py-3 text-sm font-medium rounded hover:bg-emerald-950 active:scale-95 transition mt-8">
                     Book Service
                 </button>
             </div>

@@ -15,94 +15,52 @@ const productImages = [
 
 const slidePad = 'px-12 sm:px-14 md:px-12 lg:px-20'
 
-function CategorySlide() {
-    const [hoveredIdx, setHoveredIdx] = useState(null)
-    const cards = [
+function CategorySlide({ onComingSoon }) {
+    const leafyCards = [
         { name: 'Plants', icon: Leaf, href: '/products?category=Plants', color: 'bg-emerald-500' },
         { name: 'Garden Tools', icon: Wrench, href: '/products?category=Gardening', color: 'bg-lime-500' },
         { name: 'Farmhouses', icon: HomeIcon, href: '/properties', color: 'bg-orange-500' },
         { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
         { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
     ]
+    const marketplaceCards = [
+        { name: 'Electronics', icon: Package, href: '/products?category=Electronics', color: 'bg-blue-500', marketplace: true },
+        { name: 'Mobile', icon: Leaf, href: '/products?category=Mobile+Phones', color: 'bg-purple-500', marketplace: true },
+        { name: 'Fashion', icon: Leaf, href: '/products?category=Fashion', color: 'bg-orange-500', marketplace: true },
+        { name: 'Home', icon: HomeIcon, href: '/products?category=Home+%26+Kitchen', color: 'bg-teal-500', marketplace: true },
+        { name: 'Sports', icon: Wrench, href: '/products?category=Sports+%26+Outdoors', color: 'bg-pink-500', marketplace: true },
+    ]
+    const cards = [...leafyCards, ...marketplaceCards]
     return (
-        <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #e8f5e9 0%, #e0f2f1 50%, #f1f8e9 100%)' }}>
-            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-200/30 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-200/20 blur-3xl" />
+        <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #90ee90 0%, #b2f5b2 50%, #90ee90 100%)' }}>
+            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-green-300/40 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-emerald-300/40 blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-300/30 blur-3xl" />
 
             <div className={`max-w-7xl mx-auto ${slidePad} h-full flex flex-col py-4 sm:py-5 relative z-10`}>
                 <div className="text-center shrink-0">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-800">Browse by Category</h1>
-                    <p className="text-sm sm:text-base text-slate-500 mt-1">Find exactly what you need</p>
+                    <p className="text-sm sm:text-base text-slate-500 mt-1">Plants, garden & everything else</p>
                 </div>
 
-                <div className="flex-1 flex flex-col items-center justify-center">
-                    {/* Mobile grid — always 1 column, cards stack vertically */}
-                    <div className="lg:hidden w-full grid grid-cols-1 gap-4 px-4">
+                <div className="flex-1 flex items-center justify-center">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-5 gap-3 sm:gap-4 w-full max-w-4xl">
                         {cards.map((cat, i) => (
                             <Link
                                 key={i}
                                 href={cat.href}
-                                className={`flex flex-col items-center gap-3 bg-white rounded-3xl shadow-lg p-4 transition-all duration-300 group`}
+                                className="flex flex-col items-center gap-2 sm:gap-3 bg-white rounded-2xl sm:rounded-3xl shadow-lg p-3 sm:p-5 transition-all duration-300 group hover:shadow-xl hover:-translate-y-0.5"
                             >
-                                <div className={`w-14 h-14 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                    <cat.icon size={28} className="text-white" />
+                                <div className={`w-11 h-11 sm:w-14 sm:h-14 ${cat.color} rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
+                                    <cat.icon size={22} className="text-white sm:hidden" />
+                                    <cat.icon size={28} className="text-white hidden sm:block" />
                                 </div>
-                                <span className="text-sm font-bold text-slate-700 text-center leading-tight">{cat.name}</span>
+                                <span className="text-[11px] sm:text-sm font-bold text-slate-700 text-center leading-tight">{cat.name}</span>
+                                {cat.marketplace && (
+                                    <span className="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">SOON</span>
+                                )}
                             </Link>
                         ))}
-                    </div>
-
-                    {/* Desktop grid — 2 columns on lg+, adjusts down to 1 column */}
-                    <div className="hidden lg:flex lg:items-center gap-8">
-                        {/* Overlap container with responsive width */}
-                        <div className="relative flex w-full gap-8">
-                            {/* First card — no negative margin, full width visible */}
-                            <Link
-                                key={0}
-                                href={cards[0].href}
-                                className="relative flex items-center gap-3 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
-                                style={{
-                                    width: 'minmax(180px, 250px)',
-                                    padding: '24px 32px 24px 24px',
-                                    marginLeft: 0,
-                                    zIndex: 5,
-                                }}
-                            >
-                                <div className={`w-14 h-14 ${cards[0].color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                    <cat.icon size={36} className="text-white" />
-                                </div>
-                                <span className="text-sm font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cards[0].name}</span>
-                            </Link>
-
-                            {/* Remaining cards — with responsive overlap */}
-                            {cards.slice(1).map((cat, idx) => {
-                                const i = idx + 1 // original index
-                                const isHovered = hoveredIdx === i
-                                const isMiddle = i === 2
-                                return (
-                                    <Link
-                                        key={i}
-                                        href={cat.href}
-                                        onMouseEnter={() => setHoveredIdx(i)}
-                                        onMouseLeave={() => setHoveredIdx(null)}
-                                        className="relative flex items-center gap-3 bg-white rounded-3xl shadow-lg transition-all duration-300 group"
-                                        style={{
-                                            flex: '0 0 minmax(180px, 250px)',
-                                            padding: isHovered ? '24px 32px 24px 24px' : '24px 48px 24px 24px',
-                                            marginLeft: isHovered ? 0 : -60,
-                                            zIndex: isHovered ? 50 : i,
-                                            boxShadow: isHovered ? '0 20px 40px -12px rgba(0,0,0,0.15)' : undefined,
-                                        }}
-                                    >
-                                        <div className={`w-14 h-14 ${cat.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                            <cat.icon size={30} className="text-white" />
-                                        </div>
-                                        <span className="text-sm font-bold text-slate-700 text-center leading-tight whitespace-nowrap">{cat.name}</span>
-                                    </Link>
-                                )
-                            })}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -165,15 +123,15 @@ const slides = [
     {
         id: 3,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #e0f2f1 100%)' }}>
-                <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-emerald-200/30 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-teal-200/30 blur-3xl" />
-                <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-lime-200/20 blur-3xl" />
+            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
+                <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-emerald-400/20 blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-teal-400/20 blur-3xl" />
+                <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-lime-400/10 blur-3xl" />
 
                 <div className={`max-w-7xl mx-auto ${slidePad} h-full flex flex-col py-5 sm:py-6 lg:py-8 relative z-10`}>
                     <div className="text-center mb-3 sm:mb-5 shrink-0">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-800">Our Services</h2>
-                        <p className="text-sm sm:text-base text-slate-500 mt-1 sm:mt-2">Trusted professionals at your doorstep</p>
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white">Our Services</h2>
+                        <p className="text-sm sm:text-base text-emerald-200 mt-1 sm:mt-2">Trusted professionals at your doorstep</p>
                     </div>
                     <div className="flex-1 flex flex-col items-center justify-center gap-2.5 sm:gap-3 min-h-0">
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-3xl">
@@ -216,10 +174,10 @@ const slides = [
     {
         id: 4,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #f1f8e9 0%, #e8f5e9 50%, #e0f2f1 100%)' }}>
-                <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-emerald-200/30 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-teal-200/30 blur-3xl" />
-                <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-lime-200/20 blur-3xl" />
+            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #b2f5b2 0%, #90ee90 50%, #b2f5b2 100%)' }}>
+                <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-green-300/40 blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-emerald-300/40 blur-3xl" />
+                <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-lime-300/30 blur-3xl" />
 
                 <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center py-5 sm:py-6 lg:py-8 relative z-10`}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 lg:gap-10 w-full">
@@ -227,7 +185,7 @@ const slides = [
                             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-800 leading-tight">
                                 Book Trusted <span className="text-emerald-600">Experts</span> for Any Job
                             </h2>
-                            <p className="text-sm sm:text-base lg:text-lg text-slate-500 mt-2 sm:mt-4 max-w-md">
+                            <p className="text-sm sm:text-base text-slate-500 mt-2 sm:mt-4 max-w-md">
                                 From landscape architects to plant doctors — connect with verified professionals who deliver quality results.
                             </p>
                             <Link href="/services" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-200 mt-4 sm:mt-6 w-fit">
@@ -262,17 +220,17 @@ const slides = [
     {
         id: 5,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a2332 0%, #0f172a 50%, #1e293b 100%)' }}>
-                <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-teal-500/10 blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-cyan-500/5 blur-3xl" />
+            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
+                <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-emerald-300/15 blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-teal-300/15 blur-3xl" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-300/10 blur-3xl" />
                 {/* Grid pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
                 <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center relative z-10`}>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 w-full py-5 sm:py-8">
                         <div className="flex flex-col justify-center">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white leading-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
                                 India's Green<br />Ecosystem.<br />
                                 <span className="text-emerald-400">One Platform.</span>
                             </h2>

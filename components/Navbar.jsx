@@ -113,7 +113,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Nav Links */}
-                    <div className="hidden lg:flex items-center gap-1">
+                    <div className="hidden xl:flex items-center gap-1">
                         {[
                             { href: '/', label: 'Home' },
                             { href: '/products', label: 'Products' },
@@ -140,7 +140,7 @@ const Navbar = () => {
                     {/* Sell on LeafyLand CTA — desktop */}
                     <Link
                         href="/become-seller"
-                        className={`hidden lg:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors border ${
+                        className={`hidden xl:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors border ${
                             pathname === '/become-seller'
                                 ? 'bg-emerald-600 text-white border-emerald-600'
                                 : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm shadow-emerald-200'
@@ -184,7 +184,7 @@ const Navbar = () => {
                         {/* Mobile menu toggle */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="p-2 text-slate-700 hover:text-emerald-600 lg:hidden rounded-lg hover:bg-white/50 transition-colors"
+                            className="p-2 text-slate-700 hover:text-emerald-600 xl:hidden rounded-lg hover:bg-white/50 transition-colors"
                         >
                             <Menu size={20} />
                         </button>
@@ -195,13 +195,13 @@ const Navbar = () => {
             {/* Mobile Drawer Backdrop */}
             {mobileMenuOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+                    className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm xl:hidden"
                     onClick={() => setMobileMenuOpen(false)}
                 />
             )}
 
             {/* Mobile Drawer */}
-            <div className={`fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+            <div className={`fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-300 ease-in-out xl:hidden ${
                 mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
             }`}>
                 <div className="flex flex-col h-full p-6">
@@ -249,7 +249,7 @@ const Navbar = () => {
                             className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
                             <ShoppingCart size={18} /> Cart {cartCount > 0 && `(${cartCount})`}
                         </Link>
-                        <button className="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-medium rounded-xl text-sm transition-colors">
+                        <button className="w-full py-2.5 bg-emerald-900 hover:bg-emerald-950 text-white font-medium rounded-xl text-sm transition-colors">
                             Login / Sign Up
                         </button>
                     </div>

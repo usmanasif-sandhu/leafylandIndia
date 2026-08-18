@@ -1,92 +1,201 @@
 'use client'
-import { dummyStoreDashboardData } from "@/assets/assets"
-import Loading from "@/components/Loading"
-import { CircleDollarSignIcon, ShoppingBasketIcon, StarIcon, TagsIcon } from "lucide-react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { IndianRupee, ShoppingBag, Package, Star, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react'
+import StatCard from '@/components/admin/StatCard'
+import StatusBadge from '@/components/admin/StatusBadge'
+import { storeInfo, vendorOrders, vendorProducts, vendorReviews, vendorInventoryAlerts, revenueChartData } from '@/lib/data/vendor'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-export default function Dashboard() {
+export default function VendorDashboard() {
+    const totalRevenue = vendorOrders.reduce((sum, o) => sum + o.total, 0)
+    const totalProducts = vendorProducts.length
+    const totalOrders = vendorOrders.length
+    const avgRating = vendorReviews.length
+        ? (vendorReviews.reduce((sum, r) => sum + r.rating, 0) / vendorReviews.length).toFixed(1)
+        : 0
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
-
-    const router = useRouter()
-
-    const [loading, setLoading] = useState(true)
-    const [dashboardData, setDashboardData] = useState({
-        totalProducts: 0,
-        totalEarnings: 0,
-        totalOrders: 0,
-        ratings: [],
-    })
-
-    const dashboardCardsData = [
-        { title: 'Total Products', value: dashboardData.totalProducts, icon: ShoppingBasketIcon },
-        { title: 'Total Earnings', value: currency + dashboardData.totalEarnings, icon: CircleDollarSignIcon },
-        { title: 'Total Orders', value: dashboardData.totalOrders, icon: TagsIcon },
-        { title: 'Total Ratings', value: dashboardData.ratings.length, icon: StarIcon },
-    ]
-
-    const fetchDashboardData = async () => {
-        setDashboardData(dummyStoreDashboardData)
-        setLoading(false)
-    }
-
-    useEffect(() => {
-        fetchDashboardData()
-    }, [])
-
-    if (loading) return <Loading />
+    const recentOrders = vendorOrders.slice(0, 5)
+    const topProducts = [...vendorProducts].sort((a, b) => b.totalSales - a.totalSales).slice(0, 5)
+    const ratingDist = [5, 4, 3, 2, 1].map(star => ({
+        star,
+        count: vendorReviews.filter(r => r.rating === star).length,
+    }))
+    const maxRatingCount = Math.max(...ratingDist.map(r => r.count), 1)
 
     return (
-        <div className=" text-slate-500 mb-28">
-            <h1 className="text-2xl">Seller <span className="text-slate-800 font-medium">Dashboard</span></h1>
+        <div className="space-y-6">
+            <h1 className="text-2xl font-semibold text-slate-800">
+                Vendor <span className="font-bold">Dashboard</span>
+            </h1>
 
-            <div className="flex flex-wrap gap-5 my-10 mt-4">
-                {
-                    dashboardCardsData.map((card, index) => (
-                        <div key={index} className="flex items-center gap-11 border border-slate-200 p-3 px-6 rounded-lg">
-                            <div className="flex flex-col gap-3 text-xs">
-                                <p>{card.title}</p>
-                                <b className="text-2xl font-medium text-slate-700">{card.value}</b>
-                            </div>
-                            <card.icon size={50} className=" w-11 h-11 p-2.5 text-slate-400 bg-slate-100 rounded-full" />
-                        </div>
-                    ))
-                }
+            {/* Stat Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <StatCard icon={IndianRupee} label="Total Revenue" value={`₹${totalRevenue.toLocaleString('en-IN')}`} change={12.5} color="bg-emerald-100" />
+                <StatCard icon={ShoppingBag} label="Total Orders" value={totalOrders} change={8.2} color="bg-blue-100" />
+                <StatCard icon={Package} label="Active Products" value={totalProducts} change={5.0} color="bg-purple-100" />
+                <StatCard icon={Star} label="Average Rating" value={avgRating} change={2.1} color="bg-amber-100" />
             </div>
 
-            <h2>Total Reviews</h2>
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Chart */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-4">Revenue This Week</h2>
+                    <ResponsiveContainer width="100%" height={260}>
+                        <AreaChart data={revenueChartData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                            <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                            <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                formatter={(value) => [`₹${value.toLocaleString('en-IN')}`, 'Revenue']}
+                            />
+                            <Area type="monotone" dataKey="revenue" stroke="#10b981" fill="#10b981" fillOpacity={0.15} strokeWidth={2} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
 
-            <div className="mt-5">
-                {
-                    dashboardData.ratings.map((review, index) => (
-                        <div key={index} className="flex max-sm:flex-col gap-5 sm:items-center justify-between py-6 border-b border-slate-200 text-sm text-slate-600 max-w-4xl">
-                            <div>
-                                <div className="flex gap-3">
-                                    <Image src={review.user.image} alt="" className="w-10 aspect-square rounded-full" width={100} height={100} />
-                                    <div>
-                                        <p className="font-medium">{review.user.name}</p>
-                                        <p className="font-light text-slate-500">{new Date(review.createdAt).toDateString()}</p>
-                                    </div>
+                {/* Rating Distribution */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-4">Rating Distribution</h2>
+                    <div className="space-y-3">
+                        {ratingDist.map(({ star, count }) => (
+                            <div key={star} className="flex items-center gap-3">
+                                <span className="text-xs font-semibold text-slate-600 w-8">{star} ★</span>
+                                <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-amber-400 rounded-full transition-all"
+                                        style={{ width: `${(count / maxRatingCount) * 100}%` }}
+                                    />
                                 </div>
-                                <p className="mt-3 text-slate-500 max-w-xs leading-6">{review.review}</p>
+                                <span className="text-xs text-slate-500 w-8 text-right">{count}</span>
                             </div>
-                            <div className="flex flex-col justify-between gap-6 sm:items-end">
-                                <div className="flex flex-col sm:items-end">
-                                    <p className="text-slate-400">{review.product?.category}</p>
-                                    <p className="font-medium">{review.product?.name}</p>
-                                    <div className='flex items-center'>
-                                        {Array(5).fill('').map((_, index) => (
-                                            <StarIcon key={index} size={17} className='text-transparent mt-0.5' fill={review.rating >= index + 1 ? "#00C950" : "#D1D5DB"} />
+                        ))}
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-100 text-center">
+                        <p className="text-3xl font-extrabold text-slate-800">{avgRating}</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Average from {vendorReviews.length} reviews</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Tables */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Recent Orders */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Orders</h2>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="text-left text-slate-500 border-b border-slate-100">
+                                    <th className="pb-3 font-medium">Order ID</th>
+                                    <th className="pb-3 font-medium">Customer</th>
+                                    <th className="pb-3 font-medium">Amount</th>
+                                    <th className="pb-3 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recentOrders.map((order) => (
+                                    <tr key={order.id} className="border-b border-slate-50 last:border-0">
+                                        <td className="py-3 font-medium text-slate-700">{order.id}</td>
+                                        <td className="py-3 text-slate-600">{order.customer}</td>
+                                        <td className="py-3 text-slate-700">₹{order.total.toLocaleString('en-IN')}</td>
+                                        <td className="py-3"><StatusBadge status={order.status} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Top Products */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <h2 className="text-lg font-semibold text-slate-800 mb-4">Top Products</h2>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="text-left text-slate-500 border-b border-slate-100">
+                                    <th className="pb-3 font-medium">Product</th>
+                                    <th className="pb-3 font-medium">Sales</th>
+                                    <th className="pb-3 font-medium">Revenue</th>
+                                    <th className="pb-3 font-medium">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {topProducts.map((product) => (
+                                    <tr key={product.id} className="border-b border-slate-50 last:border-0">
+                                        <td className="py-3 font-medium text-slate-700 truncate max-w-[180px]">{product.name}</td>
+                                        <td className="py-3 text-slate-600">{product.totalSales}</td>
+                                        <td className="py-3 text-slate-700">₹{product.revenue.toLocaleString('en-IN')}</td>
+                                        <td className="py-3">
+                                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                                product.stock <= 3 ? 'bg-red-100 text-red-600' :
+                                                product.stock <= 10 ? 'bg-amber-100 text-amber-600' :
+                                                'bg-emerald-100 text-emerald-600'
+                                            }`}>
+                                                {product.stock}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {/* Stock Alerts */}
+            {vendorInventoryAlerts.length > 0 && (
+                <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                        <AlertTriangle size={18} className="text-amber-500" />
+                        <h2 className="text-lg font-semibold text-slate-800">Stock Alerts</h2>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {vendorInventoryAlerts.map((item) => (
+                            <div key={item.id} className={`flex items-center gap-3 p-3 rounded-xl border ${
+                                item.status === 'critical' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'
+                            }`}>
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                                    item.status === 'critical' ? 'bg-red-100' : 'bg-amber-100'
+                                }`}>
+                                    <AlertTriangle size={18} className={item.status === 'critical' ? 'text-red-600' : 'text-amber-600'} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-semibold text-slate-700">{item.name}</p>
+                                    <p className={`text-xs ${item.status === 'critical' ? 'text-red-600' : 'text-amber-600'}`}>
+                                        {item.stock} units left
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Recent Reviews */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-5">
+                <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Reviews</h2>
+                <div className="space-y-4">
+                    {vendorReviews.slice(0, 3).map((review) => (
+                        <div key={review.id} className="flex gap-3 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
+                            <div className="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-emerald-700">{review.customer.charAt(0)}</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm font-semibold text-slate-700">{review.customer}</p>
+                                    <div className="flex items-center gap-0.5">
+                                        {Array(5).fill('').map((_, i) => (
+                                            <Star key={i} size={10} fill={i < review.rating ? '#f59e0b' : '#e2e8f0'} className={i < review.rating ? 'text-amber-400' : 'text-slate-200'} />
                                         ))}
                                     </div>
                                 </div>
-                                <button onClick={() => router.push(`/product/${review.product.id}`)} className="bg-slate-100 px-5 py-2 hover:bg-slate-200 rounded transition-all">View Product</button>
+                                <p className="text-xs text-slate-500 mt-0.5">{review.product}</p>
+                                <p className="text-sm text-slate-600 mt-1 line-clamp-2">{review.review}</p>
                             </div>
                         </div>
-                    ))
-                }
+                    ))}
+                </div>
             </div>
         </div>
     )

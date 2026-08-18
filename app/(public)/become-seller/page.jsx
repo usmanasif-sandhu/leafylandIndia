@@ -173,7 +173,7 @@ export default function BecomeSeller() {
 
             {/* Final CTA */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center">
-                <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl px-6 py-14 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-emerald-900 to-emerald-950 rounded-3xl px-6 py-14 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-emerald-500/10 blur-3xl" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-teal-500/10 blur-3xl" />
                     <div className="relative z-10">

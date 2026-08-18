@@ -36,7 +36,7 @@ const BookServiceModal = ({ service, setShowBookModal }) => {
                 </div>
                 <input name="location" onChange={handleChange} value={booking.location} className="p-2 px-4 outline-none border border-slate-200 rounded w-full" type="text" placeholder="Service location / address" required />
                 <textarea name="requirements" onChange={handleChange} value={booking.requirements} className="p-2 px-4 outline-none border border-slate-200 rounded w-full" rows={3} placeholder="Describe what you need (optional)" />
-                <button className="bg-slate-800 text-white text-sm font-medium py-2.5 rounded-md hover:bg-slate-900 active:scale-95 transition-all">REQUEST BOOKING</button>
+                <button className="bg-emerald-900 text-white text-sm font-medium py-2.5 rounded-md hover:bg-emerald-950 active:scale-95 transition-all">REQUEST BOOKING</button>
             </div>
             <XIcon size={30} className="absolute top-5 right-5 text-slate-500 hover:text-slate-700 cursor-pointer" onClick={() => setShowBookModal(false)} />
         </form>

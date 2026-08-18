@@ -9,18 +9,32 @@ const PropertiesPage = () => {
     const [selectedType, setSelectedType] = useState('All')
     const [listingFilter, setListingFilter] = useState('All')
 
-    const filtered = properties.filter(p => {
+    const allFiltered = properties.filter(p => {
         const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase())
         const matchType = selectedType === 'All' || p.listingType === selectedType
         const matchListing = listingFilter === 'All' || p.type === listingFilter
         return matchSearch && matchType && matchListing
     })
 
+    // Pin LeafyLand properties at top, marketplace below
+    const filtered = [
+        ...allFiltered.filter(p => !p.marketplace),
+        ...allFiltered.filter(p => p.marketplace),
+    ]
+
+    const leafyCount = filtered.filter(p => !p.marketplace).length
+    const marketplaceCount = filtered.filter(p => p.marketplace).length
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
             <div className="mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Properties</h1>
-                <p className="text-sm text-slate-500 mt-1">{filtered.length} listings found</p>
+                <p className="text-sm text-slate-500 mt-1">
+                    {leafyCount > 0 && <span className="text-emerald-600 font-medium">{leafyCount} LeafyLand</span>}
+                    {leafyCount > 0 && marketplaceCount > 0 && <span> + </span>}
+                    {marketplaceCount > 0 && <span className="text-blue-600 font-medium">{marketplaceCount} Marketplace</span>}
+                    {' '}listings found
+                </p>
             </div>
 
             {/* Search */}
@@ -77,10 +91,40 @@ const PropertiesPage = () => {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                    {filtered.map(property => (
-                        <PropertyCard key={property.id} property={property} />
-                    ))}
+                <div className="space-y-6">
+                    {/* LeafyLand Properties */}
+                    {leafyCount > 0 && (
+                        <div>
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full">
+                                    🌿 LeafyLand Properties
+                                </span>
+                                <div className="flex-1 h-px bg-emerald-100" />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                                {filtered.filter(p => !p.marketplace).map(property => (
+                                    <PropertyCard key={property.id} property={property} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Marketplace Properties */}
+                    {marketplaceCount > 0 && (
+                        <div>
+                            <div className="flex items-center gap-2 mb-3">
+                                <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
+                                    🏠 Marketplace Properties
+                                </span>
+                                <div className="flex-1 h-px bg-blue-100" />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                                {filtered.filter(p => p.marketplace).map(property => (
+                                    <PropertyCard key={property.id} property={property} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
