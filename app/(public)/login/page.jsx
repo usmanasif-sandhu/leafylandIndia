@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
@@ -17,11 +17,24 @@ function LoginForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [isSignUp, setIsSignUp] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [formError, setFormError] = useState('')
     const googleEnabled = Boolean(process.env.NEXT_PUBLIC_GOOGLE_AUTH)
+
+    useEffect(() => {
+        fetch('/api/auth/csrf')
+            .then(async (res) => {
+                const data = await res.json().catch(() => ({}))
+                if (!res.ok) {
+                    setFormError(data.message || 'Sign-in is not configured on the server.')
+                }
+            })
+            .catch(() => setFormError('Could not reach the sign-in service.'))
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
+        setFormError('')
         try {
             if (isSignUp) {
                 const res = await fetch('/api/auth/register', {
@@ -42,12 +55,15 @@ function LoginForm() {
             if (result?.error) {
                 const message = result.error === 'CredentialsSignin'
                     ? 'Invalid email or password'
-                    : 'Sign-in failed. Check AUTH_SECRET, DATABASE_URL, and that the database is seeded.'
+                    : result.error === 'Configuration'
+                        ? 'AUTH_SECRET is missing on Vercel. Add it in Environment Variables, then Redeploy.'
+                        : 'Sign-in failed. Set AUTH_SECRET and DATABASE_URL on Vercel, then Redeploy.'
                 throw new Error(message)
             }
             const nextPath = callbackUrl.startsWith('/') ? callbackUrl : '/auth/continue'
             window.location.assign(nextPath)
         } catch (err) {
+            setFormError(err.message)
             toast.error(err.message)
         } finally {
             setLoading(false)
@@ -68,6 +84,11 @@ function LoginForm() {
                 </div>
 
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sm:p-8">
+                    {formError && (
+                        <p className="mb-4 text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+                            {formError}
+                        </p>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {isSignUp && (
                             <div>
