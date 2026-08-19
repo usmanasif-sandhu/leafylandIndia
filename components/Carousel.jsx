@@ -19,16 +19,16 @@ function CategorySlide({ onComingSoon }) {
     const leafyCards = [
         { name: 'Plants', icon: Leaf, href: '/products?category=Plants', color: 'bg-emerald-500' },
         { name: 'Garden Tools', icon: Wrench, href: '/products?category=Gardening', color: 'bg-lime-500' },
-        { name: 'Farmhouses', icon: HomeIcon, href: '/properties', color: 'bg-orange-500' },
+        { name: 'Farmhouses', icon: HomeIcon, href: '/properties', color: 'bg-emerald-600' },
         { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
         { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
     ]
     const marketplaceCards = [
-        { name: 'Electronics', icon: Package, href: '/products?category=Electronics', color: 'bg-blue-500', marketplace: true },
-        { name: 'Mobile', icon: Leaf, href: '/products?category=Mobile+Phones', color: 'bg-purple-500', marketplace: true },
-        { name: 'Fashion', icon: Leaf, href: '/products?category=Fashion', color: 'bg-orange-500', marketplace: true },
-        { name: 'Home', icon: HomeIcon, href: '/products?category=Home+%26+Kitchen', color: 'bg-teal-500', marketplace: true },
-        { name: 'Sports', icon: Wrench, href: '/products?category=Sports+%26+Outdoors', color: 'bg-pink-500', marketplace: true },
+        { name: 'Electronics', icon: Package, href: '/products?category=Electronics', color: 'bg-emerald-500', marketplace: true },
+        { name: 'Mobile', icon: Leaf, href: '/products?category=Mobile+Phones', color: 'bg-lime-500', marketplace: true },
+        { name: 'Fashion', icon: Leaf, href: '/products?category=Fashion', color: 'bg-emerald-600', marketplace: true },
+        { name: 'Home', icon: HomeIcon, href: '/products?category=Home+%26+Kitchen', color: 'bg-lime-600', marketplace: true },
+        { name: 'Sports', icon: Wrench, href: '/products?category=Sports+%26+Outdoors', color: 'bg-emerald-500', marketplace: true },
     ]
     const cards = [...leafyCards, ...marketplaceCards]
     return (
@@ -57,7 +57,7 @@ function CategorySlide({ onComingSoon }) {
                                 </div>
                                 <span className="text-[11px] sm:text-sm font-bold text-slate-700 text-center leading-tight">{cat.name}</span>
                                 {cat.marketplace && (
-                                    <span className="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">SOON</span>
+                                    <span className="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">SOON</span>
                                 )}
                             </Link>
                         ))}
@@ -125,7 +125,7 @@ const slides = [
         render: () => (
             <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
                 <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-emerald-400/20 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-teal-400/20 blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-emerald-400/20 blur-3xl" />
                 <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-lime-400/10 blur-3xl" />
 
                 <div className={`max-w-7xl mx-auto ${slidePad} h-full flex flex-col py-5 sm:py-6 lg:py-8 relative z-10`}>
@@ -195,7 +195,7 @@ const slides = [
                         <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
                             {[
                                 { icon: Compass, label: 'Landscape Architects', sub: 'Custom garden design', color: 'bg-emerald-500', href: '/services' },
-                                { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant diagnosis', color: 'bg-teal-500', href: '/services' },
+                                 { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant diagnosis', color: 'bg-emerald-500', href: '/services' },
                                 { icon: CalendarCheck, label: 'Onsite Agronomist', sub: 'Farm consultation', color: 'bg-emerald-600', href: '/services' },
                                 { icon: BadgeCheck, label: 'Garden Contractors', sub: 'Verified & rated', color: 'bg-lime-600', href: '/services' },
                             ].map((item, i) => (
@@ -222,7 +222,7 @@ const slides = [
         render: () => (
             <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
                 <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-emerald-300/15 blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-teal-300/15 blur-3xl" />
+                <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-emerald-300/15 blur-3xl" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-300/10 blur-3xl" />
                 {/* Grid pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
@@ -282,7 +282,7 @@ const Carousel = () => {
 
     return (
         <div
-            className="relative w-full rounded-2xl overflow-hidden shadow-lg h-[520px] sm:h-[480px] md:h-[500px] lg:h-auto lg:aspect-[16/7]"
+            className="relative w-full rounded-2xl overflow-hidden shadow-lg h-[460px] sm:h-[480px] md:h-[500px] lg:h-[calc(100vh-10rem)] lg:max-h-[760px]"
             onMouseEnter={() => { setIsPaused(true); setIsHovered(true) }}
             onMouseLeave={() => { setIsPaused(false); setIsHovered(false) }}
         >
