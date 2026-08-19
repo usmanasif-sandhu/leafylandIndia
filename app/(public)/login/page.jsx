@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
@@ -19,17 +19,6 @@ function LoginForm() {
     const [loading, setLoading] = useState(false)
     const [formError, setFormError] = useState('')
     const googleEnabled = Boolean(process.env.NEXT_PUBLIC_GOOGLE_AUTH)
-
-    useEffect(() => {
-        fetch('/api/auth/csrf')
-            .then(async (res) => {
-                const data = await res.json().catch(() => ({}))
-                if (!res.ok) {
-                    setFormError(data.message || 'Sign-in is not configured on the server.')
-                }
-            })
-            .catch(() => setFormError('Could not reach the sign-in service.'))
-    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -53,12 +42,9 @@ function LoginForm() {
                 callbackUrl,
             })
             if (result?.error) {
-                const message = result.error === 'CredentialsSignin'
+                throw new Error(result.error === 'CredentialsSignin'
                     ? 'Invalid email or password'
-                    : result.error === 'Configuration'
-                        ? 'AUTH_SECRET is missing on Vercel. Add it in Environment Variables, then Redeploy.'
-                        : 'Sign-in failed. Set AUTH_SECRET and DATABASE_URL on Vercel, then Redeploy.'
-                throw new Error(message)
+                    : 'Sign-in failed. Try again, or create the account on this site first.')
             }
             const nextPath = callbackUrl.startsWith('/') ? callbackUrl : '/auth/continue'
             window.location.assign(nextPath)

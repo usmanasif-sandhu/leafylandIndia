@@ -1,8 +1,17 @@
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
+async function resolveSecret() {
+    const explicit = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+    if (explicit) return explicit
+    const basis = process.env.DATABASE_URL || process.env.VERCEL_URL || 'leafyland-dev'
+    const data = new TextEncoder().encode(`leafyland-auth:${basis}`)
+    const hash = await crypto.subtle.digest('SHA-256', data)
+    return Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, '0')).join('')
+}
+
 async function readAuthToken(req) {
-    const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+    const secret = await resolveSecret()
     if (!secret) return null
 
     const cookieNames = [
