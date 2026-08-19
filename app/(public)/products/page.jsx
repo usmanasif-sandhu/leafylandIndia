@@ -2,7 +2,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
-import { products, productCategories } from "@/lib/data/products"
+import { productCategories } from "@/lib/data/products"
 import { Search, X, Leaf, Store } from 'lucide-react'
 
 function ProductsContent() {
@@ -13,6 +13,16 @@ function ProductsContent() {
     const [search, setSearch] = useState(urlSearch)
     const [selectedCategory, setSelectedCategory] = useState(urlCategory)
     const [sortBy, setSortBy] = useState('featured')
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        const params = new URLSearchParams()
+        if (urlSearch) params.set('search', urlSearch)
+        if (urlCategory && urlCategory !== 'All') params.set('category', urlCategory)
+        fetch(`/api/products?${params.toString()}`)
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setProducts(data) })
+    }, [urlCategory, urlSearch])
 
     useEffect(() => {
         setSelectedCategory(urlCategory)

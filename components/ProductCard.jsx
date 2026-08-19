@@ -1,6 +1,5 @@
 'use client'
 import { ShoppingCart, Star } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 const ProductCard = ({ product }) => {
@@ -14,13 +13,17 @@ const ProductCard = ({ product }) => {
         <Link href={`/products/${product.id}`} className="group block w-40 sm:w-44 flex-shrink-0">
             {/* Image container */}
             <div className="relative bg-slate-50 rounded-2xl overflow-hidden aspect-square">
-                <Image
-                    width={176}
-                    height={176}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                    src={product.images?.[0] || 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=176&h=176&fit=crop'}
-                    alt={product.name}
-                />
+                {product.images?.[0] ? (
+                    <img
+                        width={176}
+                        height={176}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        src={product.images[0]}
+                        alt={product.name}
+                    />
+                ) : (
+                    <div className="w-full h-full bg-slate-100" />
+                )}
                 {/* ADD button — bottom right overlay */}
                 <button className="absolute bottom-2 right-2 bg-white/90 hover:bg-emerald-600 hover:text-white text-emerald-700 text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-md transition-all active:scale-95 border border-emerald-200 hover:border-emerald-600">
                     ADD

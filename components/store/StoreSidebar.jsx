@@ -1,6 +1,8 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
+import { assets } from '@/assets/assets'
 import {
     LayoutDashboard,
     Package,
@@ -49,12 +51,18 @@ const navSections = [
             { name: 'Payouts', href: '/store/payouts', icon: Wallet },
         ],
     },
-    {
-        label: 'Communication',
-        items: [
-            { name: 'Messages', href: '/store/messages', icon: MessageSquare },
-        ],
-    },
+        {
+            label: 'Communication',
+            items: [
+                { name: 'Messages', href: '/store/messages', icon: MessageSquare },
+            ],
+        },
+        {
+            label: 'Account',
+            items: [
+                { name: 'Settings', href: '/store/settings', icon: Settings },
+            ],
+        },
 ]
 
 const StoreSidebar = ({ isOpen, onClose }) => {
@@ -81,7 +89,7 @@ const StoreSidebar = ({ isOpen, onClose }) => {
             >
                 {/* Logo */}
                 <div className="flex items-center gap-2 px-5 h-16 border-b border-slate-100 shrink-0">
-                    <img src="/logo.png" alt="LeafyLand" className="h-8 w-auto" />
+                    <Image src={assets.logo} alt="LeafyLand" width={120} height={32} className="h-8 w-auto object-contain" />
                     <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">Vendor Panel</span>
                 </div>
 

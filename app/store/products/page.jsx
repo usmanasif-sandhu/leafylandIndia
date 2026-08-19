@@ -1,15 +1,22 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Search, Plus, Eye, Edit, Trash2, Package } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { vendorProducts } from '@/lib/data/vendor'
 import toast from 'react-hot-toast'
 
 export default function VendorProducts() {
     const [search, setSearch] = useState('')
     const [categoryFilter, setCategoryFilter] = useState('All')
     const [stockFilter, setStockFilter] = useState('All')
+    const [vendorProducts, setVendorProducts] = useState([])
+
+    const load = () => {
+        fetch('/api/vendor/products')
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setVendorProducts(data) })
+    }
+
+    useEffect(() => { load() }, [])
 
     const categories = ['All', ...new Set(vendorProducts.map(p => p.category))]
 
@@ -85,12 +92,17 @@ export default function VendorProducts() {
                     {filtered.map(product => (
                         <div key={product.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-md transition-shadow group">
                             <div className="relative aspect-square bg-slate-50">
-                                <Image
-                                    src={product.images[0]}
-                                    alt={product.name}
-                                    fill
-                                    className="object-cover group-hover:scale-105 transition duration-300"
-                                />
+                                {product.images?.[0] ? (
+                                    <img
+                                        src={product.images[0]}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                                        <Package size={32} />
+                                    </div>
+                                )}
                                 <span className={`absolute top-2 left-2 text-[9px] font-bold px-2 py-0.5 rounded-full ${
                                     product.stock <= 3 ? 'bg-red-500 text-white' :
                                     product.stock <= 10 ? 'bg-amber-500 text-white' :
@@ -116,7 +128,17 @@ export default function VendorProducts() {
                                         <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
                                             <Edit size={14} />
                                         </button>
-                                        <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (!confirm('Delete this product?')) return
+                                                const res = await fetch(`/api/vendor/products/${product.id}`, { method: 'DELETE' })
+                                                if (!res.ok) return toast.error('Could not delete')
+                                                toast.success('Product deleted')
+                                                load()
+                                            }}
+                                            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                        >
                                             <Trash2 size={14} />
                                         </button>
                                     </div>

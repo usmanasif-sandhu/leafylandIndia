@@ -6,6 +6,7 @@ import { assets } from "@/assets/assets";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useSession, signOut } from "next-auth/react";
 
 const cities = [
     'Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai',
@@ -23,6 +24,14 @@ const Navbar = () => {
     const [locationSearch, setLocationSearch] = useState('');
     const locationRef = useRef(null);
     const cartCount = useSelector(state => state.cart.total);
+    const { data: session } = useSession();
+    const panelHref = session?.user?.role === 'ADMIN'
+        ? '/admin'
+        : session?.user?.storeId && session?.user?.storeStatus === 'approved'
+            ? '/store'
+            : session?.user
+                ? '/orders'
+                : '/login';
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -44,8 +53,8 @@ const Navbar = () => {
 
     return (
         <nav className="sticky top-0 z-50 glass-navbar">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex items-center h-14 sm:h-16 gap-3">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+                <div className="flex items-center h-14 sm:h-16 gap-2 lg:gap-3 min-w-0">
 
                     {/* Logo */}
                     <Link href="/" className="flex items-center shrink-0 hover:opacity-90 transition-opacity">
@@ -60,15 +69,15 @@ const Navbar = () => {
                     </Link>
 
                     {/* Location Selector */}
-                    <div ref={locationRef} className="relative hidden sm:block">
+                    <div ref={locationRef} className="relative hidden sm:block shrink-0">
                         <button
                             onClick={() => setLocationOpen(!locationOpen)}
-                            className="flex flex-col items-start px-3.5 py-1 hover:bg-white/60 rounded-lg transition-colors cursor-pointer"
+                            className="flex flex-col items-start px-1.5 lg:px-2.5 py-1 hover:bg-white/60 rounded-lg transition-colors cursor-pointer"
                         >
-                            <span className="text-[10px] text-slate-400 font-medium leading-tight">Select your location</span>
-                            <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-slate-400 font-medium leading-tight whitespace-nowrap">Select your location</span>
+                            <div className="flex items-center gap-1">
                                 <MapPin size={15} className="text-emerald-600 shrink-0" />
-                                <span className="text-sm font-semibold text-slate-700 truncate max-w-[110px]">{location}</span>
+                                <span className="text-sm font-semibold text-slate-700 truncate max-w-[90px] lg:max-w-[110px]">{location}</span>
                                 <ChevronDown size={13} className={`text-slate-400 transition-transform ${locationOpen ? 'rotate-180' : ''}`} />
                             </div>
                         </button>
@@ -113,7 +122,7 @@ const Navbar = () => {
                     </div>
 
                     {/* Desktop Nav Links */}
-                    <div className="hidden xl:flex items-center gap-1">
+                    <div className="hidden xl:flex items-center gap-0.5 shrink-0">
                         {[
                             { href: '/', label: 'Home' },
                             { href: '/products', label: 'Products' },
@@ -123,7 +132,7 @@ const Navbar = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                                className={`px-2.5 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
                                     pathname === link.href
                                         ? 'text-emerald-600 bg-emerald-50'
                                         : 'text-slate-600 hover:text-emerald-600 hover:bg-emerald-50'
@@ -134,31 +143,27 @@ const Navbar = () => {
                         ))}
                     </div>
 
-                    {/* Spacer */}
-                    <div className="flex-1" />
+                    {/* Search + actions — fills leftover space, never clips Cart */}
+                    <div className="flex items-center justify-end gap-1.5 sm:gap-2 min-w-0 flex-1">
+                        <Link
+                            href="/become-seller"
+                            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-xl transition-colors border shrink-0 whitespace-nowrap ${
+                                pathname === '/become-seller'
+                                    ? 'bg-emerald-600 text-white border-emerald-600'
+                                    : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm shadow-emerald-200'
+                            }`}
+                        >
+                            <Store size={15} />
+                            Sell on LeafyLand
+                        </Link>
 
-                    {/* Sell on LeafyLand CTA — desktop */}
-                    <Link
-                        href="/become-seller"
-                        className={`hidden xl:inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors border ${
-                            pathname === '/become-seller'
-                                ? 'bg-emerald-600 text-white border-emerald-600'
-                                : 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 shadow-sm shadow-emerald-200'
-                        }`}
-                    >
-                        <Store size={15} />
-                        Sell on LeafyLand
-                    </Link>
-
-                    {/* Search + Icons — right aligned */}
-                    <div className="flex items-center gap-2 sm:gap-3">
                         <form
                             onSubmit={handleSearch}
-                            className="hidden sm:flex items-center gap-2 bg-slate-100 hover:bg-slate-200/80 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 w-52 lg:w-72 px-3 py-2 rounded-xl transition-all"
+                            className="hidden sm:flex items-center gap-2 bg-slate-100 hover:bg-slate-200/80 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/20 min-w-0 flex-1 max-w-[11rem] md:max-w-[14rem] xl:max-w-[12rem] 2xl:max-w-[18rem] px-3 py-2 rounded-xl transition-all"
                         >
                             <Search size={16} className="text-slate-400 shrink-0" />
                             <input
-                                className="w-full bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
+                                className="w-full min-w-0 bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
                                 type="text"
                                 placeholder="Search plants, tools..."
                                 value={search}
@@ -166,12 +171,28 @@ const Navbar = () => {
                             />
                         </form>
 
-                        <Link href="/login" className="flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
-                            <User size={18} />
-                            <span className="hidden md:inline text-xs">Login</span>
-                        </Link>
+                        {session?.user ? (
+                            <div className="flex items-center shrink-0">
+                                <Link href={panelHref} className="flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50 whitespace-nowrap">
+                                    <User size={18} />
+                                    <span className="hidden md:inline text-xs max-w-[72px] truncate">{session.user.name || 'Account'}</span>
+                                </Link>
+                                <button
+                                    type="button"
+                                    onClick={() => signOut({ callbackUrl: '/' })}
+                                    className="hidden sm:inline text-[11px] text-slate-500 hover:text-emerald-600 px-1"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <Link href="/login" className="flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50 shrink-0 whitespace-nowrap">
+                                <User size={18} />
+                                <span className="hidden md:inline text-xs">Login</span>
+                            </Link>
+                        )}
 
-                        <Link href="/cart" className="relative flex items-center gap-1.5 px-2.5 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50">
+                        <Link href="/cart" className="relative flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors rounded-lg hover:bg-white/50 shrink-0 whitespace-nowrap">
                             <ShoppingCart size={18} />
                             <span className="hidden md:inline text-xs">Cart</span>
                             {cartCount > 0 && (
@@ -184,7 +205,7 @@ const Navbar = () => {
                         {/* Mobile menu toggle */}
                         <button
                             onClick={() => setMobileMenuOpen(true)}
-                            className="p-2 text-slate-700 hover:text-emerald-600 xl:hidden rounded-lg hover:bg-white/50 transition-colors"
+                            className="p-2 text-slate-700 hover:text-emerald-600 xl:hidden rounded-lg hover:bg-white/50 transition-colors shrink-0"
                         >
                             <Menu size={20} />
                         </button>

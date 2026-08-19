@@ -1,24 +1,31 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { IndianRupee, ShoppingBag, Package, Star, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react'
 import StatCard from '@/components/admin/StatCard'
 import StatusBadge from '@/components/admin/StatusBadge'
-import { storeInfo, vendorOrders, vendorProducts, vendorReviews, vendorInventoryAlerts, revenueChartData } from '@/lib/data/vendor'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 export default function VendorDashboard() {
-    const totalRevenue = vendorOrders.reduce((sum, o) => sum + o.total, 0)
-    const totalProducts = vendorProducts.length
-    const totalOrders = vendorOrders.length
-    const avgRating = vendorReviews.length
-        ? (vendorReviews.reduce((sum, r) => sum + r.rating, 0) / vendorReviews.length).toFixed(1)
-        : 0
+    const [dash, setDash] = useState(null)
 
+    useEffect(() => {
+        fetch('/api/vendor/dashboard')
+            .then((r) => r.json())
+            .then((data) => { if (!data.error) setDash(data) })
+    }, [])
+
+    const totalRevenue = dash?.stats?.totalRevenue || 0
+    const totalProducts = dash?.stats?.totalProducts || 0
+    const totalOrders = dash?.stats?.totalOrders || 0
+    const avgRating = dash?.stats?.avgRating || 0
+    const vendorOrders = dash?.recentOrders || []
+    const vendorProducts = dash?.topProducts || []
+    const vendorReviews = dash?.recentReviews || []
+    const vendorInventoryAlerts = dash?.inventoryAlerts || []
+    const revenueChartData = dash?.revenueChartData || []
     const recentOrders = vendorOrders.slice(0, 5)
-    const topProducts = [...vendorProducts].sort((a, b) => b.totalSales - a.totalSales).slice(0, 5)
-    const ratingDist = [5, 4, 3, 2, 1].map(star => ({
-        star,
-        count: vendorReviews.filter(r => r.rating === star).length,
-    }))
+    const topProducts = vendorProducts.slice(0, 5)
+    const ratingDist = dash?.ratingDist || [5, 4, 3, 2, 1].map((star) => ({ star, count: 0 }))
     const maxRatingCount = Math.max(...ratingDist.map(r => r.count), 1)
 
     return (
@@ -73,7 +80,7 @@ export default function VendorDashboard() {
                     </div>
                     <div className="mt-4 pt-4 border-t border-slate-100 text-center">
                         <p className="text-3xl font-extrabold text-slate-800">{avgRating}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">Average from {vendorReviews.length} reviews</p>
+                        <p className="text-xs text-slate-500 mt-0.5">Average from {dash?.stats?.reviewCount || 0} reviews</p>
                     </div>
                 </div>
             </div>

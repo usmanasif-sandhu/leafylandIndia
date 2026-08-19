@@ -3,28 +3,33 @@ import { useEffect, useState } from "react"
 import { toast } from "react-hot-toast"
 import Image from "next/image"
 import Loading from "@/components/Loading"
-import { productDummyData } from "@/assets/assets"
 
 export default function StoreManageProducts() {
-
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
-
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
 
     const fetchProducts = async () => {
-        setProducts(productDummyData)
+        const res = await fetch('/api/vendor/products')
+        const data = await res.json()
+        if (Array.isArray(data)) setProducts(data)
         setLoading(false)
     }
 
     const toggleStock = async (productId) => {
-        // Logic to toggle the stock of a product
-
-
+        const product = products.find((p) => p.id === productId)
+        if (!product) return
+        const res = await fetch(`/api/vendor/products/${productId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ inStock: !product.inStock }),
+        })
+        if (!res.ok) throw new Error('Update failed')
+        setProducts((prev) => prev.map((p) => p.id === productId ? { ...p, inStock: !p.inStock } : p))
     }
 
     useEffect(() => {
-            fetchProducts()
+        fetchProducts()
     }, [])
 
     if (loading) return <Loading />
@@ -47,7 +52,9 @@ export default function StoreManageProducts() {
                         <tr key={product.id} className="border-t border-gray-200 hover:bg-gray-50">
                             <td className="px-4 py-3">
                                 <div className="flex gap-2 items-center">
-                                    <Image width={40} height={40} className='p-1 shadow rounded cursor-pointer' src={product.images[0]} alt="" />
+                                    {product.images?.[0] && (
+                                        <Image width={40} height={40} className='p-1 shadow rounded cursor-pointer' src={product.images[0]} alt="" />
+                                    )}
                                     {product.name}
                                 </div>
                             </td>

@@ -1,13 +1,27 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
-import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
-import { dummyUsersData } from '@/lib/data/users'
+const ROLE_FILTERS = ['All', 'Buyer', 'Seller', 'Admin']
 
-const ROLE_FILTERS = ['All', 'Buyer', 'Seller']
+const ROLE_STYLES = {
+  admin: 'bg-slate-800 text-white',
+  seller: 'bg-emerald-100 text-emerald-700',
+  buyer: 'bg-blue-100 text-blue-700',
+}
+
+function RoleBadge({ role }) {
+  const key = (role || 'buyer').toLowerCase()
+  const style = ROLE_STYLES[key] || 'bg-slate-100 text-slate-600'
+  const label = key.charAt(0).toUpperCase() + key.slice(1)
+  return (
+    <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full ${style}`}>
+      {label}
+    </span>
+  )
+}
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString('en-IN', {
@@ -20,13 +34,20 @@ function formatDate(dateStr) {
 export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState('All')
   const [selectedUser, setSelectedUser] = useState(null)
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    fetch('/api/admin/users')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setUsers(data) })
+  }, [])
 
   const filteredData = useMemo(() => {
-    if (roleFilter === 'All') return dummyUsersData
-    return dummyUsersData.filter(
+    if (roleFilter === 'All') return users
+    return users.filter(
       (u) => u.role === roleFilter.toLowerCase()
     )
-  }, [roleFilter])
+  }, [roleFilter, users])
 
   const columns = [
     {
@@ -35,7 +56,7 @@ export default function UsersPage() {
       render: (_, row) => (
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-sm font-bold shrink-0">
-            {row.name.split(' ').map((n) => n[0]).join('')}
+            {(row.name || '?').split(' ').map((n) => n[0]).join('')}
           </div>
           <span className="font-semibold text-slate-800">{row.name}</span>
         </div>
@@ -49,9 +70,7 @@ export default function UsersPage() {
     {
       key: 'role',
       label: 'Role',
-      render: (val) => (
-        <StatusBadge status={val === 'seller' ? 'active' : val} />
-      ),
+      render: (val) => <RoleBadge role={val} />,
     },
     {
       key: 'joinDate',
@@ -114,7 +133,7 @@ export default function UsersPage() {
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-800">{selectedUser.name}</p>
-                <StatusBadge status={selectedUser.role === 'seller' ? 'active' : selectedUser.role} />
+                <RoleBadge role={selectedUser.role} />
               </div>
             </div>
 
@@ -125,7 +144,10 @@ export default function UsersPage() {
               <DetailRow label="Join Date" value={formatDate(selectedUser.joinDate)} />
               <DetailRow label="Total Orders" value={selectedUser.totalOrders} />
               {selectedUser.storeName && (
-                <DetailRow label="Store Name" value={selectedUser.storeName} />
+                <>
+                  <DetailRow label="Store Name" value={selectedUser.storeName} />
+                  <DetailRow label="Store Status" value={selectedUser.storeStatus || '—'} />
+                </>
               )}
             </div>
           </div>

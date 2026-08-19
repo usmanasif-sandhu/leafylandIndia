@@ -1,14 +1,14 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CategoriesStrip from "@/components/CategoriesStrip";
 import Carousel from "@/components/Carousel";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import PropertyCard from "@/components/PropertyCard";
 import ComingSoonModal from "@/components/ComingSoonModal";
-import { products } from "@/lib/data/products";
-import { services } from "@/lib/data/services";
-import { properties } from "@/lib/data/properties";
+import { products as dummyProducts } from "@/lib/data/products";
+import { services as dummyServices } from "@/lib/data/services";
+import { properties as dummyProperties } from "@/lib/data/properties";
 import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck, Sprout, TreePine } from "lucide-react";
 import Link from "next/link";
 
@@ -42,6 +42,21 @@ const serviceIcons = {
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All')
     const [comingSoonCategory, setComingSoonCategory] = useState(null)
+    const [products, setProducts] = useState(dummyProducts)
+    const [services, setServices] = useState(dummyServices)
+    const [properties, setProperties] = useState(dummyProperties)
+
+    useEffect(() => {
+        Promise.all([
+            fetch('/api/products').then((r) => r.json()),
+            fetch('/api/services').then((r) => r.json()),
+            fetch('/api/properties').then((r) => r.json()),
+        ]).then(([p, s, pr]) => {
+            if (Array.isArray(p) && p.length) setProducts(p)
+            if (Array.isArray(s) && s.length) setServices(s)
+            if (Array.isArray(pr) && pr.length) setProperties(pr)
+        }).catch(() => {})
+    }, [])
 
     // LeafyLand core items (prioritized)
     const leafyProducts = products.filter(p => !p.marketplace)

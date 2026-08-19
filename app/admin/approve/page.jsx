@@ -1,22 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CheckCircle } from 'lucide-react'
-import { storesDummyData } from '@/assets/assets'
 import PageHeader from '@/components/admin/PageHeader'
 import EmptyState from '@/components/admin/EmptyState'
+import toast from 'react-hot-toast'
 
 export default function AdminApprove() {
-  const [pendingStores, setPendingStores] = useState(
-    storesDummyData.filter((s) => s.status === 'pending')
-  )
+  const [pendingStores, setPendingStores] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const handleApprove = (id) => {
-    setPendingStores((prev) => prev.filter((s) => s.id !== id))
+  const load = async () => {
+    const res = await fetch('/api/admin/stores')
+    const data = await res.json()
+    if (res.ok) setPendingStores((data || []).filter((s) => s.status === 'pending'))
+    setLoading(false)
   }
 
-  const handleReject = (id) => {
+  useEffect(() => { load() }, [])
+
+  const handleApprove = async (id) => {
+    const res = await fetch(`/api/admin/stores/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'approved' }),
+    })
+    if (!res.ok) return toast.error('Approve failed')
     setPendingStores((prev) => prev.filter((s) => s.id !== id))
+    toast.success('Store approved')
+  }
+
+  const handleReject = async (id) => {
+    const res = await fetch(`/api/admin/stores/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'rejected' }),
+    })
+    if (!res.ok) return toast.error('Reject failed')
+    setPendingStores((prev) => prev.filter((s) => s.id !== id))
+    toast.success('Store rejected')
   }
 
   return (
@@ -26,7 +48,9 @@ export default function AdminApprove() {
         description="Review and approve pending store applications"
       />
 
-      {pendingStores.length === 0 ? (
+      {loading ? (
+        <p className="text-sm text-slate-500">Loading…</p>
+      ) : pendingStores.length === 0 ? (
         <EmptyState
           icon={CheckCircle}
           title="No pending approvals"

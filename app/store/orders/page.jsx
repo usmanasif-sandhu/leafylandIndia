@@ -1,13 +1,19 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Search, Eye, ChevronDown } from 'lucide-react'
 import StatusBadge from '@/components/admin/StatusBadge'
-import { vendorOrders } from '@/lib/data/vendor'
 import toast from 'react-hot-toast'
 
 export default function VendorOrders() {
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState('All')
+    const [vendorOrders, setVendorOrders] = useState([])
+
+    useEffect(() => {
+        fetch('/api/vendor/orders')
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setVendorOrders(data) })
+    }, [])
     const [selectedOrder, setSelectedOrder] = useState(null)
 
     const statuses = ['All', 'Processing', 'Shipped', 'Delivered']

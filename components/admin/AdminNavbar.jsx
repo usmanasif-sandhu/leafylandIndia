@@ -1,7 +1,8 @@
 'use client'
 
 import { usePathname } from "next/navigation"
-import { Menu, Search } from "lucide-react"
+import { signOut, useSession } from "next-auth/react"
+import { LogOut, Menu, Search } from "lucide-react"
 
 const routeTitles = {
     "/admin": "Dashboard",
@@ -17,7 +18,14 @@ const routeTitles = {
 
 const AdminNavbar = ({ onMenuToggle }) => {
     const pathname = usePathname()
+    const { data: session } = useSession()
     const title = routeTitles[pathname] || "Dashboard"
+    const initials = (session?.user?.name || "Admin")
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
 
     return (
         <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 z-20 flex items-center justify-between px-4 lg:px-6">
@@ -43,11 +51,19 @@ const AdminNavbar = ({ onMenuToggle }) => {
 
                 <div className="flex items-center gap-2">
                     <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold">
-                        AD
+                        {initials}
                     </div>
                     <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2 py-0.5 rounded-full hidden sm:inline">
                         Admin
                     </span>
+                    <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: "/" })}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                        <LogOut size={16} />
+                        <span className="hidden sm:inline">Logout</span>
+                    </button>
                 </div>
             </div>
         </header>

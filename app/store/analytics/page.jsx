@@ -1,25 +1,36 @@
 'use client'
-import { TrendingUp, ShoppingCart, Package, Users, IndianRupee, ArrowUpRight, ArrowDownRight } from 'lucide-react'
-import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { vendorOrders, vendorProducts, vendorCustomers, monthlyRevenueData, revenueChartData } from '@/lib/data/vendor'
+import { useEffect, useState } from 'react'
+import { TrendingUp, ShoppingCart, Users, IndianRupee, ArrowUpRight } from 'lucide-react'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4']
 
 export default function VendorAnalytics() {
-    const totalRevenue = vendorOrders.reduce((sum, o) => sum + o.total, 0)
-    const avgOrderValue = vendorOrders.length ? Math.round(totalRevenue / vendorOrders.length) : 0
-    const totalCustomers = vendorCustomers.length
+    const [data, setData] = useState(null)
+
+    useEffect(() => {
+        fetch('/api/vendor/analytics')
+            .then((r) => r.json())
+            .then((d) => { if (!d.error) setData(d) })
+    }, [])
+
+    const totalRevenue = data?.totalRevenue || 0
+    const avgOrderValue = data?.avgOrderValue || 0
+    const totalCustomers = data?.totalCustomers || 0
+    const vendorProducts = data?.products || []
+    const vendorCustomers = data?.customers || []
+    const monthlyRevenueData = data?.monthlyRevenueData || []
     const repeatCustomers = vendorCustomers.filter(c => c.totalOrders > 1).length
     const repeatRate = totalCustomers ? Math.round((repeatCustomers / totalCustomers) * 100) : 0
 
     const categoryData = vendorProducts.reduce((acc, p) => {
         const existing = acc.find(a => a.name === p.category)
-        if (existing) { existing.value += p.totalSales }
-        else { acc.push({ name: p.category, value: p.totalSales }) }
+        if (existing) { existing.value += p.totalSales || 0 }
+        else { acc.push({ name: p.category, value: p.totalSales || 0 }) }
         return acc
     }, []).sort((a, b) => b.value - a.value)
 
-    const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4']
-
-    const topProducts = [...vendorProducts].sort((a, b) => b.revenue - a.revenue).slice(0, 6)
+    const topProducts = [...vendorProducts].sort((a, b) => (b.revenue || 0) - (a.revenue || 0)).slice(0, 6)
 
     return (
         <div className="space-y-6">
@@ -27,22 +38,20 @@ export default function VendorAnalytics() {
                 Store <span className="font-bold">Analytics</span>
             </h1>
 
-            {/* KPI Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, change: '+12.5%', up: true, icon: IndianRupee, color: 'bg-emerald-100' },
-                    { label: 'Avg Order Value', value: `₹${avgOrderValue.toLocaleString()}`, change: '+8.2%', up: true, icon: ShoppingCart, color: 'bg-blue-100' },
-                    { label: 'Total Customers', value: totalCustomers, change: '+15.3%', up: true, icon: Users, color: 'bg-purple-100' },
-                    { label: 'Repeat Rate', value: `${repeatRate}%`, change: '-2.1%', up: false, icon: TrendingUp, color: 'bg-amber-100' },
+                    { label: 'Total Revenue', value: `₹${totalRevenue.toLocaleString('en-IN')}`, icon: IndianRupee, color: 'bg-emerald-100' },
+                    { label: 'Avg Order Value', value: `₹${avgOrderValue.toLocaleString()}`, icon: ShoppingCart, color: 'bg-blue-100' },
+                    { label: 'Total Customers', value: totalCustomers, icon: Users, color: 'bg-purple-100' },
+                    { label: 'Repeat Rate', value: `${repeatRate}%`, icon: TrendingUp, color: 'bg-amber-100' },
                 ].map((kpi, i) => (
                     <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
                         <div className="flex items-center justify-between mb-3">
                             <div className={`w-10 h-10 ${kpi.color} rounded-xl flex items-center justify-center`}>
                                 <kpi.icon size={18} className="text-slate-600" />
                             </div>
-                            <span className={`flex items-center gap-0.5 text-xs font-semibold ${kpi.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                                {kpi.up ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                                {kpi.change}
+                            <span className="flex items-center gap-0.5 text-xs font-semibold text-emerald-600">
+                                <ArrowUpRight size={12} />
                             </span>
                         </div>
                         <p className="text-xs text-slate-500">{kpi.label}</p>
@@ -51,9 +60,7 @@ export default function VendorAnalytics() {
                 ))}
             </div>
 
-            {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Monthly Revenue */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Monthly Revenue</h2>
                     <ResponsiveContainer width="100%" height={280}>
@@ -70,32 +77,34 @@ export default function VendorAnalytics() {
                     </ResponsiveContainer>
                 </div>
 
-                {/* Category Sales Pie */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Sales by Category</h2>
-                    <div className="flex items-center gap-6">
-                        <ResponsiveContainer width="50%" height={220}>
-                            <PieChart>
-                                <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} innerRadius={40} dataKey="value">
-                                    {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                        <div className="flex-1 space-y-2">
-                            {categoryData.slice(0, 6).map((cat, i) => (
-                                <div key={cat.name} className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                                    <span className="text-xs text-slate-600 truncate">{cat.name}</span>
-                                    <span className="text-xs font-semibold text-slate-800 ml-auto">{cat.value}</span>
-                                </div>
-                            ))}
+                    {categoryData.length === 0 ? (
+                        <p className="text-sm text-slate-500">No sales data yet.</p>
+                    ) : (
+                        <div className="flex items-center gap-6">
+                            <ResponsiveContainer width="50%" height={220}>
+                                <PieChart>
+                                    <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} innerRadius={40} dataKey="value">
+                                        {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="flex-1 space-y-2">
+                                {categoryData.slice(0, 6).map((cat, i) => (
+                                    <div key={cat.name} className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                        <span className="text-xs text-slate-600 truncate">{cat.name}</span>
+                                        <span className="text-xs font-semibold text-slate-800 ml-auto">{cat.value}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
-            {/* Top Products Table */}
             <div className="bg-white rounded-2xl border border-slate-100 p-5">
                 <h2 className="text-lg font-semibold text-slate-800 mb-4">Top Products by Revenue</h2>
                 <div className="overflow-x-auto">
@@ -116,10 +125,10 @@ export default function VendorAnalytics() {
                                     <td className="py-3 text-slate-400 font-medium">{i + 1}</td>
                                     <td className="py-3 font-medium text-slate-700">{p.name}</td>
                                     <td className="py-3 text-slate-500">{p.category}</td>
-                                    <td className="py-3 text-slate-600">{p.totalSales}</td>
-                                    <td className="py-3 font-semibold text-slate-800">₹{p.revenue.toLocaleString()}</td>
+                                    <td className="py-3 text-slate-600">{p.totalSales || 0}</td>
+                                    <td className="py-3 font-semibold text-slate-800">₹{(p.revenue || 0).toLocaleString()}</td>
                                     <td className="py-3 text-amber-500 font-semibold">
-                                        {p.rating.length ? (p.rating.reduce((a, b) => a + b, 0) / p.rating.length).toFixed(1) : '—'}
+                                        {Array.isArray(p.rating) && p.rating.length ? (p.rating.reduce((a, b) => a + b, 0) / p.rating.length).toFixed(1) : (p.avgRating || '—')}
                                     </td>
                                 </tr>
                             ))}

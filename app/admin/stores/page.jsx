@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Eye } from 'lucide-react'
 import { storesDummyData } from '@/assets/assets'
 import PageHeader from '@/components/admin/PageHeader'
@@ -9,9 +9,15 @@ import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
 
 export default function AdminStores() {
-  const [stores, setStores] = useState(storesDummyData)
+  const [stores, setStores] = useState([])
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedStore, setSelectedStore] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/admin/stores')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setStores(data) })
+  }, [])
 
   const filteredStores = useMemo(() => {
     if (statusFilter === 'all') return stores
@@ -20,10 +26,16 @@ export default function AdminStores() {
     return stores
   }, [stores, statusFilter])
 
-  const toggleActive = (id) => {
-    setStores((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, isActive: !s.isActive } : s))
-    )
+  const toggleActive = async (id) => {
+    const row = stores.find((s) => s.id === id)
+    if (!row) return
+    const next = !row.isActive
+    setStores((prev) => prev.map((s) => (s.id === id ? { ...s, isActive: next } : s)))
+    await fetch(`/api/admin/stores/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isActive: next }),
+    })
   }
 
   const columns = [

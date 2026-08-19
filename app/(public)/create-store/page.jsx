@@ -5,6 +5,7 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import Loading from '@/components/Loading'
 import { Store, Upload, CheckCircle, Leaf, Info } from 'lucide-react'
+import { fileToDataUrl } from '@/components/store/StoreLogo'
 
 export default function CreateStore() {
     const [alreadySubmitted, setAlreadySubmitted] = useState(false)
@@ -27,14 +28,56 @@ export default function CreateStore() {
     }
 
     const fetchSellerStatus = async () => {
-        // Logic to check if the store is already submitted
-
-        setLoading(false)
+        try {
+            const res = await fetch('/api/stores/apply')
+            const data = await res.json()
+            if (data.store) {
+                setAlreadySubmitted(true)
+                setStatus(data.store.status)
+                setMessage(
+                    data.store.status === 'approved'
+                        ? 'Your store is live. You can open the vendor panel.'
+                        : data.store.status === 'rejected'
+                            ? 'Your application was rejected. Contact support or update details.'
+                            : 'Your application is under review.'
+                )
+            }
+        } catch {
+            toast.error('Could not load store status')
+        } finally {
+            setLoading(false)
+        }
     }
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        // Logic to submit the store details
+        try {
+            let logo = ''
+            if (storeInfo.image instanceof File) {
+                logo = await fileToDataUrl(storeInfo.image)
+            }
+            const res = await fetch('/api/stores/apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: storeInfo.name,
+                    username: storeInfo.username,
+                    description: storeInfo.description,
+                    email: storeInfo.email,
+                    contact: storeInfo.contact,
+                    address: storeInfo.address,
+                    logo,
+                }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Could not submit')
+            toast.success('Store application submitted')
+            setAlreadySubmitted(true)
+            setStatus(data.status)
+            setMessage('Your application is under review.')
+        } catch (err) {
+            toast.error(err.message)
+        }
     }
 
     useEffect(() => {

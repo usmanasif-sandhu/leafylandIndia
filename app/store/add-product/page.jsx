@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Upload, X, Plus, Image as ImageIcon } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import PageHeader from '@/components/admin/PageHeader'
+import { fileToDataUrl } from '@/components/store/StoreLogo'
 
 const leafyCategories = [
     'Big Plant', 'Bulbs', 'Fruit Plant', 'Gardening', 'Indoor Greenary',
@@ -18,7 +19,7 @@ const marketplaceCategories = [
 export default function StoreAddProduct() {
     const [images, setImages] = useState([])
     const [productInfo, setProductInfo] = useState({
-        name: '', description: '', mrp: '', price: '', category: '',
+        name: '', description: '', mrp: '', price: '', category: '', stock: '10',
     })
     const [loading, setLoading] = useState(false)
     const [showComingSoon, setShowComingSoon] = useState(false)
@@ -38,9 +39,29 @@ export default function StoreAddProduct() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
-        toast.success('Product added successfully!')
-        setProductInfo({ name: '', description: '', mrp: '', price: '', category: '' })
-        setImages([])
+        setLoading(true)
+        try {
+            if (!images.length) throw new Error('Upload at least one product photo')
+            const imageUrls = await Promise.all(images.map((file) => fileToDataUrl(file)))
+            const res = await fetch('/api/vendor/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...productInfo,
+                    stock: Number(productInfo.stock || 0),
+                    images: imageUrls,
+                }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Could not add product')
+            toast.success('Product added successfully!')
+            setProductInfo({ name: '', description: '', mrp: '', price: '', category: '', stock: '10' })
+            setImages([])
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -84,6 +105,14 @@ export default function StoreAddProduct() {
                                 <label className="block text-xs font-medium text-slate-500 mb-1.5">Sale Price (₹)</label>
                                 <input
                                     type="number" name="price" value={productInfo.price} onChange={onChangeHandler}
+                                    placeholder="0" min={0} required
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-slate-500 mb-1.5">Stock</label>
+                                <input
+                                    type="number" name="stock" value={productInfo.stock} onChange={onChangeHandler}
                                     placeholder="0" min={0} required
                                     className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition"
                                 />

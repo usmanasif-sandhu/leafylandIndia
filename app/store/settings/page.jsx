@@ -1,19 +1,42 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Save, Camera } from 'lucide-react'
-import { storeInfo } from '@/lib/data/vendor'
 import toast from 'react-hot-toast'
+import { useVendorStore } from '@/components/store/VendorStoreContext'
+import StoreLogo, { fileToDataUrl } from '@/components/store/StoreLogo'
 
 export default function StoreSettings() {
-    const [info, setInfo] = useState({ ...storeInfo })
+    const { store, loading, setStore } = useVendorStore()
+    const [info, setInfo] = useState({})
+
+    useEffect(() => {
+        if (store) setInfo(store)
+    }, [store])
 
     const handleChange = (e) => {
         setInfo({ ...info, [e.target.name]: e.target.value })
     }
 
-    const handleSave = () => {
+    const handleSave = async () => {
+        const res = await fetch('/api/vendor/settings', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(info),
+        })
+        const data = await res.json()
+        if (!res.ok) return toast.error(data.error || 'Could not save')
+        setInfo(data)
+        setStore(data)
         toast.success('Store profile updated successfully')
     }
+
+    const statusLabel = info.status === 'approved' && info.isActive
+        ? 'Active & Verified'
+        : info.status === 'pending'
+            ? 'Pending review'
+            : info.status || '—'
+
+    if (loading) return <p className="text-sm text-slate-500">Loading store profile…</p>
 
     return (
         <div className="space-y-6">
@@ -33,38 +56,64 @@ export default function StoreSettings() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Store Logo */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                    <h2 className="text-sm font-semibold text-slate-800 mb-4">Store Logo</h2>
+                    <h2 className="text-sm font-semibold text-slate-800 mb-4">Store photo</h2>
                     <div className="flex flex-col items-center gap-4">
-                        <div className="w-24 h-24 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                            <span className="text-3xl font-bold text-emerald-700">{info.name?.charAt(0)}</span>
-                        </div>
-                        <button className="flex items-center gap-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors">
-                            <Camera size={14} /> Change Logo
-                        </button>
+                        <StoreLogo src={info.logo} name={info.name} className="w-24 h-24 rounded-2xl text-3xl" />
+                        <label className="flex items-center gap-2 text-xs font-medium text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer">
+                            <Camera size={14} /> Upload photo
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0]
+                                    if (!file) return
+                                    try {
+                                        const logo = await fileToDataUrl(file)
+                                        const next = { ...info, logo }
+                                        setInfo(next)
+                                        const res = await fetch('/api/vendor/settings', {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ logo }),
+                                        })
+                                        const data = await res.json()
+                                        if (!res.ok) throw new Error(data.error || 'Could not update logo')
+                                        setStore(data)
+                                        toast.success('Logo updated')
+                                    } catch (err) {
+                                        toast.error(err.message)
+                                    }
+                                    e.target.value = ''
+                                }}
+                            />
+                        </label>
                     </div>
                     <div className="mt-6 space-y-3">
                         <div>
                             <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
                             <span className="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
-                                Active & Verified
+                                {statusLabel}
                             </span>
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-slate-500 mb-1">Member Since</label>
-                            <p className="text-sm text-slate-700">{new Date(info.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' })}</p>
+                            <p className="text-sm text-slate-700">
+                                {info.createdAt
+                                    ? new Date(info.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' })
+                                    : '—'}
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Store Details */}
                 <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6">
                     <h2 className="text-sm font-semibold text-slate-800 mb-4">Store Details</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {[
                             { label: 'Store Name', name: 'name', type: 'text' },
-                            { label: 'Username', name: 'username', type: 'text' },
+                            { label: 'Username', name: 'username', type: 'text', disabled: true },
                             { label: 'Email', name: 'email', type: 'email' },
                             { label: 'Phone', name: 'contact', type: 'tel' },
                             { label: 'City', name: 'city', type: 'text' },
@@ -79,7 +128,8 @@ export default function StoreSettings() {
                                     name={field.name}
                                     value={info[field.name] || ''}
                                     onChange={handleChange}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition"
+                                    disabled={field.disabled}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm px-4 py-2.5 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 outline-none transition disabled:text-slate-400"
                                 />
                             </div>
                         ))}
@@ -97,7 +147,6 @@ export default function StoreSettings() {
                 </div>
             </div>
 
-            {/* Business & Payment */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white rounded-2xl border border-slate-100 p-6">
                     <h2 className="text-sm font-semibold text-slate-800 mb-4">Business Details</h2>
@@ -143,7 +192,6 @@ export default function StoreSettings() {
                 </div>
             </div>
 
-            {/* Policies */}
             <div className="bg-white rounded-2xl border border-slate-100 p-6">
                 <h2 className="text-sm font-semibold text-slate-800 mb-4">Store Policies</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
