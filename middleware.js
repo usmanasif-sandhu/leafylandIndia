@@ -1,13 +1,32 @@
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
+async function readAuthToken(req) {
+    const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
+    if (!secret) return null
+
+    const cookieNames = [
+        '__Secure-authjs.session-token',
+        'authjs.session-token',
+        '__Secure-next-auth.session-token',
+        'next-auth.session-token',
+    ]
+
+    for (const cookieName of cookieNames) {
+        const token = await getToken({
+            req,
+            secret,
+            cookieName,
+            secureCookie: cookieName.startsWith('__Secure-'),
+        })
+        if (token) return token
+    }
+    return null
+}
+
 export async function middleware(req) {
     const { pathname } = req.nextUrl
-    const token = await getToken({
-        req,
-        secret: process.env.AUTH_SECRET,
-        secureCookie: process.env.NODE_ENV === 'production',
-    })
+    const token = await readAuthToken(req)
 
     const isAdmin = pathname.startsWith('/admin')
     const isStore = pathname.startsWith('/store')
