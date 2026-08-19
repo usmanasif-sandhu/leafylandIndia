@@ -5,6 +5,7 @@ import Image from "next/image";
 import { assets } from "@/assets/assets";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import { useSession, signOut } from "next-auth/react";
 
@@ -19,6 +20,7 @@ const Navbar = () => {
     const pathname = usePathname();
     const [search, setSearch] = useState('');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const [location, setLocation] = useState('Mumbai');
     const [locationOpen, setLocationOpen] = useState(false);
     const [locationSearch, setLocationSearch] = useState('');
@@ -34,6 +36,10 @@ const Navbar = () => {
                 : '/login';
 
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
         const handleClick = (e) => {
             if (locationRef.current && !locationRef.current.contains(e.target)) {
                 setLocationOpen(false)
@@ -42,6 +48,15 @@ const Navbar = () => {
         document.addEventListener('mousedown', handleClick)
         return () => document.removeEventListener('mousedown', handleClick)
     }, [])
+
+    useEffect(() => {
+        if (!mobileMenuOpen) return
+        const prevOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        return () => {
+            document.body.style.overflow = prevOverflow
+        }
+    }, [mobileMenuOpen])
 
     const filteredCities = cities.filter(c => c.toLowerCase().includes(locationSearch.toLowerCase()))
 
@@ -52,6 +67,7 @@ const Navbar = () => {
     };
 
     return (
+        <>
         <nav className="sticky top-0 z-50 glass-navbar">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
                 <div className="flex items-center h-14 sm:h-16 gap-2 lg:gap-3 min-w-0">
@@ -212,71 +228,89 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Mobile Drawer Backdrop */}
-            {mobileMenuOpen && (
+        </nav>
+        {mounted && createPortal(
+            <div className={`xl:hidden ${mobileMenuOpen ? '' : 'pointer-events-none'}`} aria-hidden={!mobileMenuOpen}>
                 <div
-                    className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm xl:hidden"
+                    className={`fixed inset-0 z-[90] bg-black/40 transition-opacity duration-300 ${
+                        mobileMenuOpen ? 'opacity-100' : 'opacity-0'
+                    }`}
                     onClick={() => setMobileMenuOpen(false)}
                 />
-            )}
+                <div
+                    className={`fixed inset-y-0 right-0 z-[100] w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-300 ease-in-out ${
+                        mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+                    }`}
+                    style={{
+                        top: 0,
+                        bottom: 0,
+                        paddingTop: 'env(safe-area-inset-top)',
+                        paddingBottom: 'env(safe-area-inset-bottom)',
+                    }}
+                >
+                    <div className="flex flex-col h-full p-6 overflow-y-auto overscroll-contain">
+                        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                            <Image src={assets.logo} alt="LeafyLand" width={120} height={30} className="h-7 w-auto object-contain" />
+                            <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
 
-            {/* Mobile Drawer */}
-            <div className={`fixed top-0 right-0 z-50 h-full w-80 max-w-[85vw] bg-white shadow-2xl transition-transform duration-300 ease-in-out xl:hidden ${
-                mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}>
-                <div className="flex flex-col h-full p-6">
-                    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                        <Image src={assets.logo} alt="LeafyLand" width={120} height={30} className="h-7 w-auto object-contain" />
-                        <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors">
-                            <X size={20} />
-                        </button>
-                    </div>
+                        <form onSubmit={handleSearch} className="mt-4 flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl">
+                            <Search size={16} className="text-slate-400 shrink-0" />
+                            <input
+                                className="w-full bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
+                                type="text"
+                                placeholder="Search products, services..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </form>
 
-                    <form onSubmit={handleSearch} className="mt-4 flex items-center gap-2 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl">
-                        <Search size={16} className="text-slate-400 shrink-0" />
-                        <input
-                            className="w-full bg-transparent outline-none placeholder-slate-400 text-slate-700 text-sm"
-                            type="text"
-                            placeholder="Search products, services..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </form>
+                        <div className="flex flex-col gap-1 mt-6 text-sm font-medium text-slate-700">
+                            {[
+                                { href: '/', label: 'Home' },
+                                { href: '/products', label: 'Products' },
+                                { href: '/services', label: 'Services' },
+                                { href: '/properties', label: 'Properties' },
+                                { href: '/about', label: 'About' },
+                                { href: '/contact', label: 'Contact' },
+                                { href: '/how-it-works', label: 'How It Works' },
+                            ].map(link => (
+                                <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}
+                                    className={`py-2.5 px-3 rounded-lg transition-colors ${pathname === link.href ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-emerald-50 hover:text-emerald-600'}`}>
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
 
-                    <div className="flex flex-col gap-1 mt-6 text-sm font-medium text-slate-700">
-                        {[
-                            { href: '/', label: 'Home' },
-                            { href: '/products', label: 'Products' },
-                            { href: '/services', label: 'Services' },
-                            { href: '/properties', label: 'Properties' },
-                            { href: '/about', label: 'About' },
-                            { href: '/contact', label: 'Contact' },
-                            { href: '/how-it-works', label: 'How It Works' },
-                        ].map(link => (
-                            <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)}
-                                className={`py-2.5 px-3 rounded-lg transition-colors ${pathname === link.href ? 'bg-emerald-50 text-emerald-600' : 'hover:bg-emerald-50 hover:text-emerald-600'}`}>
-                                {link.label}
+                        <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-2">
+                            <Link href="/become-seller" onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors">
+                                <Store size={16} /> Sell on LeafyLand
                             </Link>
-                        ))}
-                    </div>
-
-                    <div className="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-2">
-                        <Link href="/become-seller" onClick={() => setMobileMenuOpen(false)}
-                            className="flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-colors">
-                            <Store size={16} /> Sell on LeafyLand
-                        </Link>
-                        <Link href="/cart" onClick={() => setMobileMenuOpen(false)}
-                            className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
-                            <ShoppingCart size={18} /> Cart {cartCount > 0 && `(${cartCount})`}
-                        </Link>
-                        <button className="w-full py-2.5 bg-emerald-900 hover:bg-emerald-950 text-white font-medium rounded-xl text-sm transition-colors">
-                            Login / Sign Up
-                        </button>
+                            <Link href="/cart" onClick={() => setMobileMenuOpen(false)}
+                                className="flex items-center justify-center gap-2 py-2.5 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-100 transition-colors">
+                                <ShoppingCart size={18} /> Cart {cartCount > 0 && `(${cartCount})`}
+                            </Link>
+                            {session?.user ? (
+                                <Link href={panelHref} onClick={() => setMobileMenuOpen(false)}
+                                    className="w-full py-2.5 bg-emerald-900 hover:bg-emerald-950 text-white font-medium rounded-xl text-sm transition-colors text-center">
+                                    Account
+                                </Link>
+                            ) : (
+                                <Link href="/login" onClick={() => setMobileMenuOpen(false)}
+                                    className="w-full py-2.5 bg-emerald-900 hover:bg-emerald-950 text-white font-medium rounded-xl text-sm transition-colors text-center">
+                                    Login / Sign Up
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </div>,
+            document.body
+        )}
+        </>
     );
 };
 
