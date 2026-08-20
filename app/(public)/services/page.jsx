@@ -1,7 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { services, serviceCategories } from "@/lib/data/services"
 import { Search, Droplets, Scissors, Sparkles, ShieldCheck, Recycle, Leaf, Flower2, Wrench, Truck, Home, Zap, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Package, Trash2, Receipt, Scale, Palette, Code, Megaphone, Car, Bike, BookOpen, Music, MessageCircle, GraduationCap } from 'lucide-react'
 
 const serviceIcons = {
@@ -50,19 +49,29 @@ const serviceIcons = {
 
 const ServicesPage = () => {
     const [search, setSearch] = useState('')
+    const [services, setServices] = useState([])
+    const [loading, setLoading] = useState(true)
 
-    const filtered = services.filter(s =>
-        s.name.toLowerCase().includes(search.toLowerCase()) || s.category.toLowerCase().includes(search.toLowerCase())
-    )
+    useEffect(() => {
+        fetch('/api/services')
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setServices(data) })
+            .finally(() => setLoading(false))
+    }, [])
 
-    const leafyServices = filtered.filter(s => !s.marketplace)
-    const marketplaceServices = filtered.filter(s => s.marketplace)
+    const filtered = useMemo(() => services.filter((s) =>
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        (s.category || '').toLowerCase().includes(search.toLowerCase())
+    ), [services, search])
 
-    const dailyServices = leafyServices.filter(s => s.category === 'Daily Needs Services')
-    const homeServices = leafyServices.filter(s => s.category === 'Home Services')
-    const professionalServices = marketplaceServices.filter(s => s.category === 'Professional Services')
-    const transportationServices = marketplaceServices.filter(s => s.category === 'Transportation')
-    const educationServices = marketplaceServices.filter(s => s.category === 'Education & Tutoring')
+    const grouped = useMemo(() => {
+        const map = {}
+        filtered.forEach((s) => {
+            const cat = s.category || 'Other'
+            ;(map[cat] ||= []).push(s)
+        })
+        return Object.entries(map)
+    }, [filtered])
 
     return (
         <div className="bg-slate-50/50 min-h-[60vh]">
@@ -86,153 +95,41 @@ const ServicesPage = () => {
                 </div>
             </div>
 
-            {/* Daily Needs Services */}
-            {dailyServices.length > 0 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-1">Daily Needs Services</h2>
-                    <p className="text-sm text-slate-500 mb-5">On-demand green & home services at your doorstep</p>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {dailyServices.map(service => {
-                            const Icon = serviceIcons[service.name] || Leaf
-                            return (
-                                <Link
-                                    key={service.id}
-                                    href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-[#c8e6c9] rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
-                                        <Icon size={22} className="text-emerald-600" />
-                                    </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </div>
+            {loading ? (
+                <div className="text-center py-20">
+                    <p className="text-slate-500 text-sm">Loading services…</p>
                 </div>
-            )}
-
-            {/* Home Services */}
-            {homeServices.length > 0 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-1">Home Services</h2>
-                    <p className="text-sm text-slate-500 mb-5">Professional home maintenance and repair services</p>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {homeServices.map(service => {
-                            const Icon = serviceIcons[service.name] || Leaf
-                            return (
-                                <Link
-                                    key={service.id}
-                                    href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-[#c8e6c9] rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
-                                        <Icon size={22} className="text-emerald-600" />
-                                    </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {/* ═══ MARKETPLACE SERVICES ═══ */}
-
-            {/* Professional Services */}
-            {professionalServices.length > 0 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
-                    <div className="flex items-center gap-3 mb-5">
-                        <span className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full">
-                            💼 Professional Services
-                        </span>
-                        <div className="flex-1 h-px bg-blue-100" />
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {professionalServices.map(service => {
-                            const Icon = serviceIcons[service.name] || Leaf
-                            return (
-                                <Link
-                                    key={service.id}
-                                    href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-blue-50 rounded-2xl border border-blue-100 hover:border-blue-200 hover:shadow-md transition-all group cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
-                                        <Icon size={22} className="text-blue-600" />
-                                    </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {/* Transportation */}
-            {transportationServices.length > 0 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-8">
-                    <div className="flex items-center gap-3 mb-5">
-                        <span className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-purple-700 text-xs font-semibold rounded-full">
-                            🚗 Transportation
-                        </span>
-                        <div className="flex-1 h-px bg-purple-100" />
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {transportationServices.map(service => {
-                            const Icon = serviceIcons[service.name] || Leaf
-                            return (
-                                <Link
-                                    key={service.id}
-                                    href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-purple-50 rounded-2xl border border-purple-100 hover:border-purple-200 hover:shadow-md transition-all group cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
-                                        <Icon size={22} className="text-purple-600" />
-                                    </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {/* Education & Tutoring */}
-            {educationServices.length > 0 && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
-                    <div className="flex items-center gap-3 mb-5">
-                        <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full">
-                            📚 Education & Tutoring
-                        </span>
-                        <div className="flex-1 h-px bg-amber-100" />
-                    </div>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-                        {educationServices.map(service => {
-                            const Icon = serviceIcons[service.name] || Leaf
-                            return (
-                                <Link
-                                    key={service.id}
-                                    href={`/services/${service.slug}`}
-                                    className="flex flex-col items-center gap-3 p-5 bg-amber-50 rounded-2xl border border-amber-100 hover:border-amber-200 hover:shadow-md transition-all group cursor-pointer"
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
-                                        <Icon size={22} className="text-amber-600" />
-                                    </div>
-                                    <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
-                                </Link>
-                            )
-                        })}
-                    </div>
-                </div>
-            )}
-
-            {/* Empty state */}
-            {filtered.length === 0 && (
+            ) : filtered.length === 0 ? (
                 <div className="text-center py-20">
                     <p className="text-slate-500 text-sm">No services found matching your search.</p>
                     <button onClick={() => setSearch('')} className="mt-3 text-emerald-600 text-sm font-medium hover:underline">
                         Clear search
                     </button>
                 </div>
+            ) : (
+                grouped.map(([category, items]) => (
+                    <div key={category} className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-800 mb-1">{category}</h2>
+                        <p className="text-sm text-slate-500 mb-5">Professional services to get the job done</p>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                            {items.map((service) => {
+                                const Icon = serviceIcons[service.name] || Leaf
+                                return (
+                                    <Link
+                                        key={service.id}
+                                        href={`/services/${service.id}`}
+                                        className="flex flex-col items-center gap-3 p-5 bg-[#c8e6c9] rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all group cursor-pointer"
+                                    >
+                                        <div className="w-12 h-12 rounded-full bg-white/70 flex items-center justify-center group-hover:bg-white transition-colors">
+                                            <Icon size={22} className="text-emerald-600" />
+                                        </div>
+                                        <span className="text-xs font-semibold text-slate-700 text-center leading-tight">{service.name}</span>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </div>
+                ))
             )}
         </div>
     )

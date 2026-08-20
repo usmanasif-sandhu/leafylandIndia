@@ -1,7 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { products } from '@/lib/data/products'
 import ProductDetails from '@/components/ProductDetails'
 import ProductDescription from '@/components/ProductDescription'
 import Link from 'next/link'
@@ -9,9 +8,37 @@ import { ChevronLeft } from 'lucide-react'
 
 const ProductPage = () => {
     const { productId } = useParams()
-    const product = products.find(p => p.id === productId)
+    const [product, setProduct] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [notFound, setNotFound] = useState(false)
 
-    if (!product) {
+    useEffect(() => {
+        setLoading(true)
+        setNotFound(false)
+        setProduct(null)
+        fetch(`/api/products/${productId}`)
+            .then(async (res) => {
+                if (res.status === 404) {
+                    setNotFound(true)
+                    return null
+                }
+                if (!res.ok) throw new Error('Failed to load')
+                return res.json()
+            })
+            .then((data) => { if (data) setProduct(data) })
+            .catch(() => setNotFound(true))
+            .finally(() => setLoading(false))
+    }, [productId])
+
+    if (loading) {
+        return (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 text-center">
+                <p className="text-slate-500 text-sm">Loading…</p>
+            </div>
+        )
+    }
+
+    if (notFound || !product) {
         return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 text-center">
                 <p className="text-slate-500 text-sm">Product not found.</p>

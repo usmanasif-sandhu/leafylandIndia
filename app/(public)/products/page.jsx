@@ -1,8 +1,7 @@
 'use client'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
-import { productCategories } from "@/lib/data/products"
 import { Search, X, Leaf, Store } from 'lucide-react'
 
 function ProductsContent() {
@@ -31,6 +30,11 @@ function ProductsContent() {
     useEffect(() => {
         setSearch(urlSearch)
     }, [urlSearch])
+
+    const categories = useMemo(() => {
+        const set = new Set(products.map((p) => p.category).filter(Boolean))
+        return ['All', ...Array.from(set)]
+    }, [products])
 
     const allFiltered = products.filter(p => {
         const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
@@ -86,7 +90,7 @@ function ProductsContent() {
             </div>
 
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-4">
-                {['All', ...productCategories].map(cat => (
+                {categories.map(cat => (
                     <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}

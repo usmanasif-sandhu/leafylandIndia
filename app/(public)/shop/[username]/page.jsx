@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { MailIcon, MapPinIcon } from "lucide-react"
 import Loading from "@/components/Loading"
 import Image from "next/image"
-import { dummyStoreData, productDummyData } from "@/assets/assets"
 
 export default function StoreShop() {
 
@@ -13,20 +12,42 @@ export default function StoreShop() {
     const [products, setProducts] = useState([])
     const [storeInfo, setStoreInfo] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [notFound, setNotFound] = useState(false)
 
     const fetchStoreData = async () => {
-        setStoreInfo(dummyStoreData)
-        setProducts(productDummyData)
-        setLoading(false)
+        try {
+            const res = await fetch(`/api/shops/${username}`)
+            if (res.status === 404) {
+                setNotFound(true)
+                return
+            }
+            if (!res.ok) throw new Error('Failed to load')
+            const data = await res.json()
+            setStoreInfo(data)
+            setProducts(data.products || [])
+        } catch {
+            setNotFound(true)
+        } finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
         fetchStoreData()
-    }, [])
+    }, [username])
 
-    return !loading ? (
+    if (loading) return <Loading />
+
+    if (notFound || !storeInfo) {
+        return (
+            <div className="min-h-[70vh] mx-6 flex flex-col items-center justify-center text-center">
+                <p className="text-slate-500 text-sm">Store not found.</p>
+            </div>
+        )
+    }
+
+    return (
         <div className="min-h-[70vh] mx-6">
-
             {/* Store Info Banner */}
             {storeInfo && (
                 <div className="max-w-7xl mx-auto bg-slate-50 rounded-xl p-6 md:p-10 mt-6 flex flex-col md:flex-row items-center gap-6 shadow-xs">
@@ -50,7 +71,7 @@ export default function StoreShop() {
                                 <MailIcon className="w-4 h-4 text-gray-500 mr-2" />
                                 <span>{storeInfo.email}</span>
                             </div>
-                           
+
                         </div>
                     </div>
                 </div>
@@ -64,5 +85,5 @@ export default function StoreShop() {
                 </div>
             </div>
         </div>
-    ) : <Loading />
+    )
 }

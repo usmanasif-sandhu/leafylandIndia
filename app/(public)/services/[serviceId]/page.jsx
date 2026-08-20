@@ -1,15 +1,43 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { services } from '@/lib/data/services'
 import Link from 'next/link'
 import { ChevronLeft, MapPin, Star, Clock, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 
 const ServicePage = () => {
     const { serviceId } = useParams()
-    const service = services.find(s => s.id === serviceId)
+    const [service, setService] = useState(null)
+    const [loading, setLoading] = useState(true)
+    const [notFound, setNotFound] = useState(false)
 
-    if (!service) {
+    useEffect(() => {
+        setLoading(true)
+        setNotFound(false)
+        setService(null)
+        fetch(`/api/services/${serviceId}`)
+            .then(async (res) => {
+                if (res.status === 404) {
+                    setNotFound(true)
+                    return null
+                }
+                if (!res.ok) throw new Error('Failed to load')
+                return res.json()
+            })
+            .then((data) => { if (data) setService(data) })
+            .catch(() => setNotFound(true))
+            .finally(() => setLoading(false))
+    }, [serviceId])
+
+    if (loading) {
+        return (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 text-center">
+                <p className="text-slate-500 text-sm">Loading…</p>
+            </div>
+        )
+    }
+
+    if (notFound || !service) {
         return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 text-center">
                 <p className="text-slate-500 text-sm">Service not found.</p>
@@ -23,6 +51,8 @@ const ServicePage = () => {
     const rating = service.rating?.length
         ? Math.round(service.rating.reduce((acc, r) => acc + r.rating, 0) / service.rating.length)
         : 0
+
+    const providerName = service.store?.name || 'Provider'
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
@@ -58,6 +88,11 @@ const ServicePage = () => {
                                 <Star size={14} fill="#059669" className="text-emerald-600" /> {rating}
                             </span>
                         )}
+                        {service.duration && (
+                            <span className="flex items-center gap-1 text-sm text-slate-500">
+                                <Clock size={14} /> {service.duration}
+                            </span>
+                        )}
                     </div>
 
                     <div className="mt-6">
@@ -70,10 +105,10 @@ const ServicePage = () => {
                     {/* Provider */}
                     <div className="flex items-center gap-3 mt-6 p-4 bg-slate-50 rounded-xl">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-semibold text-blue-700">{service.providerName?.[0] || 'P'}</span>
+                            <span className="text-sm font-semibold text-blue-700">{providerName?.[0] || 'P'}</span>
                         </div>
                         <div>
-                            <p className="text-sm font-medium text-slate-700">{service.providerName}</p>
+                            <p className="text-sm font-medium text-slate-700">{providerName}</p>
                             <p className="text-xs text-slate-400">Service Provider</p>
                         </div>
                     </div>

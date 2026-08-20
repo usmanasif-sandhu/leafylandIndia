@@ -1,29 +1,36 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import PropertyCard from "@/components/PropertyCard"
-import { properties, propertyTypes } from "@/lib/data/properties"
 import { Search } from 'lucide-react'
 
 const PropertiesPage = () => {
     const [search, setSearch] = useState('')
     const [selectedType, setSelectedType] = useState('All')
     const [listingFilter, setListingFilter] = useState('All')
+    const [properties, setProperties] = useState([])
+    const [loading, setLoading] = useState(true)
 
-    const allFiltered = properties.filter(p => {
+    useEffect(() => {
+        fetch('/api/properties')
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setProperties(data) })
+            .finally(() => setLoading(false))
+    }, [])
+
+    const propertyTypes = useMemo(() => {
+        const set = new Set(properties.map((p) => p.propertyType).filter(Boolean))
+        return ['All', ...Array.from(set)]
+    }, [properties])
+
+    const filtered = properties.filter(p => {
         const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase())
-        const matchType = selectedType === 'All' || p.listingType === selectedType
-        const matchListing = listingFilter === 'All' || p.type === listingFilter
+        const matchType = selectedType === 'All' || p.propertyType === selectedType
+        const matchListing = listingFilter === 'All' || p.listingType === listingFilter
         return matchSearch && matchType && matchListing
     })
 
-    // Pin LeafyLand properties at top, marketplace below
-    const filtered = [
-        ...allFiltered.filter(p => !p.marketplace),
-        ...allFiltered.filter(p => p.marketplace),
-    ]
-
-    const leafyCount = filtered.filter(p => !p.marketplace).length
-    const marketplaceCount = filtered.filter(p => p.marketplace).length
+    const leafyCount = filtered.length
+    const marketplaceCount = 0
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
@@ -31,8 +38,6 @@ const PropertiesPage = () => {
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Properties</h1>
                 <p className="text-sm text-slate-500 mt-1">
                     {leafyCount > 0 && <span className="text-emerald-600 font-medium">{leafyCount} LeafyLand</span>}
-                    {leafyCount > 0 && marketplaceCount > 0 && <span> + </span>}
-                    {marketplaceCount > 0 && <span className="text-blue-600 font-medium">{marketplaceCount} Marketplace</span>}
                     {' '}listings found
                 </p>
             </div>
@@ -49,9 +54,9 @@ const PropertiesPage = () => {
                 />
             </div>
 
-            {/* Filters */}
+            {/* Listing filter (SALE / RENT) */}
             <div className="flex flex-wrap gap-2 mb-4">
-                {['All', 'SALE', 'RENT'].map(type => (
+                {['All', 'SALE', 'RENT'].map((type) => (
                     <button
                         key={type}
                         onClick={() => setListingFilter(type)}
@@ -66,8 +71,9 @@ const PropertiesPage = () => {
                 ))}
             </div>
 
+            {/* Property type filter (derived from data) */}
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-4 mb-4">
-                {['All', ...propertyTypes].map(type => (
+                {propertyTypes.map((type) => (
                     <button
                         key={type}
                         onClick={() => setSelectedType(type)}
@@ -82,8 +88,11 @@ const PropertiesPage = () => {
                 ))}
             </div>
 
-            {/* Property Grid */}
-            {filtered.length === 0 ? (
+            {loading ? (
+                <div className="text-center py-20">
+                    <p className="text-slate-500 text-sm">Loading properties…</p>
+                </div>
+            ) : filtered.length === 0 ? (
                 <div className="text-center py-20">
                     <p className="text-slate-500 text-sm">No properties found matching your criteria.</p>
                     <button onClick={() => { setSearch(''); setSelectedType('All'); setListingFilter('All') }} className="mt-3 text-amber-600 text-sm font-medium hover:underline">
@@ -92,7 +101,6 @@ const PropertiesPage = () => {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    {/* LeafyLand Properties */}
                     {leafyCount > 0 && (
                         <div>
                             <div className="flex items-center gap-2 mb-3">
@@ -102,14 +110,13 @@ const PropertiesPage = () => {
                                 <div className="flex-1 h-px bg-emerald-100" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                                {filtered.filter(p => !p.marketplace).map(property => (
+                                {filtered.map((property) => (
                                     <PropertyCard key={property.id} property={property} />
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {/* Marketplace Properties */}
                     {marketplaceCount > 0 && (
                         <div>
                             <div className="flex items-center gap-2 mb-3">
@@ -119,7 +126,7 @@ const PropertiesPage = () => {
                                 <div className="flex-1 h-px bg-blue-100" />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-                                {filtered.filter(p => p.marketplace).map(property => (
+                                {filtered.filter(p => p.marketplace).map((property) => (
                                     <PropertyCard key={property.id} property={property} />
                                 ))}
                             </div>

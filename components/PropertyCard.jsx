@@ -16,8 +16,8 @@ const PropertyCard = ({ property }) => {
                     src={property.images?.[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=224&h=168&fit=crop'}
                     alt={property.title}
                 />
-                <span className={`absolute top-2 left-2 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md ${property.type === 'SALE' ? 'bg-amber-500' : 'bg-blue-500'}`}>
-                    {property.type === 'SALE' ? 'FOR SALE' : 'FOR RENT'}
+                <span className={`absolute top-2 left-2 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md ${property.listingType === 'SALE' ? 'bg-amber-500' : 'bg-blue-500'}`}>
+                    {property.listingType === 'SALE' ? 'FOR SALE' : 'FOR RENT'}
                 </span>
                 <button className="absolute bottom-2 right-2 bg-white/90 hover:bg-amber-500 hover:text-white text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-md transition-all active:scale-95 border border-amber-200 hover:border-amber-500">
                     ENQUIRE
@@ -30,7 +30,7 @@ const PropertyCard = ({ property }) => {
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                     <span className="flex items-center gap-0.5 text-[10px] text-slate-500">
-                        <Maximize size={9} /> {property.area}
+                        <Maximize size={9} /> {property.landSize}
                     </span>
                     <span className="flex items-center gap-0.5 text-[10px] text-slate-500">
                         <BedDouble size={9} /> {property.listingType}
@@ -38,7 +38,7 @@ const PropertyCard = ({ property }) => {
                 </div>
                 <p className="text-sm font-bold text-slate-800 mt-1">
                     {currency}{property.price.toLocaleString()}
-                    {property.type === 'RENT' && <span className="text-[10px] font-normal text-slate-500">/mo</span>}
+                    {property.listingType === 'RENT' && <span className="text-[10px] font-normal text-slate-500">/mo</span>}
                 </p>
             </div>
         </Link>
