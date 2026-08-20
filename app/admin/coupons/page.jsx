@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import { Check, X } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -8,16 +8,18 @@ import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import EmptyState from '@/components/admin/EmptyState'
 
-const defaultCoupons = [
-  { code: 'WELCOME10', description: 'Welcome discount for new customers', discount: 10, isPublic: true, forNewUser: true, forMember: false, expiresAt: '2026-12-31' },
-  { code: 'SUMMER20', description: 'Summer sale discount', discount: 20, isPublic: true, forNewUser: false, forMember: false, expiresAt: '2026-08-31' },
-  { code: 'MEMBER15', description: 'Exclusive member discount', discount: 15, isPublic: false, forNewUser: false, forMember: true, expiresAt: '2026-12-31' },
-  { code: 'FESTIVE25', description: 'Festive season special offer', discount: 25, isPublic: true, forNewUser: false, forMember: false, expiresAt: '2025-12-31' },
-  { code: 'FIRST50', description: 'First order discount for new users', discount: 50, isPublic: false, forNewUser: true, forMember: false, expiresAt: '2026-06-30' },
-]
-
 export default function AdminCoupons() {
-  const [coupons, setCoupons] = useState(defaultCoupons)
+  const [coupons, setCoupons] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const load = () => {
+    fetch('/api/admin/coupons')
+      .then((r) => r.json())
+      .then((data) => { if (Array.isArray(data)) setCoupons(data) })
+      .finally(() => setLoading(false))
+  }
+
+  useEffect(() => { load() }, [])
 
   const [newCoupon, setNewCoupon] = useState({
     code: '',
@@ -37,7 +39,7 @@ export default function AdminCoupons() {
     setNewCoupon({ ...newCoupon, [field]: !newCoupon[field] })
   }
 
-  const handleAddCoupon = (e) => {
+  const handleAddCoupon = async (e) => {
     e.preventDefault()
 
     const exists = coupons.some((c) => c.code.toUpperCase() === newCoupon.code.toUpperCase())
@@ -46,35 +48,52 @@ export default function AdminCoupons() {
       return
     }
 
-    setCoupons([
-      {
-        code: newCoupon.code.toUpperCase(),
-        description: newCoupon.description,
-        discount: Number(newCoupon.discount),
-        isPublic: newCoupon.isPublic,
-        forNewUser: newCoupon.forNewUser,
-        forMember: newCoupon.forMember,
-        expiresAt: newCoupon.expiresAt,
-      },
-      ...coupons,
-    ])
-
-    toast.success('Coupon added successfully')
-
-    setNewCoupon({
-      code: '',
-      description: '',
-      discount: '',
-      forNewUser: false,
-      forMember: false,
-      isPublic: false,
-      expiresAt: format(new Date(), 'yyyy-MM-dd'),
-    })
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newCoupon,
+          discount: Number(newCoupon.discount),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Could not create coupon')
+        return
+      }
+      toast.success('Coupon added successfully')
+      setCoupons((prev) => [data, ...prev])
+      setNewCoupon({
+        code: '',
+        description: '',
+        discount: '',
+        forNewUser: false,
+        forMember: false,
+        isPublic: false,
+        expiresAt: format(new Date(), 'yyyy-MM-dd'),
+      })
+    } catch {
+      toast.error('Could not create coupon')
+    }
   }
 
-  const handleDelete = (code) => {
-    setCoupons(coupons.filter((c) => c.code !== code))
-    toast.success('Coupon deleted')
+  const handleDelete = async (code) => {
+    try {
+      const res = await fetch('/api/admin/coupons', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      })
+      if (!res.ok) {
+        toast.error('Could not delete coupon')
+        return
+      }
+      setCoupons((prev) => prev.filter((c) => c.code !== code))
+      toast.success('Coupon deleted')
+    } catch {
+      toast.error('Could not delete coupon')
+    }
   }
 
   const columns = [
@@ -230,7 +249,9 @@ export default function AdminCoupons() {
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 className="text-lg font-bold text-slate-800 mb-5">All Coupons</h2>
 
-        {coupons.length === 0 ? (
+        {loading ? (
+          <p className="text-sm text-slate-500 py-6">Loading coupons…</p>
+        ) : coupons.length === 0 ? (
           <EmptyState
             icon={X}
             title="No coupons yet"
