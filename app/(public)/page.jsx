@@ -6,9 +6,6 @@ import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import PropertyCard from "@/components/PropertyCard";
 import ComingSoonModal from "@/components/ComingSoonModal";
-import { products as dummyProducts } from "@/lib/data/products";
-import { services as dummyServices } from "@/lib/data/services";
-import { properties as dummyProperties } from "@/lib/data/properties";
 import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck, Sprout, TreePine } from "lucide-react";
 import Link from "next/link";
 
@@ -42,9 +39,9 @@ const serviceIcons = {
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All')
     const [comingSoonCategory, setComingSoonCategory] = useState(null)
-    const [products, setProducts] = useState(dummyProducts)
-    const [services, setServices] = useState(dummyServices)
-    const [properties, setProperties] = useState(dummyProperties)
+    const [products, setProducts] = useState([])
+    const [services, setServices] = useState([])
+    const [properties, setProperties] = useState([])
 
     useEffect(() => {
         Promise.all([
@@ -52,9 +49,9 @@ export default function Home() {
             fetch('/api/services').then((r) => r.json()),
             fetch('/api/properties').then((r) => r.json()),
         ]).then(([p, s, pr]) => {
-            if (Array.isArray(p) && p.length) setProducts(p)
-            if (Array.isArray(s) && s.length) setServices(s)
-            if (Array.isArray(pr) && pr.length) setProperties(pr)
+            if (Array.isArray(p)) setProducts(p)
+            if (Array.isArray(s)) setServices(s)
+            if (Array.isArray(pr)) setProperties(pr)
         }).catch(() => {})
     }, [])
 
@@ -214,7 +211,7 @@ export default function Home() {
                                 return (
                                     <Link
                                         key={service.id}
-                                        href={`/services/${service.slug}`}
+                                        href={`/services/${service.id}`}
                                         className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group"
                                     >
                                         <div className="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
@@ -246,7 +243,7 @@ export default function Home() {
                                 return (
                                     <Link
                                         key={service.id}
-                                        href={`/services/${service.slug}`}
+                                        href={`/services/${service.id}`}
                                         className="flex flex-col items-center gap-2.5 p-4 bg-white rounded-2xl border border-slate-100 hover:border-emerald-200 hover:shadow-md transition-all group"
                                     >
                                         <div className="w-11 h-11 rounded-full bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
