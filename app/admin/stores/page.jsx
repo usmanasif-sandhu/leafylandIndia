@@ -2,7 +2,6 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { Eye } from 'lucide-react'
-import { storesDummyData } from '@/assets/assets'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
@@ -55,8 +54,9 @@ export default function AdminStores() {
       render: (val) => <StatusBadge status={val} />,
     },
     {
-      key: 'city',
-      label: 'City',
+      key: 'username',
+      label: 'Username',
+      render: (val) => val || '—',
     },
     {
       key: 'isActive',

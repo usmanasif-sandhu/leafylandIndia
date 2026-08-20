@@ -1,20 +1,38 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
-import { services, serviceCategories } from '@/lib/data/services'
 
 export default function ServicesPage() {
+  const [services, setServices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [selectedService, setSelectedService] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/admin/services')
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load services')
+        return res.json()
+      })
+      .then(setServices)
+      .catch((e) => setError(e.message || 'Something went wrong'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const categories = useMemo(() => {
+    const set = new Set(services.map((s) => s.category).filter(Boolean))
+    return ['All', ...Array.from(set)]
+  }, [services])
 
   const filteredData = useMemo(() => {
     if (categoryFilter === 'All') return services
     return services.filter((s) => s.category === categoryFilter)
-  }, [categoryFilter])
+  }, [categoryFilter, services])
 
   const columns = [
     {
@@ -23,12 +41,9 @@ export default function ServicesPage() {
       render: (val) => <span className="font-semibold">{val || 'N/A'}</span>,
     },
     {
-      key: 'storeId',
+      key: 'store',
       label: 'Store',
-      render: (_val, row) => {
-        const num = row.storeId?.replace('store-', '') || '?'
-        return `Store #${num}`
-      },
+      render: (_val, row) => row.store?.name || 'N/A',
     },
     { key: 'category', label: 'Category' },
     {
@@ -70,19 +85,24 @@ export default function ServicesPage() {
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
-          <option value="All">All Categories</option>
-          {serviceCategories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat === 'All' ? 'All Categories' : cat}</option>
           ))}
         </select>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        searchKeys={['name', 'category']}
-        emptyMessage="No services found"
-      />
+      {loading ? (
+        <p className="text-slate-500">Loading services…</p>
+      ) : error ? (
+        <p className="text-red-600">{error}</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          searchKeys={['name', 'category', 'store.name']}
+          emptyMessage="No services found"
+        />
+      )}
 
       <DetailSlideOver
         isOpen={!!selectedService}

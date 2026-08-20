@@ -1,20 +1,38 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
-import { products, productCategories } from '@/lib/data/products'
 
 export default function ProductsPage() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [selectedProduct, setSelectedProduct] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/admin/products')
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load products')
+        return res.json()
+      })
+      .then(setProducts)
+      .catch((e) => setError(e.message || 'Something went wrong'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const categories = useMemo(() => {
+    const set = new Set(products.map((p) => p.category).filter(Boolean))
+    return ['All', ...Array.from(set)]
+  }, [products])
 
   const filteredData = useMemo(() => {
     if (categoryFilter === 'All') return products
     return products.filter((p) => p.category === categoryFilter)
-  }, [categoryFilter])
+  }, [categoryFilter, products])
 
   const columns = [
     {
@@ -30,12 +48,9 @@ export default function ProductsPage() {
     },
     { key: 'name', label: 'Name', render: (val) => <span className="font-semibold">{val || 'N/A'}</span> },
     {
-      key: 'storeId',
+      key: 'storeName',
       label: 'Store',
-      render: (val) => {
-        const num = val?.replace('store-', '') || '?'
-        return `Store #${num}`
-      },
+      render: (val) => val || 'N/A',
     },
     { key: 'category', label: 'Category' },
     {
@@ -72,19 +87,24 @@ export default function ProductsPage() {
           onChange={(e) => setCategoryFilter(e.target.value)}
           className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
-          <option value="All">All Categories</option>
-          {productCategories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat === 'All' ? 'All Categories' : cat}</option>
           ))}
         </select>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        searchKeys={['name', 'category']}
-        emptyMessage="No products found"
-      />
+      {loading ? (
+        <p className="text-slate-500">Loading products…</p>
+      ) : error ? (
+        <p className="text-red-600">{error}</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          searchKeys={['name', 'category', 'storeName']}
+          emptyMessage="No products found"
+        />
+      )}
 
       <DetailSlideOver
         isOpen={!!selectedProduct}
@@ -111,9 +131,7 @@ export default function ProductsPage() {
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Store</h3>
-                <p className="text-sm text-slate-700 mt-1">
-                  Store #{(selectedProduct.storeId?.replace('store-', '') || '?')}
-                </p>
+                <p className="text-sm text-slate-700 mt-1">{selectedProduct.storeName || 'N/A'}</p>
               </div>
             </div>
 

@@ -1,22 +1,27 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
-import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
-import { dummyOrdersData } from '@/lib/data/orders'
 
-const STATUS_FILTERS = [
-  'All',
-  'Order Placed',
-  'Processing',
-  'Shipped',
-  'Delivered',
-  'Cancelled',
-]
+const STATUS_FILTERS = ['All', 'ORDER_PLACED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+
+const ORDER_STATUS = {
+  ORDER_PLACED: { label: 'Order Placed', cls: 'bg-slate-100 text-slate-600' },
+  PROCESSING: { label: 'Processing', cls: 'bg-amber-100 text-amber-700' },
+  SHIPPED: { label: 'Shipped', cls: 'bg-blue-100 text-blue-700' },
+  DELIVERED: { label: 'Delivered', cls: 'bg-emerald-100 text-emerald-700' },
+  CANCELLED: { label: 'Cancelled', cls: 'bg-red-100 text-red-700' },
+}
+
+const StatusPill = ({ status }) => {
+  const s = ORDER_STATUS[status] || { label: status, cls: 'bg-slate-100 text-slate-600' }
+  return <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full ${s.cls}`}>{s.label}</span>
+}
 
 function formatDate(dateStr) {
+  if (!dateStr) return '—'
   return new Date(dateStr).toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'short',
@@ -25,18 +30,31 @@ function formatDate(dateStr) {
 }
 
 function formatCurrency(amount) {
-  return `₹${amount.toLocaleString('en-IN')}`
+  return `₹${Number(amount || 0).toLocaleString('en-IN')}`
 }
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
 
+  useEffect(() => {
+    fetch('/api/admin/orders')
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load orders')
+        return res.json()
+      })
+      .then(setOrders)
+      .catch((e) => setError(e.message || 'Something went wrong'))
+      .finally(() => setLoading(false))
+  }, [])
+
   const filteredData = useMemo(() => {
-    if (statusFilter === 'All') return dummyOrdersData
-    const key = statusFilter.toLowerCase().replace(' ', '_')
-    return dummyOrdersData.filter((o) => o.status === key)
-  }, [statusFilter])
+    if (statusFilter === 'All') return orders
+    return orders.filter((o) => o.status === statusFilter)
+  }, [statusFilter, orders])
 
   const columns = [
     {
@@ -46,14 +64,8 @@ export default function OrdersPage() {
         <span className="font-mono text-sm font-semibold text-slate-800">{val}</span>
       ),
     },
-    {
-      key: 'customer',
-      label: 'Customer',
-    },
-    {
-      key: 'store',
-      label: 'Store',
-    },
+    { key: 'customer', label: 'Customer' },
+    { key: 'store', label: 'Store' },
     {
       key: 'total',
       label: 'Total',
@@ -64,7 +76,7 @@ export default function OrdersPage() {
     {
       key: 'status',
       label: 'Status',
-      render: (val) => <StatusBadge status={val.replace('_', ' ')} />,
+      render: (val) => <StatusPill status={val} />,
     },
     {
       key: 'date',
@@ -97,18 +109,24 @@ export default function OrdersPage() {
         >
           {STATUS_FILTERS.map((s) => (
             <option key={s} value={s}>
-              {s === 'All' ? 'All Statuses' : s}
+              {s === 'All' ? 'All Statuses' : ORDER_STATUS[s]?.label || s}
             </option>
           ))}
         </select>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        searchKeys={['id', 'customer', 'store']}
-        emptyMessage="No orders found"
-      />
+      {loading ? (
+        <p className="text-slate-500">Loading orders…</p>
+      ) : error ? (
+        <p className="text-red-600">{error}</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          searchKeys={['id', 'customer', 'store']}
+          emptyMessage="No orders found"
+        />
+      )}
 
       <DetailSlideOver
         isOpen={!!selectedOrder}
@@ -120,15 +138,15 @@ export default function OrdersPage() {
             <div className="pb-4 border-b border-slate-100">
               <span className="font-mono text-lg font-bold text-slate-800">{selectedOrder.id}</span>
               <div className="mt-1">
-                <StatusBadge status={selectedOrder.status.replace('_', ' ')} />
+                <StatusPill status={selectedOrder.status} />
               </div>
             </div>
 
             <div className="space-y-3">
               <DetailRow label="Customer" value={selectedOrder.customer} />
               <DetailRow label="Store" value={selectedOrder.store} />
-              <DetailRow label="Order Date" value={formatDate(selectedOrder.date)} />
-              <DetailRow label="Payment Method" value={selectedOrder.paymentMethod} />
+              <DetailRow label="Order Date" value={formatDate(selectedOrder.date || selectedOrder.createdAt)} />
+              <DetailRow label="Payment Method" value={selectedOrder.paymentMethod || selectedOrder.payment} />
               <DetailRow
                 label="Payment Status"
                 value={
@@ -142,7 +160,7 @@ export default function OrdersPage() {
             <div>
               <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Items</h3>
               <div className="bg-slate-50 rounded-lg divide-y divide-slate-100">
-                {selectedOrder.items.map((item, i) => (
+                {(selectedOrder.items || []).map((item, i) => (
                   <div key={i} className="flex items-center justify-between px-4 py-3">
                     <span className="text-sm text-slate-700">
                       {item.name} <span className="text-slate-400">× {item.quantity}</span>

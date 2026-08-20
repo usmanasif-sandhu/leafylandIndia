@@ -1,30 +1,43 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
-import { properties } from '@/lib/data/properties'
 
-const STATUS_OPTIONS = ['All', 'Pending', 'Approved', 'Rejected']
+const STATUS_OPTIONS = ['All', 'pending', 'approved', 'rejected']
 
 const TYPE_COLORS = {
   Farmhouse: 'bg-emerald-100 text-emerald-700',
   Farmland: 'bg-amber-100 text-amber-700',
   Cottage: 'bg-amber-100 text-amber-700',
   'Nursery Land': 'bg-slate-100 text-slate-600',
-  'Agricultural Plot': 'bg-amber-100 text-amber-700',
+  'Agricultural Land': 'bg-amber-100 text-amber-700',
 }
 
 export default function PropertiesPage() {
+  const [properties, setProperties] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
   const [selectedProperty, setSelectedProperty] = useState(null)
 
+  useEffect(() => {
+    fetch('/api/admin/properties')
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Failed to load properties')
+        return res.json()
+      })
+      .then(setProperties)
+      .catch((e) => setError(e.message || 'Something went wrong'))
+      .finally(() => setLoading(false))
+  }, [])
+
   const filteredData = useMemo(() => {
     if (statusFilter === 'All') return properties
-    return properties.filter((p) => p.status === statusFilter)
-  }, [statusFilter])
+    return properties.filter((p) => (p.status || 'pending') === statusFilter)
+  }, [statusFilter, properties])
 
   const columns = [
     {
@@ -33,15 +46,12 @@ export default function PropertiesPage() {
       render: (val) => <span className="font-semibold">{val || 'N/A'}</span>,
     },
     {
-      key: 'storeId',
+      key: 'store',
       label: 'Store',
-      render: (_val, row) => {
-        const num = row.storeId?.replace('store-', '') || '?'
-        return `Store #${num}`
-      },
+      render: (_val, row) => row.store?.name || 'N/A',
     },
     {
-      key: 'type',
+      key: 'propertyType',
       label: 'Type',
       render: (val) => {
         const color = TYPE_COLORS[val] || 'bg-slate-100 text-slate-600'
@@ -97,12 +107,18 @@ export default function PropertiesPage() {
         </select>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        searchKeys={['title', 'type']}
-        emptyMessage="No properties found"
-      />
+      {loading ? (
+        <p className="text-slate-500">Loading properties…</p>
+      ) : error ? (
+        <p className="text-red-600">{error}</p>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          searchKeys={['title', 'propertyType', 'location']}
+          emptyMessage="No properties found"
+        />
+      )}
 
       <DetailSlideOver
         isOpen={!!selectedProperty}
@@ -125,7 +141,7 @@ export default function PropertiesPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</h3>
-                <p className="text-sm text-slate-700 mt-1">{selectedProperty.type || 'N/A'}</p>
+                <p className="text-sm text-slate-700 mt-1">{selectedProperty.propertyType || 'N/A'}</p>
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Listing</h3>
@@ -149,7 +165,7 @@ export default function PropertiesPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Land Size</h3>
-                <p className="text-sm text-slate-700 mt-1">{selectedProperty.area || 'N/A'}</p>
+                <p className="text-sm text-slate-700 mt-1">{selectedProperty.landSize || 'N/A'}</p>
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Covered Area</h3>
@@ -171,9 +187,9 @@ export default function PropertiesPage() {
             <div>
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Features</h3>
               <div className="mt-1">
-                {(selectedProperty.amenities || []).length > 0 ? (
+                {(selectedProperty.features || []).length > 0 ? (
                   <p className="text-sm text-slate-700">
-                    {selectedProperty.amenities.join(', ')}
+                    {selectedProperty.features.join(', ')}
                   </p>
                 ) : (
                   <p className="text-sm text-slate-500">N/A</p>
