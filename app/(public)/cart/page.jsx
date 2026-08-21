@@ -107,9 +107,9 @@ export default function Cart() {
                                 <span>{currency}{totalPrice.toLocaleString()}</span>
                             </div>
                         </div>
-                        <button className="w-full mt-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm transition-colors">
+                        <Link href="/checkout" className="block w-full mt-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm transition-colors text-center">
                             Proceed to Checkout
-                        </button>
+                        </Link>
                         <Link href="/products" className="flex items-center justify-center gap-1 mt-3 text-xs text-emerald-600 font-medium hover:underline">
                             Continue Shopping <ChevronRight size={14} />
                         </Link>
