@@ -134,7 +134,7 @@ model Order {
     // Relations
     user    User    @relation("BuyerRelation", fields: [userId], references: [id])
     store   Store   @relation(fields: [storeId], references: [id])
-    address Address? @relation(fields: [addressId], references: [id])
+    address Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
 }
 
 // Required for creating an OrderItem: orderId, productId, quantity, price

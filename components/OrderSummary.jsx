@@ -8,7 +8,7 @@ import { clearCart } from '@/lib/features/cart/cartSlice'
 import AddressPicker from './AddressPicker'
 
 const PAYMENT_METHODS = [
-    { id: 'COD', label: 'Cash on Delivery' },
+    { id: 'COD', label: 'Cash on Delivery', disabled: true, comingSoon: true },
     { id: 'STRIPE', label: 'Stripe (Card)' },
     { id: 'UPI', label: 'UPI' },
     { id: 'BANK_TRANSFER', label: 'Bank Transfer' },
@@ -20,7 +20,7 @@ const OrderSummary = ({ totalPrice, items }) => {
     const router = useRouter()
     const dispatch = useDispatch()
 
-    const [paymentMethod, setPaymentMethod] = useState('COD')
+    const [paymentMethod, setPaymentMethod] = useState(PAYMENT_METHODS.find((m) => !m.disabled)?.id || 'COD')
     const [selectedAddressId, setSelectedAddressId] = useState(null)
     const [couponCodeInput, setCouponCodeInput] = useState('')
     const [coupon, setCoupon] = useState('')
@@ -90,11 +90,17 @@ const OrderSummary = ({ totalPrice, items }) => {
                             type="radio"
                             id={m.id}
                             name="payment"
-                            onChange={() => setPaymentMethod(m.id)}
+                            disabled={m.disabled}
+                            onChange={() => !m.disabled && setPaymentMethod(m.id)}
                             checked={paymentMethod === m.id}
-                            className='accent-emerald-700'
+                            className='accent-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed'
                         />
-                        <label htmlFor={m.id} className='cursor-pointer'>{m.label}</label>
+                        <label
+                            htmlFor={m.id}
+                            className={`cursor-pointer ${m.disabled ? 'text-slate-400 cursor-not-allowed' : ''}`}
+                        >
+                            {m.label}{m.comingSoon ? ' (coming soon)' : ''}
+                        </label>
                     </div>
                 ))}
             </div>
