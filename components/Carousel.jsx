@@ -1,6 +1,10 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, Sprout, TreePine, Flower2, Leaf, Shovel, FlaskConical, Package, Home as HomeIcon, ArrowRight, Truck, ShieldCheck, Star, Compass, Bot, CalendarCheck, BadgeCheck, Droplets, Scissors, Hammer, Zap, Sparkles, Building, Wrench, Fence } from 'lucide-react'
+import {
+    ChevronLeft, ChevronRight, Leaf, FlaskConical, Home as HomeIcon, ArrowRight,
+    Truck, ShieldCheck, Star, Compass, Bot, CalendarCheck, BadgeCheck,
+    Droplets, Scissors, Wrench,
+} from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -8,105 +12,82 @@ const productImages = [
     'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=400&h=400&fit=crop',
     'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?w=400&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=400&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400&h=400&fit=crop',
-    'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop',
 ]
 
-const slidePad = 'px-12 sm:px-14 md:px-12 lg:px-20'
+const THEME = 'linear-gradient(145deg, #043b2e 0%, #065f46 52%, #047857 100%)'
+const pad = 'px-5 sm:px-10 md:px-14 lg:px-20'
 
-function CategorySlide({ onComingSoon }) {
-    const leafyCards = [
-        { name: 'Plants', icon: Leaf, href: '/products?category=Plants', color: 'bg-emerald-500' },
-        { name: 'Garden Tools', icon: Wrench, href: '/products?category=Gardening', color: 'bg-lime-500' },
-        { name: 'Farmhouses', icon: HomeIcon, href: '/properties', color: 'bg-emerald-600' },
-        { name: 'Landscaping', icon: Scissors, href: '/services', color: 'bg-emerald-600' },
-        { name: 'Fertilizers', icon: FlaskConical, href: '/products?category=Soil+%26+Fertilizers', color: 'bg-lime-600' },
-    ]
-    const marketplaceCards = [
-        { name: 'Electronics', icon: Package, href: '/products?category=Electronics', color: 'bg-emerald-500', marketplace: true },
-        { name: 'Mobile', icon: Leaf, href: '/products?category=Mobile+Phones', color: 'bg-lime-500', marketplace: true },
-        { name: 'Fashion', icon: Leaf, href: '/products?category=Fashion', color: 'bg-emerald-600', marketplace: true },
-        { name: 'Home', icon: HomeIcon, href: '/products?category=Home+%26+Kitchen', color: 'bg-lime-600', marketplace: true },
-        { name: 'Sports', icon: Wrench, href: '/products?category=Sports+%26+Outdoors', color: 'bg-emerald-500', marketplace: true },
-    ]
-    const cards = [...leafyCards, ...marketplaceCards]
+function Glow() {
     return (
-        <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #90ee90 0%, #b2f5b2 50%, #90ee90 100%)' }}>
-            <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-green-300/40 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-emerald-300/40 blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-300/30 blur-3xl" />
+        <>
+            <div className="absolute -top-16 -right-10 w-64 h-64 rounded-full bg-emerald-400/15 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-lime-300/10 blur-3xl pointer-events-none" />
+        </>
+    )
+}
 
-            <div className={`max-w-7xl mx-auto ${slidePad} h-full flex flex-col py-4 sm:py-5 relative z-10`}>
-                <div className="text-center shrink-0">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-800">Browse by Category</h1>
-                    <p className="text-sm sm:text-base text-slate-500 mt-1">Plants, garden & everything else</p>
-                </div>
+function Tile({ href, icon: Icon, title }) {
+    return (
+        <Link
+            href={href}
+            className="flex flex-col items-center justify-center gap-1.5 sm:gap-2.5 bg-white rounded-2xl px-2 py-3 sm:p-5 min-h-[88px] sm:min-h-[120px] shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+        >
+            <span className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-emerald-600 flex items-center justify-center shrink-0">
+                <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </span>
+            <span className="text-[10px] sm:text-sm font-semibold text-slate-700 text-center leading-snug line-clamp-2">
+                {title}
+            </span>
+        </Link>
+    )
+}
 
-                <div className="flex-1 flex items-center justify-center">
-                    <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-5 gap-3 sm:gap-4 w-full max-w-4xl">
-                        {cards.map((cat, i) => (
-                            <Link
-                                key={i}
-                                href={cat.href}
-                                className="flex flex-col items-center gap-2 sm:gap-3 bg-white rounded-2xl sm:rounded-3xl shadow-lg p-3 sm:p-5 transition-all duration-300 group hover:shadow-xl hover:-translate-y-0.5"
-                            >
-                                <div className={`w-11 h-11 sm:w-14 sm:h-14 ${cat.color} rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                    <cat.icon size={22} className="text-white sm:hidden" />
-                                    <cat.icon size={28} className="text-white hidden sm:block" />
-                                </div>
-                                <span className="text-[11px] sm:text-sm font-bold text-slate-700 text-center leading-tight">{cat.name}</span>
-                                {cat.marketplace && (
-                                    <span className="text-[8px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">SOON</span>
-                                )}
-                            </Link>
-                        ))}
-                    </div>
-                </div>
+function DarkSlide({ children }) {
+    return (
+        <div className="relative w-full h-full overflow-hidden" style={{ background: THEME }}>
+            <Glow />
+            <div className={`relative z-10 h-full ${pad} pt-5 pb-12 sm:pt-8 sm:pb-14 flex flex-col`}>
+                {children}
             </div>
         </div>
     )
 }
 
 const slides = [
-    // Slide 1 — Hero
     {
         id: 1,
         render: () => (
             <div className="relative w-full h-full overflow-hidden">
-                <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover scale-105" />
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-
-                <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center relative z-10`}>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full py-6 sm:py-8 lg:py-0">
-                        <div className="flex flex-col justify-center">
-                            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight drop-shadow-lg">
-                                Shop, Hire Experts &<br />Grow —<br />
-                                <span className="text-emerald-300">All in One Place.</span>
-                            </h1>
-                            <p className="text-sm sm:text-base text-white/80 mt-3 sm:mt-4 max-w-md leading-relaxed drop-shadow">
-                                Products, services, verified professionals, communities & franchise — India's integrated green ecosystem.
-                            </p>
-                            <div className="flex flex-wrap gap-3 mt-5 sm:mt-6">
-                                <Link href="/products" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-900/30">
-                                    Explore Products <ArrowRight size={16} />
-                                </Link>
-                                <Link href="/services" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-white/90 hover:bg-white text-slate-800 text-sm font-semibold rounded-xl border border-white/50 transition-colors shadow-lg">
-                                    Book a Service <ArrowRight size={16} />
-                                </Link>
-                            </div>
+                <img src="/hero-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/45 to-black/25" />
+                <div className={`relative z-10 h-full ${pad} flex items-center pt-4 pb-12`}>
+                    <div className="w-full max-w-xl">
+                        <p className="text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-emerald-300 mb-2">
+                            LeafyLand
+                        </p>
+                        <h1 className="text-[1.35rem] sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-snug">
+                            Shop, hire experts & grow —{' '}
+                            <span className="text-emerald-300">all in one place</span>
+                        </h1>
+                        <p className="mt-2 sm:mt-3 text-xs sm:text-base text-white/80 max-w-md leading-relaxed">
+                            Plants, services, and properties across India’s green marketplace.
+                        </p>
+                        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-sm">
+                            <Link href="/products" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold rounded-xl transition-colors">
+                                Explore products <ArrowRight size={15} />
+                            </Link>
+                            <Link href="/services" className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold rounded-xl border border-white/25 transition-colors">
+                                Book a service
+                            </Link>
                         </div>
-                        <div className="relative hidden lg:flex items-center justify-center">
-                            <div className="relative w-80 h-72">
-                                <div className="absolute top-0 right-0 w-56 h-48 rounded-2xl overflow-hidden shadow-xl rotate-3 border-4 border-white">
-                                    <Image src={productImages[0]} alt="Plant" fill className="object-cover" />
-                                </div>
-                                <div className="absolute bottom-0 left-0 w-52 h-44 rounded-2xl overflow-hidden shadow-xl -rotate-2 border-4 border-white">
-                                    <Image src={productImages[2]} alt="Garden" fill className="object-cover" />
-                                </div>
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-36 h-36 rounded-2xl overflow-hidden shadow-2xl rotate-1 border-4 border-white z-10">
-                                    <Image src={productImages[1]} alt="Plant" fill className="object-cover" />
-                                </div>
+                    </div>
+                    <div className="hidden lg:flex flex-1 justify-end">
+                        <div className="relative w-72 h-64">
+                            <div className="absolute top-0 right-0 w-52 h-44 rounded-2xl overflow-hidden shadow-xl rotate-2 border-4 border-white/90">
+                                <Image src={productImages[0]} alt="" fill className="object-cover" />
+                            </div>
+                            <div className="absolute bottom-0 left-4 w-48 h-40 rounded-2xl overflow-hidden shadow-xl -rotate-2 border-4 border-white/90">
+                                <Image src={productImages[2]} alt="" fill className="object-cover" />
                             </div>
                         </div>
                     </div>
@@ -114,229 +95,169 @@ const slides = [
             </div>
         ),
     },
-    // Slide 2 — Categories
     {
         id: 2,
-        render: () => <CategorySlide />,
+        render: () => (
+            <DarkSlide>
+                <div className="text-center shrink-0 mb-3 sm:mb-6">
+                    <h2 className="text-lg sm:text-3xl lg:text-4xl font-bold text-white">Browse by category</h2>
+                    <p className="text-[11px] sm:text-sm text-emerald-200/90 mt-1">Plants, garden & property</p>
+                </div>
+                <div className="flex-1 grid grid-cols-3 gap-2 sm:gap-4 content-center max-w-3xl mx-auto w-full min-h-0">
+                    <Tile href="/products?category=Plants" icon={Leaf} title="Plants" />
+                    <Tile href="/products?category=Gardening" icon={Wrench} title="Garden tools" />
+                    <Tile href="/properties" icon={HomeIcon} title="Farmhouses" />
+                    <Tile href="/services" icon={Scissors} title="Landscaping" />
+                    <Tile href="/products?category=Soil+%26+Fertilizers" icon={FlaskConical} title="Fertilizers" />
+                    <Tile href="/products?category=Gardening" icon={Droplets} title="Irrigation" />
+                </div>
+            </DarkSlide>
+        ),
     },
-    // Slide 3 — Services
     {
         id: 3,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
-                <div className="absolute top-0 left-0 w-80 h-80 rounded-full bg-emerald-400/20 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-emerald-400/20 blur-3xl" />
-                <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-lime-400/10 blur-3xl" />
-
-                <div className={`max-w-7xl mx-auto ${slidePad} h-full flex flex-col py-5 sm:py-6 lg:py-8 relative z-10`}>
-                    <div className="text-center mb-3 sm:mb-5 shrink-0">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white">Our Services</h2>
-                        <p className="text-sm sm:text-base text-emerald-200 mt-1 sm:mt-2">Trusted professionals at your doorstep</p>
-                    </div>
-                    <div className="flex-1 flex flex-col items-center justify-center gap-2.5 sm:gap-3 min-h-0">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-3xl">
-                            {[
-                                { icon: Droplets, name: 'Plant Watering', href: '/services' },
-                                { icon: Scissors, name: 'Lawn Mowing', href: '/services' },
-                                { icon: Building, name: 'Housekeeping', href: '/services' },
-                                { icon: Hammer, name: 'Plumbing', href: '/services' },
-                            ].map((s, i) => (
-                                <Link key={i} href={s.href} className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
-                                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
-                                        <s.icon size={22} className="text-white sm:hidden" />
-                                        <s.icon size={26} className="text-white hidden sm:block" />
-                                    </div>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-700 text-center leading-tight">{s.name}</span>
-                                </Link>
-                            ))}
-                        </div>
-                        <div className="grid grid-cols-3 gap-2.5 sm:gap-4 w-full max-w-3xl">
-                            {[
-                                { icon: Zap, name: 'Electrical', href: '/services' },
-                                { icon: Sparkles, name: 'Deep Cleaning', href: '/services' },
-                                { icon: Leaf, name: 'Garden Maintenance', href: '/services' },
-                            ].map((s, i) => (
-                                <Link key={i} href={s.href} className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
-                                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-emerald-500 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
-                                        <s.icon size={22} className="text-white sm:hidden" />
-                                        <s.icon size={26} className="text-white hidden sm:block" />
-                                    </div>
-                                    <span className="text-xs sm:text-sm font-bold text-slate-700 text-center leading-tight">{s.name}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
+            <DarkSlide>
+                <div className="text-center shrink-0 mb-3 sm:mb-6">
+                    <h2 className="text-lg sm:text-3xl lg:text-4xl font-bold text-white">Our services</h2>
+                    <p className="text-[11px] sm:text-sm text-emerald-200/90 mt-1">Professionals at your doorstep</p>
                 </div>
-            </div>
+                <div className="flex-1 grid grid-cols-3 gap-2 sm:gap-4 content-center max-w-3xl mx-auto w-full min-h-0">
+                    <Tile href="/services" icon={Droplets} title="Plant watering" />
+                    <Tile href="/services" icon={Scissors} title="Lawn mowing" />
+                    <Tile href="/services" icon={Leaf} title="Garden care" />
+                    <Tile href="/services" icon={Wrench} title="Irrigation setup" />
+                    <Tile href="/services" icon={HomeIcon} title="Landscape design" />
+                    <Tile href="/services" icon={FlaskConical} title="Soil & nutrition" />
+                </div>
+            </DarkSlide>
         ),
     },
-    // Slide 4 — Experts
     {
         id: 4,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(160deg, #b2f5b2 0%, #90ee90 50%, #b2f5b2 100%)' }}>
-                <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-green-300/40 blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full bg-emerald-300/40 blur-3xl" />
-                <div className="absolute top-1/2 left-1/3 w-56 h-56 rounded-full bg-lime-300/30 blur-3xl" />
-
-                <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center py-5 sm:py-6 lg:py-8 relative z-10`}>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 lg:gap-10 w-full">
-                        <div className="flex flex-col justify-center">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-800 leading-tight">
-                                Book Trusted <span className="text-emerald-600">Experts</span> for Any Job
-                            </h2>
-                            <p className="text-sm sm:text-base text-slate-500 mt-2 sm:mt-4 max-w-md">
-                                From landscape architects to plant doctors — connect with verified professionals who deliver quality results.
-                            </p>
-                            <Link href="/services" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-200 mt-4 sm:mt-6 w-fit">
-                                Explore All <ArrowRight size={16} />
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
-                            {[
-                                { icon: Compass, label: 'Landscape Architects', sub: 'Custom garden design', color: 'bg-emerald-500', href: '/services' },
-                                 { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant diagnosis', color: 'bg-emerald-500', href: '/services' },
-                                { icon: CalendarCheck, label: 'Onsite Agronomist', sub: 'Farm consultation', color: 'bg-emerald-600', href: '/services' },
-                                { icon: BadgeCheck, label: 'Garden Contractors', sub: 'Verified & rated', color: 'bg-lime-600', href: '/services' },
-                            ].map((item, i) => (
-                                <Link key={i} href={item.href} className="flex flex-col items-center gap-2 sm:gap-3 p-3 sm:p-5 bg-white rounded-2xl hover:shadow-lg hover:scale-105 transition-all group">
-                                    <div className={`w-11 h-11 sm:w-14 sm:h-14 ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-md`}>
-                                        <item.icon size={22} className="text-white sm:hidden" />
-                                        <item.icon size={26} className="text-white hidden sm:block" />
-                                    </div>
-                                    <div className="text-center">
-                                        <span className="text-xs sm:text-sm font-bold text-slate-700 leading-tight block">{item.label}</span>
-                                        <span className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 block">{item.sub}</span>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
+            <DarkSlide>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-8 h-full min-h-0">
+                    <div className="flex flex-col justify-center text-center lg:text-left">
+                        <h2 className="text-lg sm:text-3xl lg:text-4xl font-bold text-white leading-snug">
+                            Book trusted <span className="text-emerald-300">experts</span>
+                        </h2>
+                        <p className="hidden sm:block text-sm text-emerald-100/80 mt-3 max-w-md mx-auto lg:mx-0">
+                            Verified landscape architects, agronomists, and garden contractors.
+                        </p>
+                        <Link href="/services" className="mt-3 sm:mt-5 inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-emerald-800 text-sm font-semibold rounded-xl w-fit mx-auto lg:mx-0 hover:bg-emerald-50 transition-colors">
+                            Explore all <ArrowRight size={15} />
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3 content-center min-h-0">
+                        <Tile href="/services" icon={Compass} title="Landscape architects" />
+                        <Tile href="/services" icon={Bot} title="Plant doctor AI" />
+                        <Tile href="/services" icon={CalendarCheck} title="Onsite agronomist" />
+                        <Tile href="/services" icon={BadgeCheck} title="Garden contractors" />
                     </div>
                 </div>
-            </div>
+            </DarkSlide>
         ),
     },
-    // Slide 5 — Trust & CTA
     {
         id: 5,
         render: () => (
-            <div className="relative w-full h-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)' }}>
-                <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-emerald-300/15 blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full bg-emerald-300/15 blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-lime-300/10 blur-3xl" />
-                {/* Grid pattern overlay */}
-                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
-                <div className={`max-w-7xl mx-auto ${slidePad} h-full flex items-center relative z-10`}>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-8 w-full py-5 sm:py-8">
-                        <div className="flex flex-col justify-center">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight">
-                                India's Green<br />Ecosystem.<br />
-                                <span className="text-emerald-400">One Platform.</span>
-                            </h2>
-                            <p className="text-sm sm:text-base text-slate-400 mt-2 sm:mt-3 max-w-md">Buy plants, hire experts, list properties, and grow with India's largest green marketplace community.</p>
-                            <div className="flex flex-wrap gap-3 mt-4 sm:mt-6">
-                                <Link href="/products" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-xl transition-colors shadow-lg shadow-emerald-500/30">
-                                    Get Started <ArrowRight size={16} />
-                                </Link>
-                                <Link href="/how-it-works" className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded-xl border border-white/20 transition-colors backdrop-blur">
-                                    How It Works
-                                </Link>
+            <DarkSlide>
+                <div className="flex flex-col justify-center h-full min-h-0 gap-3 sm:gap-5 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+                    <div className="text-center lg:text-left shrink-0">
+                        <h2 className="text-base sm:text-3xl lg:text-4xl font-bold text-white leading-snug">
+                            India’s green ecosystem.{' '}
+                            <span className="text-emerald-300">One platform.</span>
+                        </h2>
+                        <p className="hidden sm:block mt-2 text-sm text-emerald-100/80 max-w-md mx-auto lg:mx-0">
+                            Buy plants, hire experts, and list properties with a trusted community.
+                        </p>
+                        <Link href="/products" className="mt-2.5 sm:mt-5 inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-xl w-fit mx-auto lg:mx-0 transition-colors">
+                            Get started <ArrowRight size={15} />
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-4 lg:grid-cols-2 gap-1.5 sm:gap-3">
+                        {[
+                            { icon: ShieldCheck, label: 'Vendors', value: '500+' },
+                            { icon: Truck, label: 'Cities', value: '50+' },
+                            { icon: Leaf, label: 'Plants', value: '10K+' },
+                            { icon: Star, label: 'Customers', value: '5K+' },
+                        ].map((stat) => (
+                            <div key={stat.label} className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 px-1 py-2 sm:p-5 text-center">
+                                <stat.icon className="hidden sm:block w-6 h-6 text-emerald-300 mx-auto mb-1" />
+                                <p className="text-sm sm:text-2xl font-bold text-white leading-none">{stat.value}</p>
+                                <p className="text-[9px] sm:text-xs text-emerald-100/80 leading-tight mt-1">{stat.label}</p>
                             </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
-                            {[
-                                { icon: ShieldCheck, label: 'Vetted Vendors', value: '500+' },
-                                { icon: Truck, label: 'Cities Covered', value: '50+' },
-                                { icon: Leaf, label: 'Plants Delivered', value: '10K+' },
-                                { icon: Star, label: 'Happy Customers', value: '5K+' },
-                            ].map((stat, i) => (
-                                <div key={i} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-3 sm:p-5 text-center hover:bg-white/10 transition-colors">
-                                    <stat.icon size={22} className="text-emerald-400 mx-auto mb-1.5 sm:mb-2 sm:hidden" />
-                                    <stat.icon size={28} className="text-emerald-400 mx-auto mb-2 hidden sm:block" />
-                                    <p className="text-xl sm:text-2xl font-extrabold text-white">{stat.value}</p>
-                                    <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1">{stat.label}</p>
-                                </div>
-                            ))}
-                        </div>
+                        ))}
                     </div>
                 </div>
-            </div>
+            </DarkSlide>
         ),
     },
 ]
 
 const Carousel = () => {
     const [current, setCurrent] = useState(0)
-    const [isPaused, setIsPaused] = useState(false)
-    const [isHovered, setIsHovered] = useState(false)
+    const [paused, setPaused] = useState(false)
+    const [touchX, setTouchX] = useState(null)
 
-    const next = useCallback(() => setCurrent(c => (c + 1) % slides.length), [])
-    const prev = useCallback(() => setCurrent(c => (c - 1 + slides.length) % slides.length), [])
+    const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [])
+    const prev = useCallback(() => setCurrent((c) => (c - 1 + slides.length) % slides.length), [])
 
     useEffect(() => {
-        if (isPaused) return
-        const timer = setInterval(next, 5000)
+        if (paused) return
+        const timer = setInterval(next, 6000)
         return () => clearInterval(timer)
-    }, [isPaused, next])
+    }, [paused, next])
 
     return (
         <div
-            className="relative w-full rounded-2xl overflow-hidden shadow-lg h-[460px] sm:h-[480px] md:h-[500px] lg:h-[calc(100vh-10rem)] lg:max-h-[760px]"
-            onMouseEnter={() => { setIsPaused(true); setIsHovered(true) }}
-            onMouseLeave={() => { setIsPaused(false); setIsHovered(false) }}
+            className="relative w-full rounded-2xl overflow-hidden shadow-md h-[340px] sm:h-[430px] md:h-[500px] lg:h-[min(72vh,640px)]"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onTouchStart={(e) => setTouchX(e.touches[0].clientX)}
+            onTouchEnd={(e) => {
+                if (touchX == null) return
+                const dx = e.changedTouches[0].clientX - touchX
+                if (dx > 40) prev()
+                if (dx < -40) next()
+                setTouchX(null)
+            }}
         >
-            {/* Slides */}
-            <div className="relative w-full h-full">
-                {slides.map((slide, i) => (
-                    <div
-                        key={slide.id}
-                        className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                    >
-                        {slide.render()}
-                    </div>
-                ))}
-            </div>
+            {slides.map((slide, i) => (
+                <div
+                    key={slide.id}
+                    className={`absolute inset-0 transition-opacity duration-500 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}
+                >
+                    {slide.render()}
+                </div>
+            ))}
 
-            {/* Arrows — faded by default, visible on hover; always readable on touch */}
             <button
                 type="button"
                 aria-label="Previous slide"
                 onClick={prev}
-                className={`absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur ${
-                    isHovered
-                        ? 'bg-white/90 hover:bg-white shadow-lg text-slate-700 hover:text-slate-900'
-                        : 'bg-white/70 text-slate-600 shadow-md lg:bg-slate-400/20 lg:text-slate-400/40 lg:shadow-none'
-                }`}
+                className="absolute left-1.5 sm:left-3 z-20 w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 shadow-sm flex items-center justify-center hover:bg-white transition-colors bottom-2.5 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
             >
-                <ChevronLeft size={18} className="sm:hidden" />
-                <ChevronLeft size={20} className="hidden sm:block" />
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
                 type="button"
                 aria-label="Next slide"
                 onClick={next}
-                className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur ${
-                    isHovered
-                        ? 'bg-white/90 hover:bg-white shadow-lg text-slate-700 hover:text-slate-900'
-                        : 'bg-white/70 text-slate-600 shadow-md lg:bg-slate-400/20 lg:text-slate-400/40 lg:shadow-none'
-                }`}
+                className="absolute right-1.5 sm:right-3 z-20 w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white/90 text-slate-700 shadow-sm flex items-center justify-center hover:bg-white transition-colors bottom-2.5 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"
             >
-                <ChevronRight size={18} className="sm:hidden" />
-                <ChevronRight size={20} className="hidden sm:block" />
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
-            {/* Dots */}
-            <div className="absolute bottom-2.5 sm:bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-1.5">
                 {slides.map((_, i) => (
                     <button
                         key={i}
                         type="button"
                         aria-label={`Go to slide ${i + 1}`}
                         onClick={() => setCurrent(i)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                            i === current ? 'w-6 bg-emerald-600' : 'w-1.5 bg-slate-400/50 hover:bg-slate-400'
-                        }`}
+                        className={`h-1.5 rounded-full transition-all ${i === current ? 'w-5 bg-white' : 'w-1.5 bg-white/40'}`}
                     />
                 ))}
             </div>
