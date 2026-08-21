@@ -28,6 +28,7 @@ export default function Orders() {
                                     <th className="text-left">Product</th>
                                     <th className="text-center">Total Price</th>
                                     <th className="text-left">Address</th>
+                                    <th className="text-left">Payment</th>
                                     <th className="text-left">Status</th>
                                 </tr>
                             </thead>

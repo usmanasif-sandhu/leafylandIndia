@@ -20,6 +20,9 @@ const OrderItem = ({ order }) => {
         DELIVERED: 'text-green-500 bg-green-100',
     }
 
+    const addr = order.addressObj
+    const paymentLabel = order.paymentMethod?.split('_').join(' ').toLowerCase() || 'cod'
+
     return (
         <>
             <tr className="text-sm">
@@ -55,9 +58,24 @@ const OrderItem = ({ order }) => {
                 <td className="text-center max-md:hidden">{currency}{order.total}</td>
 
                 <td className="text-left max-md:hidden">
-                    <p>{order.address.name}, {order.address.street},</p>
-                    <p>{order.address.city}, {order.address.state}, {order.address.zip}, {order.address.country},</p>
-                    <p>{order.address.phone}</p>
+                    {addr ? (
+                        <>
+                            <p>{addr.name}, {addr.street},</p>
+                            <p>{addr.city}, {addr.state}, {addr.zip}, {addr.country},</p>
+                            <p>{addr.phone}</p>
+                        </>
+                    ) : (
+                        <p className="text-slate-400">Address removed</p>
+                    )}
+                </td>
+
+                <td className="text-left max-md:hidden">
+                    <p className="capitalize font-medium text-slate-600">{paymentLabel}</p>
+                    {order.isCouponUsed && order.coupon ? (
+                        <p className="text-xs text-emerald-700 mt-1">Coupon: {order.coupon.code}</p>
+                    ) : (
+                        <p className="text-xs text-slate-400 mt-1">No coupon</p>
+                    )}
                 </td>
 
                 <td className="text-left space-y-2 text-sm max-md:hidden">
@@ -72,9 +90,21 @@ const OrderItem = ({ order }) => {
             {/* Mobile */}
             <tr className="md:hidden">
                 <td colSpan={5}>
-                    <p>{order.address.name}, {order.address.street}</p>
-                    <p>{order.address.city}, {order.address.state}, {order.address.zip}, {order.address.country}</p>
-                    <p>{order.address.phone}</p>
+                    {addr ? (
+                        <>
+                            <p>{addr.name}, {addr.street}</p>
+                            <p>{addr.city}, {addr.state}, {addr.zip}, {addr.country}</p>
+                            <p>{addr.phone}</p>
+                        </>
+                    ) : (
+                        <p className="text-slate-400">Address removed</p>
+                    )}
+                    <p className="mt-2 capitalize font-medium text-slate-600">Paid via {paymentLabel}</p>
+                    {order.isCouponUsed && order.coupon ? (
+                        <p className="text-xs text-emerald-700">Coupon: {order.coupon.code}</p>
+                    ) : (
+                        <p className="text-xs text-slate-400">No coupon</p>
+                    )}
                     <br />
                     <div className="flex items-center">
                         <span className={`text-center mx-auto px-6 py-1.5 rounded ${statusStyles[order.status] || 'bg-slate-100 text-slate-700'}`}>
@@ -84,7 +114,7 @@ const OrderItem = ({ order }) => {
                 </td>
             </tr>
             <tr>
-                <td colSpan={4}>
+                <td colSpan={5}>
                     <div className="border-b border-slate-300 w-6/7 mx-auto" />
                 </td>
             </tr>

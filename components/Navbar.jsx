@@ -10,10 +10,34 @@ import { useSelector } from "react-redux";
 import { useSession, signOut } from "next-auth/react";
 
 const cities = [
-    'Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai',
-    'Pune', 'Ahmedabad', 'Kolkata', 'Jaipur', 'Lucknow',
-    'Chandigarh', 'Bhopal', 'Indore', 'Nagpur', 'Surat',
+    { name: 'Mumbai', lat: 19.076, lng: 72.877 },
+    { name: 'Delhi', lat: 28.6139, lng: 77.209 },
+    { name: 'Bengaluru', lat: 12.9716, lng: 77.5946 },
+    { name: 'Hyderabad', lat: 17.385, lng: 78.4867 },
+    { name: 'Chennai', lat: 13.0827, lng: 80.2707 },
+    { name: 'Pune', lat: 18.5204, lng: 73.8567 },
+    { name: 'Ahmedabad', lat: 23.0225, lng: 72.5714 },
+    { name: 'Kolkata', lat: 22.5726, lng: 88.3639 },
+    { name: 'Jaipur', lat: 26.9124, lng: 75.7873 },
+    { name: 'Lucknow', lat: 26.8467, lng: 80.9462 },
+    { name: 'Chandigarh', lat: 30.7333, lng: 76.7794 },
+    { name: 'Bhopal', lat: 23.2599, lng: 77.4126 },
+    { name: 'Indore', lat: 22.7196, lng: 75.8577 },
+    { name: 'Nagpur', lat: 21.1458, lng: 79.0882 },
+    { name: 'Surat', lat: 21.1702, lng: 72.8311 },
 ]
+
+const LOCATION_KEY = 'leafyland_location'
+
+function nearestCity(lat, lng) {
+    let best = cities[0]
+    let bestDist = Infinity
+    for (const c of cities) {
+        const d = (c.lat - lat) ** 2 + (c.lng - lng) ** 2
+        if (d < bestDist) { bestDist = d; best = c }
+    }
+    return best.name
+}
 
 const Navbar = () => {
     const router = useRouter();
@@ -40,6 +64,36 @@ const Navbar = () => {
     }, [])
 
     useEffect(() => {
+        const saved = typeof window !== 'undefined' ? localStorage.getItem(LOCATION_KEY) : null
+        if (saved && cities.some((c) => c.name === saved)) {
+            setLocation(saved)
+            return
+        }
+        if (typeof window === 'undefined' || !navigator.geolocation) {
+            localStorage.setItem(LOCATION_KEY, 'Mumbai')
+            return
+        }
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const city = nearestCity(pos.coords.latitude, pos.coords.longitude)
+                setLocation(city)
+                localStorage.setItem(LOCATION_KEY, city)
+            },
+            () => {
+                localStorage.setItem(LOCATION_KEY, 'Mumbai')
+            },
+            { timeout: 8000 }
+        )
+    }, [])
+
+    const selectCity = (city) => {
+        setLocation(city)
+        setLocationOpen(false)
+        setLocationSearch('')
+        try { localStorage.setItem(LOCATION_KEY, city) } catch {}
+    }
+
+    useEffect(() => {
         const handleClick = (e) => {
             if (locationRef.current && !locationRef.current.contains(e.target)) {
                 setLocationOpen(false)
@@ -58,7 +112,7 @@ const Navbar = () => {
         }
     }, [mobileMenuOpen])
 
-    const filteredCities = cities.filter(c => c.toLowerCase().includes(locationSearch.toLowerCase()))
+    const filteredCities = cities.filter(c => c.name.toLowerCase().includes(locationSearch.toLowerCase()))
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -119,16 +173,16 @@ const Navbar = () => {
                                     ) : (
                                         filteredCities.map(city => (
                                             <button
-                                                key={city}
-                                                onClick={() => { setLocation(city); setLocationOpen(false); setLocationSearch('') }}
+                                                key={city.name}
+                                                onClick={() => selectCity(city.name)}
                                                 className={`w-full flex items-center gap-2.5 px-4 py-3 text-sm transition-colors text-left ${
-                                                    location === city
+                                                    location === city.name
                                                         ? 'bg-emerald-50 text-emerald-700 font-semibold'
-                                                        : 'text-slate-600 hover:bg-slate-50'
+                                                        : 'text-slate-600 hover:bg-slate-100'
                                                 }`}
                                             >
-                                                <MapPin size={14} className={location === city ? 'text-emerald-600' : 'text-slate-300'} />
-                                                {city}
+                                                <MapPin size={14} className={location === city.name ? 'text-emerald-600' : 'text-slate-300'} />
+                                                {city.name}
                                             </button>
                                         ))
                                     )}
