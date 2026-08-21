@@ -109,6 +109,10 @@ enum OrderStatus {
 enum PaymentMethod {
     COD
     STRIPE
+    BANK_TRANSFER
+    UPI
+    CARD
+    WALLET
 }
 
 // Required for creating an Order: total, userId, storeId, addressId, isPaid, paymentMethod, isCouponUsed, coupon (JSON), orderItems (nested)
@@ -177,6 +181,10 @@ model Address {
     zip       String
     country   String
     phone     String
+    label     String? // "Home" | "Work" | custom
+    isDefault Boolean @default(false)
+    latitude  Float?
+    longitude Float?
     createdAt DateTime @default(now())
 
     // Relations
