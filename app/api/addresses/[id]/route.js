@@ -61,14 +61,7 @@ export async function DELETE(req, { params }) {
         const existing = await prisma.address.findFirst({ where: { id, userId: user.id } })
         if (!existing) return error('Address not found', 404)
 
-        await prisma.$transaction(async (tx) => {
-            // Detach any historical orders so we can delete the address
-            await tx.order.updateMany({
-                where: { addressId: id },
-                data: { addressId: null },
-            })
-            await tx.address.delete({ where: { id } })
-        })
+        await prisma.address.delete({ where: { id } })
         return json({ success: true })
     } catch (e) {
         return handleApiError(e)

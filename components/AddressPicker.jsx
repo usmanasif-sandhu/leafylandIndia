@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Plus, Star, Trash2, Pencil } from 'lucide-react'
+import { Plus, Star, Pencil } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import AddressFormModal from './AddressFormModal'
 
@@ -38,16 +38,6 @@ const AddressPicker = ({ value, onChange }) => {
         toast.success('Default address updated')
         load()
         onChange?.(id)
-    }
-
-    const remove = async (id) => {
-        if (!confirm('Delete this address? Orders using it will keep a record without the address.')) return
-        const res = await fetch(`/api/addresses/${id}`, { method: 'DELETE' })
-        if (!res.ok) return toast.error('Could not delete address')
-        toast.success('Address deleted')
-        const next = addresses.filter((a) => a.id !== id)
-        setAddresses(next)
-        if (value === id) onChange?.(next.find((a) => a.isDefault)?.id || next[0]?.id || null)
     }
 
     if (loading) return <p className="text-sm text-slate-400">Loading addresses…</p>
@@ -97,9 +87,6 @@ const AddressPicker = ({ value, onChange }) => {
                         <div className="flex gap-2">
                             <button onClick={() => { setEditing(a); setShowForm(true) }} className="text-slate-400 hover:text-slate-600" title="Edit">
                                 <Pencil size={16} />
-                            </button>
-                            <button onClick={() => remove(a.id)} className="text-slate-400 hover:text-red-500" title="Delete">
-                                <Trash2 size={16} />
                             </button>
                         </div>
                     </div>
