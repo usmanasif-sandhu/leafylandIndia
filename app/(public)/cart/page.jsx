@@ -1,4 +1,5 @@
 'use client'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
@@ -8,8 +9,14 @@ import { Trash2, ShoppingBag, ChevronRight, Minus, Plus } from 'lucide-react'
 export default function Cart() {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
     const { cartItems } = useSelector(state => state.cart)
-    const products = useSelector(state => state.product.list)
     const dispatch = useDispatch()
+    const [products, setProducts] = useState([])
+
+    useEffect(() => {
+        fetch('/api/products')
+            .then((r) => r.json())
+            .then((data) => { if (Array.isArray(data)) setProducts(data) })
+    }, [])
 
     const cartArray = []
     let totalPrice = 0
