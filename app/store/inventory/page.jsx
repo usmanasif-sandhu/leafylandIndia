@@ -100,30 +100,30 @@ export default function VendorInventory() {
 
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs sm:text-sm min-w-[550px]">
                         <thead>
                             <tr className="text-left text-slate-500 border-b border-slate-100">
-                                <th className="px-5 py-3 font-medium">Product</th>
-                                <th className="px-5 py-3 font-medium">Category</th>
-                                <th className="px-5 py-3 font-medium">Stock</th>
-                                <th className="px-5 py-3 font-medium">Status</th>
-                                <th className="px-5 py-3 font-medium">Total Sold</th>
-                                <th className="px-5 py-3 font-medium">Action</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Product</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Category</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Stock</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Status</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Total Sold</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sorted.map(product => (
                                 <tr key={product.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
-                                    <td className="px-5 py-3 font-medium text-slate-700">{product.name}</td>
-                                    <td className="px-5 py-3 text-slate-500">{product.category}</td>
-                                    <td className="px-5 py-3">
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 font-medium text-slate-700">{product.name}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 text-slate-500">{product.category}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3">
                                         <span className={`font-semibold ${
                                             product.stock <= 3 ? 'text-red-600' : product.stock <= 10 ? 'text-amber-600' : 'text-emerald-600'
                                         }`}>
                                             {product.stock}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-3">
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3">
                                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                                             product.stock <= 3 ? 'bg-red-100 text-red-600' :
                                             product.stock <= 10 ? 'bg-amber-100 text-amber-600' :
@@ -132,8 +132,8 @@ export default function VendorInventory() {
                                             {product.stock <= 3 ? 'Critical' : product.stock <= 10 ? 'Low' : 'In Stock'}
                                         </span>
                                     </td>
-                                    <td className="px-5 py-3 text-slate-600">{product.totalSales || 0}</td>
-                                    <td className="px-5 py-3">
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 text-slate-600">{product.totalSales || 0}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3">
                                         <button
                                             onClick={() => updateStock(product)}
                                             className="px-3 py-1.5 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-lg hover:bg-emerald-100 transition-colors"

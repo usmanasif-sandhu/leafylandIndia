@@ -72,30 +72,30 @@ export default function VendorPayouts() {
                     <p className="text-sm text-slate-500">No payouts yet. They appear after delivered orders.</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs sm:text-sm min-w-[450px]">
                             <thead>
                                 <tr className="text-left text-slate-500 border-b border-slate-100">
-                                    <th className="pb-3 font-medium">Reference</th>
-                                    <th className="pb-3 font-medium">Amount</th>
-                                    <th className="pb-3 font-medium">Method</th>
-                                    <th className="pb-3 font-medium">Status</th>
-                                    <th className="pb-3 font-medium">Date</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Reference</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Amount</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Method</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Status</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {vendorPayouts.map(payout => (
                                     <tr key={payout.id} className="border-b border-slate-50 last:border-0">
-                                        <td className="py-3 font-mono text-xs text-slate-600">{payout.reference}</td>
-                                        <td className="py-3 font-semibold text-slate-800">₹{(payout.amount || 0).toLocaleString()}</td>
-                                        <td className="py-3 text-slate-600">{payout.method}</td>
-                                        <td className="py-3">
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-mono text-xs text-slate-600">{payout.reference}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-semibold text-slate-800">₹{(payout.amount || 0).toLocaleString()}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{payout.method}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3">
                                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                                                 payout.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                                             }`}>
                                                 {payout.status}
                                             </span>
                                         </td>
-                                        <td className="py-3 text-slate-500">{payout.date ? new Date(payout.date).toLocaleDateString() : ''}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-500">{payout.date ? new Date(payout.date).toLocaleDateString() : ''}</td>
                                     </tr>
                                 ))}
                             </tbody>

@@ -104,14 +104,14 @@ export default function AdminDashboard() {
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Orders</h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs sm:text-sm min-w-[400px]">
                             <thead>
                                 <tr className="text-left text-slate-500 border-b border-slate-100">
-                                    <th className="pb-3 font-medium">Order ID</th>
-                                    <th className="pb-3 font-medium">Customer</th>
-                                    <th className="pb-3 font-medium">Amount</th>
-                                    <th className="pb-3 font-medium">Status</th>
-                                    <th className="pb-3 font-medium">Date</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Order ID</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Customer</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Amount</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Status</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -122,11 +122,11 @@ export default function AdminDashboard() {
                                 )}
                                 {recentOrders.map((order) => (
                                     <tr key={order.id} className="border-b border-slate-50 last:border-0">
-                                        <td className="py-3 font-medium text-slate-700">{order.id.slice(-8).toUpperCase()}</td>
-                                        <td className="py-3 text-slate-600">{order.user?.name || 'Customer'}</td>
-                                        <td className="py-3 text-slate-700">{formatCurrency(order.total)}</td>
-                                        <td className="py-3"><StatusBadge status={order.status} /></td>
-                                        <td className="py-3 text-slate-500">{formatDate(order.createdAt)}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-medium text-slate-700">{order.id.slice(-8).toUpperCase()}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{order.user?.name || 'Customer'}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-700">{formatCurrency(order.total)}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3"><StatusBadge status={order.status} /></td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-500">{formatDate(order.createdAt)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -138,13 +138,13 @@ export default function AdminDashboard() {
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Pending Approvals</h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs sm:text-sm min-w-[350px]">
                             <thead>
                                 <tr className="text-left text-slate-500 border-b border-slate-100">
-                                    <th className="pb-3 font-medium">Store Name</th>
-                                    <th className="pb-3 font-medium">Owner</th>
-                                    <th className="pb-3 font-medium">Date</th>
-                                    <th className="pb-3 font-medium text-right">Action</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Store Name</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Owner</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Date</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -155,10 +155,10 @@ export default function AdminDashboard() {
                                 )}
                                 {pendingStores.map((store) => (
                                     <tr key={store.id} className="border-b border-slate-50 last:border-0">
-                                        <td className="py-3 font-medium text-slate-700">{store.name}</td>
-                                        <td className="py-3 text-slate-600">{store.user?.name || 'Owner'}</td>
-                                        <td className="py-3 text-slate-500">{formatDate(store.createdAt)}</td>
-                                        <td className="py-3 text-right space-x-2">
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-medium text-slate-700">{store.name}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{store.user?.name || 'Owner'}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-500">{formatDate(store.createdAt)}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-right space-x-2">
                                             <button className="bg-emerald-600 text-white text-xs px-3 py-1 rounded-lg hover:bg-emerald-700 transition-colors">
                                                 Approve
                                             </button>

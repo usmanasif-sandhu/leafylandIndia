@@ -37,20 +37,21 @@ export default function StoreManageProducts() {
     return (
         <>
             <h1 className="text-2xl text-slate-500 mb-5">Manage <span className="text-slate-800 font-medium">Products</span></h1>
-            <table className="w-full max-w-4xl text-left  ring ring-slate-200  rounded overflow-hidden text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full max-w-4xl text-left ring ring-slate-200 rounded overflow-hidden text-xs sm:text-sm min-w-[400px]">
                 <thead className="bg-slate-50 text-gray-700 uppercase tracking-wider">
                     <tr>
-                        <th className="px-4 py-3">Name</th>
-                        <th className="px-4 py-3 hidden md:table-cell">Description</th>
-                        <th className="px-4 py-3 hidden md:table-cell">MRP</th>
-                        <th className="px-4 py-3">Price</th>
-                        <th className="px-4 py-3">Actions</th>
+                        <th className="px-2 py-2 sm:px-4 sm:py-3">Name</th>
+                        <th className="px-2 py-2 sm:px-4 sm:py-3 hidden md:table-cell">Description</th>
+                        <th className="px-2 py-2 sm:px-4 sm:py-3 hidden md:table-cell">MRP</th>
+                        <th className="px-2 py-2 sm:px-4 sm:py-3">Price</th>
+                        <th className="px-2 py-2 sm:px-4 sm:py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="text-slate-700">
                     {products.map((product) => (
                         <tr key={product.id} className="border-t border-gray-200 hover:bg-gray-50">
-                            <td className="px-4 py-3">
+                            <td className="px-2 py-2 sm:px-4 sm:py-3">
                                 <div className="flex gap-2 items-center">
                                     {product.images?.[0] && (
                                         <Image width={40} height={40} className='p-1 shadow rounded cursor-pointer' src={product.images[0]} alt="" />
@@ -58,10 +59,10 @@ export default function StoreManageProducts() {
                                     {product.name}
                                 </div>
                             </td>
-                            <td className="px-4 py-3 max-w-md text-slate-600 hidden md:table-cell truncate">{product.description}</td>
-                            <td className="px-4 py-3 hidden md:table-cell">{currency} {product.mrp.toLocaleString()}</td>
-                            <td className="px-4 py-3">{currency} {product.price.toLocaleString()}</td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="px-2 py-2 sm:px-4 sm:py-3 max-w-md text-slate-600 hidden md:table-cell truncate">{product.description}</td>
+                            <td className="px-2 py-2 sm:px-4 sm:py-3 hidden md:table-cell">{currency} {product.mrp.toLocaleString()}</td>
+                            <td className="px-2 py-2 sm:px-4 sm:py-3">{currency} {product.price.toLocaleString()}</td>
+                            <td className="px-2 py-2 sm:px-4 sm:py-3 text-center">
                                 <label className="relative inline-flex items-center cursor-pointer text-gray-900 gap-3">
                                     <input type="checkbox" className="sr-only peer" onChange={() => toast.promise(toggleStock(product.id), { loading: "Updating data..." })} checked={product.inStock} />
                                     <div className="w-9 h-5 bg-slate-300 rounded-full peer peer-checked:bg-green-600 transition-colors duration-200"></div>
@@ -72,6 +73,7 @@ export default function StoreManageProducts() {
                     ))}
                 </tbody>
             </table>
+            </div>
         </>
     )
 }

@@ -64,33 +64,33 @@ export default function VendorOrders() {
             {/* Orders Table */}
             <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs sm:text-sm min-w-[700px]">
                         <thead>
                             <tr className="text-left text-slate-500 border-b border-slate-100">
-                                <th className="px-5 py-3 font-medium">Order ID</th>
-                                <th className="px-5 py-3 font-medium">Customer</th>
-                                <th className="px-5 py-3 font-medium">Items</th>
-                                <th className="px-5 py-3 font-medium">Amount</th>
-                                <th className="px-5 py-3 font-medium">Payment</th>
-                                <th className="px-5 py-3 font-medium">Status</th>
-                                <th className="px-5 py-3 font-medium">Date</th>
-                                <th className="px-5 py-3 font-medium">Action</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Order ID</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Customer</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Items</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Amount</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Payment</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Status</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Date</th>
+                                <th className="px-2 py-2 sm:px-5 sm:py-3 font-medium">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filtered.map(order => (
                                 <tr key={order.id} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-5 py-3 font-mono text-xs font-semibold text-slate-700">{order.id}</td>
-                                    <td className="px-5 py-3">
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 font-mono text-xs font-semibold text-slate-700">{order.id}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3">
                                         <p className="font-medium text-slate-700">{order.customer}</p>
                                         <p className="text-xs text-slate-400">{order.email}</p>
                                     </td>
-                                    <td className="px-5 py-3 text-slate-600">{order.items.length} item(s)</td>
-                                    <td className="px-5 py-3 font-semibold text-slate-800">₹{order.total.toLocaleString()}</td>
-                                    <td className="px-5 py-3 text-slate-600">{order.payment}</td>
-                                    <td className="px-5 py-3"><StatusBadge status={order.status} /></td>
-                                    <td className="px-5 py-3 text-slate-500 text-xs">{order.date}</td>
-                                    <td className="px-5 py-3">
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 text-slate-600">{order.items.length} item(s)</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 font-semibold text-slate-800">₹{order.total.toLocaleString()}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 text-slate-600">{order.payment}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3"><StatusBadge status={order.status} /></td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3 text-slate-500 text-xs">{order.date}</td>
+                                    <td className="px-2 py-2 sm:px-5 sm:py-3">
                                         <button
                                             onClick={() => setSelectedOrder(order)}
                                             className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"

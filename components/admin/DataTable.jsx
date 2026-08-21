@@ -36,13 +36,13 @@ export default function DataTable({ columns, data, searchKeys = [], emptyMessage
       <SearchBar value={search} onChange={handleSearch} placeholder="Search..." />
 
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full text-xs sm:text-sm min-w-[600px]">
           <thead>
             <tr className="bg-slate-50">
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3"
+                  className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 py-2 sm:px-4 sm:py-3"
                 >
                   {col.label}
                 </th>
@@ -60,7 +60,7 @@ export default function DataTable({ columns, data, searchKeys = [], emptyMessage
               paginated.map((row, idx) => (
                 <tr key={row.id ?? idx} className="hover:bg-slate-50/50 transition-colors">
                   {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3">
+                    <td key={col.key} className="px-2 py-2 sm:px-4 sm:py-3">
                       {col.render ? col.render(row[col.key], row) : row[col.key]}
                     </td>
                   ))}

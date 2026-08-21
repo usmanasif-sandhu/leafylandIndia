@@ -91,22 +91,22 @@ export default function VendorDashboard() {
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Orders</h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs sm:text-sm min-w-[350px]">
                             <thead>
                                 <tr className="text-left text-slate-500 border-b border-slate-100">
-                                    <th className="pb-3 font-medium">Order ID</th>
-                                    <th className="pb-3 font-medium">Customer</th>
-                                    <th className="pb-3 font-medium">Amount</th>
-                                    <th className="pb-3 font-medium">Status</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Order ID</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Customer</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Amount</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {recentOrders.map((order) => (
                                     <tr key={order.id} className="border-b border-slate-50 last:border-0">
-                                        <td className="py-3 font-medium text-slate-700">{order.id}</td>
-                                        <td className="py-3 text-slate-600">{order.customer}</td>
-                                        <td className="py-3 text-slate-700">₹{order.total.toLocaleString('en-IN')}</td>
-                                        <td className="py-3"><StatusBadge status={order.status} /></td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-medium text-slate-700">{order.id}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{order.customer}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-700">₹{order.total.toLocaleString('en-IN')}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3"><StatusBadge status={order.status} /></td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -118,22 +118,22 @@ export default function VendorDashboard() {
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Top Products</h2>
                     <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
+                        <table className="w-full text-xs sm:text-sm min-w-[350px]">
                             <thead>
                                 <tr className="text-left text-slate-500 border-b border-slate-100">
-                                    <th className="pb-3 font-medium">Product</th>
-                                    <th className="pb-3 font-medium">Sales</th>
-                                    <th className="pb-3 font-medium">Revenue</th>
-                                    <th className="pb-3 font-medium">Stock</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Product</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Sales</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Revenue</th>
+                                    <th className="pb-3 px-2 sm:px-3 font-medium">Stock</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {topProducts.map((product) => (
                                     <tr key={product.id} className="border-b border-slate-50 last:border-0">
-                                        <td className="py-3 font-medium text-slate-700 truncate max-w-[180px]">{product.name}</td>
-                                        <td className="py-3 text-slate-600">{product.totalSales}</td>
-                                        <td className="py-3 text-slate-700">₹{product.revenue.toLocaleString('en-IN')}</td>
-                                        <td className="py-3">
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 font-medium text-slate-700 truncate max-w-[140px] sm:max-w-[180px]">{product.name}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{product.totalSales}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-700">₹{product.revenue.toLocaleString('en-IN')}</td>
+                                        <td className="py-2 sm:py-3 px-2 sm:px-3">
                                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                                                 product.stock <= 3 ? 'bg-red-100 text-red-600' :
                                                 product.stock <= 10 ? 'bg-amber-100 text-amber-600' :

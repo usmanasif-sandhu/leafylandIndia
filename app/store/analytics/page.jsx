@@ -108,26 +108,26 @@ export default function VendorAnalytics() {
             <div className="bg-white rounded-2xl border border-slate-100 p-5">
                 <h2 className="text-lg font-semibold text-slate-800 mb-4">Top Products by Revenue</h2>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs sm:text-sm min-w-[500px]">
                         <thead>
                             <tr className="text-left text-slate-500 border-b border-slate-100">
-                                <th className="pb-3 font-medium">#</th>
-                                <th className="pb-3 font-medium">Product</th>
-                                <th className="pb-3 font-medium">Category</th>
-                                <th className="pb-3 font-medium">Sales</th>
-                                <th className="pb-3 font-medium">Revenue</th>
-                                <th className="pb-3 font-medium">Avg Rating</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">#</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">Product</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">Category</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">Sales</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">Revenue</th>
+                                <th className="pb-3 px-2 sm:px-3 font-medium">Avg Rating</th>
                             </tr>
                         </thead>
                         <tbody>
                             {topProducts.map((p, i) => (
                                 <tr key={p.id} className="border-b border-slate-50 last:border-0">
-                                    <td className="py-3 text-slate-400 font-medium">{i + 1}</td>
-                                    <td className="py-3 font-medium text-slate-700">{p.name}</td>
-                                    <td className="py-3 text-slate-500">{p.category}</td>
-                                    <td className="py-3 text-slate-600">{p.totalSales || 0}</td>
-                                    <td className="py-3 font-semibold text-slate-800">₹{(p.revenue || 0).toLocaleString()}</td>
-                                    <td className="py-3 text-amber-500 font-semibold">
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-400 font-medium">{i + 1}</td>
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 font-medium text-slate-700">{p.name}</td>
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-500">{p.category}</td>
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 text-slate-600">{p.totalSales || 0}</td>
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 font-semibold text-slate-800">₹{(p.revenue || 0).toLocaleString()}</td>
+                                    <td className="py-2 sm:py-3 px-2 sm:px-3 text-amber-500 font-semibold">
                                         {Array.isArray(p.rating) && p.rating.length ? (p.rating.reduce((a, b) => a + b, 0) / p.rating.length).toFixed(1) : (p.avgRating || '—')}
                                     </td>
                                 </tr>
