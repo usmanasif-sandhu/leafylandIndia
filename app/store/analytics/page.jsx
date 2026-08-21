@@ -63,6 +63,7 @@ export default function VendorAnalytics() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Monthly Revenue</h2>
+                    <div className="w-full" style={{ minWidth: 0 }}>
                     <ResponsiveContainer width="100%" height={280}>
                         <BarChart data={monthlyRevenueData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -75,6 +76,7 @@ export default function VendorAnalytics() {
                             <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
@@ -83,7 +85,8 @@ export default function VendorAnalytics() {
                         <p className="text-sm text-slate-500">No sales data yet.</p>
                     ) : (
                         <div className="flex items-center gap-6">
-                            <ResponsiveContainer width="50%" height={220}>
+                            <div className="w-1/2" style={{ minWidth: 0 }}>
+                            <ResponsiveContainer width="100%" height={220}>
                                 <PieChart>
                                     <Pie data={categoryData} cx="50%" cy="50%" outerRadius={80} innerRadius={40} dataKey="value">
                                         {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
@@ -91,6 +94,7 @@ export default function VendorAnalytics() {
                                     <Tooltip />
                                 </PieChart>
                             </ResponsiveContainer>
+                            </div>
                             <div className="flex-1 space-y-2">
                                 {categoryData.slice(0, 6).map((cat, i) => (
                                     <div key={cat.name} className="flex items-center gap-2">

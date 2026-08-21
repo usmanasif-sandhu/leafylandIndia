@@ -188,7 +188,7 @@ const CategoriesStrip = ({ activeCategory, onSelect, onComingSoon }) => {
     return (
         <div className="sticky top-14 sm:top-16 z-40 glass-categories" ref={dropdownRef}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex gap-2 overflow-x-auto no-scrollbar py-2 relative">
+                <div className="flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 sm:py-2 relative">
                     {mainCategories.map((cat, i) => {
                         const active = activeCategory === cat.name || openDropdown === cat.name
                         const isOpen = openDropdown === cat.name
@@ -198,13 +198,13 @@ const CategoriesStrip = ({ activeCategory, onSelect, onComingSoon }) => {
                                     onClick={(e) => handleCardClick(cat, e)}
                                     onMouseEnter={() => setHoveredCard(cat.name)}
                                     onMouseLeave={() => setHoveredCard(null)}
-                                    className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl text-left transition-all cursor-pointer ${
+                                    className={`flex items-center gap-2 sm:gap-2.5 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-xl text-left transition-all cursor-pointer ${
                                         active
                                             ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200'
                                             : `${cat.color} hover:shadow-md`
                                     }`}
                                 >
-                                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-white/20' : 'bg-white/70'}`}>
+                                    <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center shrink-0 ${active ? 'bg-white/20' : 'bg-white/70'}`}>
                                         <cat.icon size={14} className={active ? 'text-white' : cat.iconColor} />
                                     </div>
                                     <div className="min-w-0">

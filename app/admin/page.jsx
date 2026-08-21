@@ -60,6 +60,7 @@ export default function AdminDashboard() {
                 {/* Orders Area Chart */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Orders Overview</h2>
+                    <div className="w-full" style={{ minWidth: 0 }}>
                     <ResponsiveContainer width="100%" height={300}>
                         <AreaChart data={ordersChartData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -78,11 +79,13 @@ export default function AdminDashboard() {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
+                    </div>
                 </div>
 
                 {/* Revenue Bar Chart */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Revenue</h2>
+                    <div className="w-full" style={{ minWidth: 0 }}>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={revenueChartData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -95,6 +98,7 @@ export default function AdminDashboard() {
                             <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
 

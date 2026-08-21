@@ -47,6 +47,7 @@ export default function VendorDashboard() {
                 {/* Revenue Chart */}
                 <div className="bg-white rounded-2xl border border-slate-100 p-5">
                     <h2 className="text-lg font-semibold text-slate-800 mb-4">Revenue This Week</h2>
+                    <div className="w-full" style={{ minWidth: 0 }}>
                     <ResponsiveContainer width="100%" height={260}>
                         <AreaChart data={revenueChartData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -59,6 +60,7 @@ export default function VendorDashboard() {
                             <Area type="monotone" dataKey="revenue" stroke="#10b981" fill="#10b981" fillOpacity={0.15} strokeWidth={2} />
                         </AreaChart>
                     </ResponsiveContainer>
+                    </div>
                 </div>
 
                 {/* Rating Distribution */}
