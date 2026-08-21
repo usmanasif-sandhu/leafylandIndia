@@ -22,18 +22,30 @@ export async function POST(req) {
         for (const key of required) {
             if (!body[key]) return error(`${key} is required`)
         }
-        const address = await prisma.address.create({
-            data: {
-                userId: user.id,
-                name: body.name,
-                email: body.email,
-                street: body.street,
-                city: body.city,
-                state: body.state,
-                zip: body.zip,
-                country: body.country,
-                phone: body.phone,
-            },
+        const address = await prisma.$transaction(async (tx) => {
+            if (body.isDefault) {
+                await tx.address.updateMany({
+                    where: { userId: user.id, isDefault: true },
+                    data: { isDefault: false },
+                })
+            }
+            return tx.address.create({
+                data: {
+                    userId: user.id,
+                    name: body.name,
+                    email: body.email,
+                    street: body.street,
+                    city: body.city,
+                    state: body.state,
+                    zip: body.zip,
+                    country: body.country,
+                    phone: body.phone,
+                    label: body.label || null,
+                    isDefault: Boolean(body.isDefault) || false,
+                    latitude: body.latitude != null ? Number(body.latitude) : null,
+                    longitude: body.longitude != null ? Number(body.longitude) : null,
+                },
+            })
         })
         return json(address, 201)
     } catch (e) {

@@ -23,6 +23,8 @@ export async function POST(req) {
     try {
         const user = await requireUser()
         const { addressId, paymentMethod = 'COD', couponCode } = await req.json()
+        const paidMethods = ['STRIPE', 'BANK_TRANSFER', 'UPI', 'CARD', 'WALLET']
+        const method = paidMethods.includes(paymentMethod) ? paymentMethod : 'COD'
 
         const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
         const cart = dbUser.cart && typeof dbUser.cart === 'object' ? dbUser.cart : {}
@@ -67,8 +69,8 @@ export async function POST(req) {
                         userId: user.id,
                         storeId,
                         addressId: address.id,
-                        isPaid: paymentMethod !== 'COD',
-                        paymentMethod: paymentMethod === 'STRIPE' ? 'STRIPE' : 'COD',
+                        isPaid: method !== 'COD',
+                        paymentMethod: method,
                         isCouponUsed: Boolean(coupon),
                         coupon: coupon ? { code: coupon.code, discount: coupon.discount } : {},
                         orderItems: {
