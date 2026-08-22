@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Upload, X, Plus, Image as ImageIcon } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import PageHeader from '@/components/admin/PageHeader'
-import { fileToDataUrl } from '@/components/store/StoreLogo'
+import { uploadImages } from '@/components/store/StoreLogo'
 
 const leafyCategories = [
     'Big Plant', 'Bulbs', 'Fruit Plant', 'Gardening', 'Indoor Greenary',
@@ -42,7 +42,7 @@ export default function StoreAddProduct() {
         setLoading(true)
         try {
             if (!images.length) throw new Error('Upload at least one product photo')
-            const imageUrls = await Promise.all(images.map((file) => fileToDataUrl(file)))
+            const imageUrls = await uploadImages(images)
             const res = await fetch('/api/vendor/products', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

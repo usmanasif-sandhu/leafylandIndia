@@ -39,9 +39,9 @@ export default function DataTable({ columns, data, searchKeys = [], emptyMessage
         <table className="w-full text-xs sm:text-sm min-w-[600px]">
           <thead>
             <tr className="bg-slate-50">
-              {columns.map((col) => (
+              {columns.map((col, colIdx) => (
                 <th
-                  key={col.key}
+                  key={col.key ?? `col-${colIdx}`}
                   className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-2 py-2 sm:px-4 sm:py-3"
                 >
                   {col.label}
@@ -59,8 +59,8 @@ export default function DataTable({ columns, data, searchKeys = [], emptyMessage
             ) : (
               paginated.map((row, idx) => (
                 <tr key={row.id ?? idx} className="hover:bg-slate-50/50 transition-colors">
-                  {columns.map((col) => (
-                    <td key={col.key} className="px-2 py-2 sm:px-4 sm:py-3">
+                  {columns.map((col, colIdx) => (
+                    <td key={col.key ?? `col-${colIdx}`} className="px-2 py-2 sm:px-4 sm:py-3">
                       {col.render ? col.render(row[col.key], row) : row[col.key]}
                     </td>
                   ))}

@@ -1,12 +1,25 @@
-import { prisma } from '@/lib/prisma'
-import { error, json } from '@/lib/api'
+import { error, json, getSessionUser } from '@/lib/api'
+import { resolveCoupon } from '@/lib/coupons'
 
 export async function POST(req) {
-    const { code } = await req.json()
-    if (!code) return error('Coupon code is required')
-    const coupon = await prisma.coupon.findUnique({ where: { code: code.toUpperCase() } })
-    if (!coupon) return error('Coupon not found', 404)
-    if (coupon.expiresAt < new Date()) return error('Coupon has expired')
-    if (!coupon.isPublic) return error('Coupon is not public')
-    return json(coupon)
+    try {
+        const body = await req.json()
+        const user = await getSessionUser()
+        const storeIds = Array.isArray(body.storeIds) ? body.storeIds.filter(Boolean) : []
+
+        const result = await resolveCoupon(body.code, {
+            userId: user?.id,
+            storeIds,
+        })
+
+        if (!result.ok) return error(result.error, result.status || 400)
+
+        return json({
+            valid: true,
+            coupon: result.coupon,
+        })
+    } catch (e) {
+        console.error(e)
+        return error('Could not validate coupon', 500)
+    }
 }

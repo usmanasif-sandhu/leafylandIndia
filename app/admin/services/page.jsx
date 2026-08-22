@@ -5,6 +5,7 @@ import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
+import toast from 'react-hot-toast'
 
 export default function ServicesPage() {
   const [services, setServices] = useState([])
@@ -13,7 +14,8 @@ export default function ServicesPage() {
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [selectedService, setSelectedService] = useState(null)
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true)
     fetch('/api/admin/services')
       .then(async (res) => {
         if (!res.ok) throw new Error('Failed to load services')
@@ -22,7 +24,21 @@ export default function ServicesPage() {
       .then(setServices)
       .catch((e) => setError(e.message || 'Something went wrong'))
       .finally(() => setLoading(false))
-  }, [])
+  }
+
+  useEffect(() => { load() }, [])
+
+  const updateStatus = async (id, status) => {
+    const res = await fetch('/api/admin/services', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    })
+    if (!res.ok) return toast.error(`${status === 'approved' ? 'Approve' : 'Reject'} failed`)
+    toast.success(status === 'approved' ? 'Service approved' : 'Service rejected')
+    setServices((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)))
+    setSelectedService((prev) => (prev?.id === id ? { ...prev, status } : prev))
+  }
 
   const categories = useMemo(() => {
     const set = new Set(services.map((s) => s.category).filter(Boolean))
@@ -59,18 +75,39 @@ export default function ServicesPage() {
     {
       key: 'status',
       label: 'Status',
-      render: (val) => <StatusBadge status={val || 'active'} />,
+      render: (val) => <StatusBadge status={val || 'pending'} />,
     },
     {
       key: 'id',
-      label: 'View',
+      label: 'Actions',
       render: (_val, row) => (
-        <button
-          onClick={() => setSelectedService(row)}
-          className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
-        >
-          View
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSelectedService(row)}
+            className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+          >
+            View
+          </button>
+          {(row.status || 'pending') === 'pending' && (
+            <>
+              <button
+                type="button"
+                onClick={() => updateStatus(row.id, 'approved')}
+                className="text-emerald-700 hover:text-emerald-800 text-sm font-medium"
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                onClick={() => updateStatus(row.id, 'rejected')}
+                className="text-red-600 hover:text-red-700 text-sm font-medium"
+              >
+                Reject
+              </button>
+            </>
+          )}
+        </div>
       ),
     },
   ]
@@ -143,9 +180,28 @@ export default function ServicesPage() {
             <div>
               <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</h3>
               <div className="mt-1">
-                <StatusBadge status={selectedService.status || 'active'} />
+                <StatusBadge status={selectedService.status || 'pending'} />
               </div>
             </div>
+
+            {(selectedService.status || 'pending') === 'pending' && (
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => updateStatus(selectedService.id, 'approved')}
+                  className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateStatus(selectedService.id, 'rejected')}
+                  className="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors"
+                >
+                  Reject
+                </button>
+              </div>
+            )}
           </div>
         )}
       </DetailSlideOver>

@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { error, json, requireUser, handleApiError } from '@/lib/api'
+import { sanitizeImageUrl } from '@/lib/images'
 
 export async function GET() {
     try {
@@ -35,7 +36,7 @@ export async function POST(req) {
                 email,
                 contact,
                 address,
-                logo: logo && logo !== '/logo.png' ? logo : '',
+                logo: sanitizeImageUrl(logo),
                 status: 'pending',
                 isActive: false,
             },

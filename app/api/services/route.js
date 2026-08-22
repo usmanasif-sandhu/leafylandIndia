@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma'
-import { json } from '@/lib/api'
 
 export async function GET(req) {
     const { searchParams } = new URL(req.url)
@@ -22,10 +21,16 @@ export async function GET(req) {
         },
         include: {
             store: { select: { name: true, username: true } },
-            rating: true,
+            rating: { select: { rating: true } },
         },
         orderBy: { createdAt: 'desc' },
     })
 
-    return json(services)
+    return new Response(JSON.stringify(services), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+        },
+    })
 }

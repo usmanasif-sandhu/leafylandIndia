@@ -27,8 +27,12 @@ export async function POST(req) {
         const user = await requireUser()
         const { storeId, body } = await req.json()
         if (!storeId || !body) return error('storeId and body are required')
+        const store = await prisma.store.findFirst({
+            where: { id: storeId, status: 'approved', isActive: true },
+        })
+        if (!store) return error('Store not available', 404)
         const message = await prisma.message.create({
-            data: { storeId, userId: user.id, body },
+            data: { storeId, userId: user.id, body: String(body).trim() },
         })
         return json(message, 201)
     } catch (e) {

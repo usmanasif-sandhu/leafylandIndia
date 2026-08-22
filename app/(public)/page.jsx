@@ -6,6 +6,7 @@ import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import PropertyCard from "@/components/PropertyCard";
 import ComingSoonModal from "@/components/ComingSoonModal";
+import { cachedJson } from '@/lib/cachedJson'
 import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck, Sprout, TreePine } from "lucide-react";
 import Link from "next/link";
 
@@ -44,15 +45,18 @@ export default function Home() {
     const [properties, setProperties] = useState([])
 
     useEffect(() => {
+        let cancelled = false
         Promise.all([
-            fetch('/api/products').then((r) => r.json()),
-            fetch('/api/services').then((r) => r.json()),
-            fetch('/api/properties').then((r) => r.json()),
+            cachedJson('/api/products'),
+            cachedJson('/api/services'),
+            cachedJson('/api/properties'),
         ]).then(([p, s, pr]) => {
+            if (cancelled) return
             if (Array.isArray(p)) setProducts(p)
             if (Array.isArray(s)) setServices(s)
             if (Array.isArray(pr)) setProperties(pr)
         }).catch(() => {})
+        return () => { cancelled = true }
     }, [])
 
     // LeafyLand core items (prioritized)
@@ -412,37 +416,39 @@ export default function Home() {
 
             {/* Expert Options */}
             {activeCategory === 'All' && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-                    <div className="text-center mb-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                    <div className="mb-4 sm:mb-5">
                         <h2 className="text-lg sm:text-xl font-bold text-slate-800">Expert Services</h2>
-                        <p className="text-sm text-slate-500 mt-1">Professional guidance for all your gardening needs</p>
+                        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                            Professional guidance for all your gardening needs
+                        </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
                         {[
-                            { icon: Compass, label: 'Hire Landscape Architects', sub: 'Custom garden & landscape design', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#2e7d32]', iconColor: 'text-white', href: '/services' },
-                            { icon: Bot, label: 'Consult Plant Doctor AI', sub: 'Instant plant health diagnosis', bg: 'bg-[#fff8e1]', iconBg: 'bg-[#f9a825]', iconColor: 'text-white', href: '/services' },
-                            { icon: CalendarCheck, label: 'Schedule Onsite Agronomist', sub: 'Expert farm & soil consultation', bg: 'bg-[#e0f2f1]', iconBg: 'bg-[#00897b]', iconColor: 'text-white', href: '/services' },
-                            { icon: BadgeCheck, label: 'Verified Garden Contractors', sub: 'Trusted & rated professionals', bg: 'bg-[#e8f5e9]', iconBg: 'bg-[#388e3c]', iconColor: 'text-white', href: '/services' },
+                            { icon: Compass, label: 'Landscape Architects', sub: 'Custom garden design', href: '/services' },
+                            { icon: Bot, label: 'Plant Doctor AI', sub: 'Instant health tips', href: '/services' },
+                            { icon: CalendarCheck, label: 'Onsite Agronomist', sub: 'Soil & farm consult', href: '/services' },
+                            { icon: BadgeCheck, label: 'Garden Contractors', sub: 'Verified professionals', href: '/services' },
                         ].map((item, i) => (
                             <Link
                                 key={i}
                                 href={item.href}
-                                className={`relative ${item.bg} rounded-2xl p-5 sm:p-6 hover:shadow-md transition-all group overflow-hidden`}
+                                className="flex flex-col gap-2.5 sm:gap-3 rounded-xl sm:rounded-2xl border border-emerald-100/80 bg-white p-3 sm:p-4 hover:border-emerald-300 hover:bg-emerald-50/40 transition-colors group"
                             >
-                                <div className="flex flex-col h-full">
-                                    <div>
-                                        <p className="text-base sm:text-lg font-bold text-slate-800">{item.label}</p>
-                                        <p className="text-xs sm:text-sm text-slate-500 mt-1">{item.sub}</p>
-                                    </div>
-                                    <div className="mt-auto pt-6">
-                                        <span className="text-xs font-semibold text-slate-600 group-hover:text-emerald-600 transition-colors flex items-center gap-1">
-                                            Explore <ChevronRight size={14} />
-                                        </span>
-                                    </div>
+                                <span className="inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-emerald-600 text-white shrink-0">
+                                    <item.icon size={18} strokeWidth={2} />
+                                </span>
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                                        {item.label}
+                                    </p>
+                                    <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5 leading-snug line-clamp-2">
+                                        {item.sub}
+                                    </p>
                                 </div>
-                                <div className={`absolute top-4 right-4 w-11 h-11 ${item.iconBg} rounded-xl flex items-center justify-center`}>
-                                    <item.icon size={22} className={item.iconColor} />
-                                </div>
+                                <span className="inline-flex items-center gap-0.5 text-[10px] sm:text-xs font-semibold text-emerald-700 group-hover:gap-1 transition-all">
+                                    Explore <ChevronRight size={12} />
+                                </span>
                             </Link>
                         ))}
                     </div>

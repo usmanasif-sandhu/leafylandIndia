@@ -1,10 +1,12 @@
 'use client'
-import { Star, Store } from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
+import { Star, Store } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+import ReviewsList from './ReviewsList'
 
 const ProductDescription = ({ product }) => {
     const [selectedTab, setSelectedTab] = useState('Description')
+    const reviews = product.rating || product.reviews || []
 
     return (
         <div className="my-10 text-sm text-slate-600">
@@ -16,11 +18,12 @@ const ProductDescription = ({ product }) => {
                         onClick={() => setSelectedTab(tab)}
                     >
                         {tab}
+                        {tab === 'Reviews' && reviews.length ? ` (${reviews.length})` : ''}
                     </button>
                 ))}
             </div>
 
-            {selectedTab === "Description" && (
+            {selectedTab === 'Description' && (
                 <div className="max-w-2xl">
                     <p className="leading-relaxed">{product.description}</p>
                     <div className="mt-4 grid grid-cols-2 gap-3">
@@ -36,34 +39,13 @@ const ProductDescription = ({ product }) => {
                 </div>
             )}
 
-            {selectedTab === "Reviews" && (
-                <div className="mt-4">
-                    {product.rating?.length > 0 ? (
-                        <div className="flex flex-col gap-4">
-                            {product.rating.map((item, index) => (
-                                <div key={index} className="flex gap-4 p-4 bg-slate-50 rounded-xl">
-                                    <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-                                        <span className="text-sm font-semibold text-emerald-700">{item.user?.name?.[0] || 'U'}</span>
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-1">
-                                            {Array(5).fill('').map((_, i) => (
-                                                <Star key={i} size={12} className='text-transparent' fill={item.rating >= i + 1 ? "#059669" : "#D1D5DB"} />
-                                            ))}
-                                        </div>
-                                        <p className="text-sm mt-1">{item.review}</p>
-                                        <p className="text-xs text-slate-400 mt-1">{item.user?.name} · {new Date(item.createdAt).toDateString()}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-slate-400 text-center py-8">No reviews yet. Be the first to review this product!</p>
-                    )}
-                </div>
+            {selectedTab === 'Reviews' && (
+                <ReviewsList
+                    reviews={reviews}
+                    emptyMessage="No reviews yet. Rate this product after your order is delivered."
+                />
             )}
 
-            {/* Store Info */}
             <div className="flex items-center gap-3 mt-8 p-4 bg-slate-50 rounded-xl">
                 <div className="w-11 h-11 bg-emerald-100 rounded-full flex items-center justify-center">
                     <Store size={18} className="text-emerald-600" />

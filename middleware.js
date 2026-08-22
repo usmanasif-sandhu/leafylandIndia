@@ -1,17 +1,17 @@
 import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server'
 
-async function resolveSecret() {
+const DEV_FALLBACK = 'leafyland-dev-insecure-secret-do-not-use-in-prod'
+
+function resolveSecret() {
     const explicit = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET
     if (explicit) return explicit
-    const basis = process.env.DATABASE_URL || process.env.VERCEL_URL || 'leafyland-dev'
-    const data = new TextEncoder().encode(`leafyland-auth:${basis}`)
-    const hash = await crypto.subtle.digest('SHA-256', data)
-    return Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, '0')).join('')
+    if (process.env.NODE_ENV === 'production') return null
+    return DEV_FALLBACK
 }
 
 async function readAuthToken(req) {
-    const secret = await resolveSecret()
+    const secret = resolveSecret()
     if (!secret) return null
 
     const cookieNames = [
@@ -40,14 +40,19 @@ export async function middleware(req) {
     const isAdmin = pathname.startsWith('/admin')
     const isStore = pathname.startsWith('/store')
     const isOrders = pathname === '/orders' || pathname.startsWith('/orders/')
+    const isProfile = pathname === '/profile' || pathname.startsWith('/profile/')
     const isCreateStore = pathname.startsWith('/create-store')
     const isLogin = pathname.startsWith('/login')
+    const isBuyerProtected =
+        pathname.startsWith('/messages') ||
+        pathname.startsWith('/bookings') ||
+        pathname.startsWith('/visits')
 
     if (isLogin && token) {
         return NextResponse.redirect(new URL('/auth/continue', req.url))
     }
 
-    if ((isAdmin || isStore || isOrders || isCreateStore) && !token) {
+    if ((isAdmin || isStore || isOrders || isProfile || isCreateStore || isBuyerProtected) && !token) {
         const login = new URL('/login', req.url)
         login.searchParams.set('callbackUrl', pathname)
         return NextResponse.redirect(login)
@@ -61,7 +66,7 @@ export async function middleware(req) {
         if (!token?.storeId) {
             return NextResponse.redirect(new URL('/become-seller', req.url))
         }
-        if (token.storeStatus === 'rejected') {
+        if (token.storeStatus !== 'approved' || !token.storeActive) {
             return NextResponse.redirect(new URL('/create-store', req.url))
         }
     }
@@ -70,5 +75,20 @@ export async function middleware(req) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/store/:path*', '/orders/:path*', '/orders', '/create-store', '/login'],
+    matcher: [
+        '/admin/:path*',
+        '/store/:path*',
+        '/orders/:path*',
+        '/orders',
+        '/profile/:path*',
+        '/profile',
+        '/create-store',
+        '/login',
+        '/messages',
+        '/messages/:path*',
+        '/bookings',
+        '/bookings/:path*',
+        '/visits',
+        '/visits/:path*',
+    ],
 }

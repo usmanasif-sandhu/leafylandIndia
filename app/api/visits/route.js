@@ -1,6 +1,20 @@
 import { prisma } from '@/lib/prisma'
 import { error, json, requireUser, handleApiError } from '@/lib/api'
 
+export async function GET() {
+    try {
+        const user = await requireUser()
+        const visits = await prisma.visit.findMany({
+            where: { userId: user.id },
+            include: { property: { select: { id: true, title: true, location: true, images: true } } },
+            orderBy: { createdAt: 'desc' },
+        })
+        return json(visits)
+    } catch (e) {
+        return handleApiError(e)
+    }
+}
+
 export async function POST(req) {
     try {
         const user = await requireUser()

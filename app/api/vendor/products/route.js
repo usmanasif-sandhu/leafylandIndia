@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { error, json, requireStore, handleApiError, serializeProduct } from '@/lib/api'
+import { sanitizeImageUrls } from '@/lib/images'
 
 export async function GET() {
     try {
@@ -23,8 +24,9 @@ export async function POST(req) {
         if (!name || !description || !category || mrp == null || price == null) {
             return error('Missing product fields')
         }
-        if (!Array.isArray(images) || images.length === 0) {
-            return error('Upload at least one product photo')
+        const safeImages = sanitizeImageUrls(images)
+        if (!safeImages.length) {
+            return error('Upload at least one product photo via /api/upload')
         }
         const product = await prisma.product.create({
             data: {
@@ -33,7 +35,7 @@ export async function POST(req) {
                 mrp: Number(mrp),
                 price: Number(price),
                 category,
-                images: Array.isArray(images) && images.length ? images : [],
+                images: safeImages,
                 stock: Number(stock || 0),
                 inStock: Number(stock || 0) > 0,
                 storeId: store.id,

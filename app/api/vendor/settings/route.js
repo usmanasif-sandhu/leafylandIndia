@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { json, requireStore, handleApiError } from '@/lib/api'
+import { json, requireStore, handleApiError, error } from '@/lib/api'
+import { sanitizeImageUrl } from '@/lib/images'
 
 const extraKeys = ['city', 'website', 'businessHours', 'gstNumber', 'panNumber', 'bankAccount', 'ifscCode', 'upiId', 'shippingPolicy', 'returnPolicy']
 
@@ -45,7 +46,10 @@ export async function PATCH(req) {
         for (const key of ['name', 'description', 'email', 'contact', 'address', 'logo']) {
             if (typeof body[key] === 'string') data[key] = body[key]
         }
-        if (data.logo === '/logo.png') data.logo = ''
+        if (typeof data.logo === 'string') {
+            data.logo = sanitizeImageUrl(data.logo)
+            if (body.logo && !data.logo) return error('Invalid logo image URL')
+        }
         const current = store.settings && typeof store.settings === 'object' && !Array.isArray(store.settings)
             ? store.settings
             : {}

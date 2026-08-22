@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useSelector, useDispatch } from 'react-redux'
 import { deleteItemFromCart } from '@/lib/features/cart/cartSlice'
 import { Trash2, ShoppingBag, ChevronRight, Minus, Plus } from 'lucide-react'
+import { cachedJson } from '@/lib/cachedJson'
 
 export default function Cart() {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
@@ -13,10 +14,16 @@ export default function Cart() {
     const [products, setProducts] = useState([])
 
     useEffect(() => {
-        fetch('/api/products')
-            .then((r) => r.json())
-            .then((data) => { if (Array.isArray(data)) setProducts(data) })
-    }, [])
+        const ids = Object.keys(cartItems || {})
+        if (!ids.length) {
+            setProducts([])
+            return
+        }
+        let cancelled = false
+        cachedJson(`/api/products?ids=${ids.join(',')}`)
+            .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data) })
+        return () => { cancelled = true }
+    }, [cartItems])
 
     const cartArray = []
     let totalPrice = 0

@@ -11,38 +11,43 @@ const img = (id) => `https://images.unsplash.com/photo-${id}?w=800&h=800&fit=cro
 async function main() {
     const passwordHash = await bcrypt.hash('LeafyLand123!', 12)
 
+    const verifiedAt = new Date()
+
     const admin = await prisma.user.upsert({
         where: { email: 'admin@leafyland.com' },
-        update: { role: 'ADMIN', passwordHash },
+        update: { role: 'ADMIN', passwordHash, emailVerified: verifiedAt },
         create: {
             name: 'LeafyLand Admin',
             email: 'admin@leafyland.com',
             passwordHash,
             role: 'ADMIN',
+            emailVerified: verifiedAt,
             image: '',
         },
     })
 
     const seller = await prisma.user.upsert({
         where: { email: 'seller@leafyland.com' },
-        update: { passwordHash },
+        update: { passwordHash, emailVerified: verifiedAt },
         create: {
             name: 'Fresh Roots Owner',
             email: 'seller@leafyland.com',
             passwordHash,
             role: 'BUYER',
+            emailVerified: verifiedAt,
             image: '',
         },
     })
 
     await prisma.user.upsert({
         where: { email: 'buyer@leafyland.com' },
-        update: { passwordHash },
+        update: { passwordHash, emailVerified: verifiedAt },
         create: {
             name: 'Priya Sharma',
             email: 'buyer@leafyland.com',
             passwordHash,
             role: 'BUYER',
+            emailVerified: verifiedAt,
             image: '',
         },
     })

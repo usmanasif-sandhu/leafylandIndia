@@ -3,6 +3,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
 import { Search, X, Leaf, Store } from 'lucide-react'
+import { cachedJson } from '@/lib/cachedJson'
 
 function ProductsContent() {
     const searchParams = useSearchParams()
@@ -15,12 +16,14 @@ function ProductsContent() {
     const [products, setProducts] = useState([])
 
     useEffect(() => {
+        let cancelled = false
         const params = new URLSearchParams()
         if (urlSearch) params.set('search', urlSearch)
         if (urlCategory && urlCategory !== 'All') params.set('category', urlCategory)
-        fetch(`/api/products?${params.toString()}`)
-            .then((r) => r.json())
-            .then((data) => { if (Array.isArray(data)) setProducts(data) })
+        const qs = params.toString()
+        cachedJson(`/api/products${qs ? `?${qs}` : ''}`)
+            .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data) })
+        return () => { cancelled = true }
     }, [urlCategory, urlSearch])
 
     useEffect(() => {

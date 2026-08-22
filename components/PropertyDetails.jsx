@@ -1,27 +1,70 @@
 'use client'
-import { MapPinIcon, RulerIcon, BedDoubleIcon, BathIcon, CalendarIcon } from "lucide-react"
-import { useState } from "react"
-import Image from "next/image"
-import ScheduleVisitModal from "./ScheduleVisitModal"
+import { MapPinIcon, RulerIcon, BedDoubleIcon, BathIcon, CalendarIcon, MessageSquare } from 'lucide-react'
+import { useState } from 'react'
+import Image from 'next/image'
+import ScheduleVisitModal from './ScheduleVisitModal'
+import toast from 'react-hot-toast'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 const PropertyDetails = ({ property }) => {
-
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
-    const [mainImage, setMainImage] = useState(property.images[0])
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const [mainImage, setMainImage] = useState(property.images?.[0])
     const [showVisitModal, setShowVisitModal] = useState(false)
+    const [showContact, setShowContact] = useState(false)
+    const [message, setMessage] = useState('')
+    const [sending, setSending] = useState(false)
+    const { data: session } = useSession()
+    const router = useRouter()
+
+    const sendMessage = async (e) => {
+        e.preventDefault()
+        if (!session?.user) {
+            toast.error('Please sign in')
+            router.push(`/login?callbackUrl=/properties/${property.id}`)
+            return
+        }
+        if (!property.storeId) {
+            toast.error('Seller unavailable')
+            return
+        }
+        setSending(true)
+        try {
+            const res = await fetch('/api/vendor/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId: property.storeId, body: message.trim() }),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Could not send')
+            toast.success('Message sent to seller')
+            setMessage('')
+            setShowContact(false)
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+            setSending(false)
+        }
+    }
 
     return (
         <div className="flex max-lg:flex-col gap-12">
             <div className="flex max-sm:flex-col-reverse gap-3">
                 <div className="flex sm:flex-col gap-3">
-                    {property.images.map((image, index) => (
-                        <div key={index} onClick={() => setMainImage(image)} className="bg-slate-100 flex items-center justify-center size-26 rounded-lg group cursor-pointer overflow-hidden">
+                    {(property.images || []).map((image, index) => (
+                        <div
+                            key={index}
+                            onClick={() => setMainImage(image)}
+                            className="bg-slate-100 flex items-center justify-center size-26 rounded-lg group cursor-pointer overflow-hidden"
+                        >
                             <Image src={image} className="w-full h-full object-cover group-hover:scale-105 transition" alt="" width={100} height={100} />
                         </div>
                     ))}
                 </div>
                 <div className="flex justify-center items-center h-100 sm:size-113 bg-slate-100 rounded-lg overflow-hidden">
-                    <Image src={mainImage} alt="" width={500} height={500} className="w-full h-full object-cover" />
+                    {mainImage && (
+                        <Image src={mainImage} alt="" width={500} height={500} className="w-full h-full object-cover" />
+                    )}
                 </div>
             </div>
 
@@ -32,14 +75,13 @@ const PropertyDetails = ({ property }) => {
                 </p>
 
                 <p className="text-2xl font-semibold text-slate-800 my-6">
-                    {currency}{property.price.toLocaleString()}
-                    {/* SCHEMA: assumes property.listingType is "SALE" | "RENT" */}
-                    {property.listingType === 'RENT' && <span className="text-base font-normal text-slate-500"> / month</span>}
+                    {currency}
+                    {property.price.toLocaleString()}
+                    {property.listingType === 'RENT' && (
+                        <span className="text-base font-normal text-slate-500"> / month</span>
+                    )}
                 </p>
 
-                {/* SCHEMA: assumes propertyType, landSize (string, e.g. "2 Kanal"), bedrooms, bathrooms are on the model.
-                    Not every property type (e.g. agricultural land) will have bedrooms/bathrooms —
-                    conditionally render so a farmland listing doesn't show "0 Bedrooms". */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm text-slate-600 py-4 border-y border-slate-200">
                     <div className="flex items-center gap-2">
                         <RulerIcon size={16} className="text-slate-400" />
@@ -65,16 +107,51 @@ const PropertyDetails = ({ property }) => {
                 <p className="text-slate-600 mt-6 max-w-xl">{property.description}</p>
 
                 <div className="flex gap-4 mt-8">
-                    <button onClick={() => setShowVisitModal(true)} className="flex items-center gap-2 bg-emerald-900 text-white px-8 py-3 text-sm font-medium rounded hover:bg-emerald-950 active:scale-95 transition">
+                    <button
+                        onClick={() => setShowVisitModal(true)}
+                        className="flex items-center gap-2 bg-emerald-900 text-white px-8 py-3 text-sm font-medium rounded hover:bg-emerald-950 active:scale-95 transition"
+                    >
                         <CalendarIcon size={16} /> Schedule Visit
                     </button>
-                    <button className="border border-slate-300 text-slate-700 px-8 py-3 text-sm font-medium rounded hover:bg-slate-50 active:scale-95 transition">
-                        Contact Seller
+                    <button
+                        onClick={() => setShowContact(true)}
+                        className="flex items-center gap-2 border border-slate-300 text-slate-700 px-8 py-3 text-sm font-medium rounded hover:bg-slate-50 active:scale-95 transition"
+                    >
+                        <MessageSquare size={16} /> Contact Seller
                     </button>
                 </div>
             </div>
 
             {showVisitModal && <ScheduleVisitModal property={property} setShowVisitModal={setShowVisitModal} />}
+
+            {showContact && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/40" onClick={() => setShowContact(false)} />
+                    <form onSubmit={sendMessage} className="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 space-y-4">
+                        <h3 className="text-lg font-semibold text-slate-800">Message seller</h3>
+                        <textarea
+                            required
+                            rows={4}
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            placeholder="Ask about availability, price, or visit details…"
+                            className="w-full border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"
+                        />
+                        <div className="flex gap-2 justify-end">
+                            <button type="button" onClick={() => setShowContact(false)} className="px-4 py-2 text-sm rounded-xl bg-slate-100">
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={sending}
+                                className="px-4 py-2 text-sm rounded-xl bg-emerald-700 text-white disabled:opacity-60"
+                            >
+                                Send
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
         </div>
     )
 }

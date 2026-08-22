@@ -4,12 +4,17 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, MapPin, Star, Clock, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
+import BookServiceModal from '@/components/BookServiceModal'
+import ReviewsList from '@/components/ReviewsList'
+import WishlistButton from '@/components/WishlistButton'
 
 const ServicePage = () => {
     const { serviceId } = useParams()
     const [service, setService] = useState(null)
     const [loading, setLoading] = useState(true)
     const [notFound, setNotFound] = useState(false)
+    const [showBookModal, setShowBookModal] = useState(false)
+    const [tab, setTab] = useState('Overview')
 
     useEffect(() => {
         setLoading(true)
@@ -48,9 +53,10 @@ const ServicePage = () => {
         )
     }
 
-    const rating = service.rating?.length
-        ? Math.round(service.rating.reduce((acc, r) => acc + r.rating, 0) / service.rating.length)
-        : 0
+    const reviews = service.reviews || service.rating || []
+    const rating = service.avgRating || (reviews.length
+        ? Math.round(reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length)
+        : 0)
 
     const providerName = service.store?.name || 'Provider'
 
@@ -61,9 +67,8 @@ const ServicePage = () => {
             </Link>
 
             <div className="flex max-lg:flex-col gap-8 lg:gap-12">
-                {/* Image */}
                 <div className="lg:w-1/2">
-                    <div className="aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden">
+                    <div className="relative aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden">
                         <Image
                             src={service.images?.[0] || 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=450&fit=crop'}
                             alt={service.name}
@@ -71,21 +76,23 @@ const ServicePage = () => {
                             height={450}
                             className="w-full h-full object-cover"
                         />
+                        <div className="absolute top-4 right-4">
+                            <WishlistButton itemId={service.id} itemType="service" className="shadow-md" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Info */}
                 <div className="flex-1">
                     <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{service.category}</span>
                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-3">{service.name}</h1>
 
-                    <div className="flex items-center gap-3 mt-3">
+                    <div className="flex flex-wrap items-center gap-3 mt-3">
                         <span className="flex items-center gap-1 text-sm text-slate-500">
                             <MapPin size={14} /> {service.location}
                         </span>
                         {rating > 0 && (
                             <span className="flex items-center gap-1 text-sm text-slate-500">
-                                <Star size={14} fill="#059669" className="text-emerald-600" /> {rating}
+                                <Star size={14} fill="#059669" className="text-emerald-600" /> {rating} ({reviews.length})
                             </span>
                         )}
                         {service.duration && (
@@ -100,9 +107,21 @@ const ServicePage = () => {
                         <p className="text-3xl font-bold text-slate-800 mt-1">₹{service.startingPrice.toLocaleString()}</p>
                     </div>
 
-                    <p className="text-sm text-slate-600 mt-4 leading-relaxed">{service.description}</p>
+                    <div className="flex flex-wrap gap-3 mt-6">
+                        <button
+                            onClick={() => setShowBookModal(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-sm font-semibold rounded-xl active:scale-95 transition"
+                        >
+                            Book Service
+                        </button>
+                        <Link
+                            href="/bookings"
+                            className="border border-slate-200 hover:border-slate-300 text-slate-700 px-6 py-3 text-sm font-medium rounded-xl transition inline-flex items-center"
+                        >
+                            My bookings
+                        </Link>
+                    </div>
 
-                    {/* Provider */}
                     <div className="flex items-center gap-3 mt-6 p-4 bg-slate-50 rounded-xl">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <span className="text-sm font-semibold text-blue-700">{providerName?.[0] || 'P'}</span>
@@ -112,31 +131,49 @@ const ServicePage = () => {
                             <p className="text-xs text-slate-400">Service Provider</p>
                         </div>
                     </div>
-
-                    {/* Actions */}
-                    <div className="flex flex-wrap gap-3 mt-6">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-sm font-semibold rounded-xl active:scale-95 transition">
-                            Request a Quote
-                        </button>
-                        <button className="border border-slate-200 hover:border-slate-300 text-slate-700 px-6 py-3 text-sm font-medium rounded-xl transition">
-                            Message Provider
-                        </button>
-                    </div>
-
-                    {/* What's Included */}
-                    <div className="mt-8">
-                        <h3 className="text-sm font-semibold text-slate-800 mb-3">What's Included</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {['Site consultation', 'Custom design', 'Material sourcing', 'Professional installation', 'Post-service cleanup', '30-day warranty'].map((item, i) => (
-                                <div key={i} className="flex items-center gap-2 text-sm text-slate-600">
-                                    <CheckCircle size={14} className="text-emerald-500 shrink-0" />
-                                    {item}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            <div className="mt-10">
+                <div className="flex border-b border-slate-200 mb-6">
+                    {['Overview', 'Reviews'].map((label) => (
+                        <button
+                            key={label}
+                            onClick={() => setTab(label)}
+                            className={`px-4 py-2.5 text-sm font-medium transition ${tab === label ? 'border-b-2 border-emerald-600 text-emerald-600' : 'text-slate-400'}`}
+                        >
+                            {label}
+                            {label === 'Reviews' && reviews.length ? ` (${reviews.length})` : ''}
+                        </button>
+                    ))}
+                </div>
+
+                {tab === 'Overview' && (
+                    <div className="max-w-2xl space-y-6">
+                        <p className="text-sm text-slate-600 leading-relaxed">{service.description}</p>
+                        <div>
+                            <h3 className="text-sm font-semibold text-slate-800 mb-3">What&apos;s included</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                {['Site consultation', 'Custom design', 'Material sourcing', 'Professional installation'].map((item) => (
+                                    <div key={item} className="flex items-center gap-2 text-sm text-slate-600">
+                                        <CheckCircle size={14} className="text-emerald-500 shrink-0" />
+                                        {item}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {tab === 'Reviews' && (
+                    <ReviewsList
+                        reviews={reviews}
+                        emptyMessage="No reviews yet. Rate this service after your booking is completed."
+                    />
+                )}
+            </div>
+
+            {showBookModal && <BookServiceModal service={service} setShowBookModal={setShowBookModal} />}
         </div>
     )
 }

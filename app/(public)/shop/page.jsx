@@ -3,6 +3,7 @@ import { Suspense, useState, useEffect } from "react"
 import ProductCard from "@/components/ProductCard"
 import { MoveLeftIcon } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { cachedJson } from '@/lib/cachedJson'
 
 function ShopContent() {
     const searchParams = useSearchParams()
@@ -13,10 +14,11 @@ function ShopContent() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch('/api/products')
-            .then((r) => r.json())
-            .then((data) => { if (Array.isArray(data)) setProducts(data) })
-            .finally(() => setLoading(false))
+        let cancelled = false
+        cachedJson('/api/products')
+            .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data) })
+            .finally(() => { if (!cancelled) setLoading(false) })
+        return () => { cancelled = true }
     }, [])
 
     const filteredProducts = search
