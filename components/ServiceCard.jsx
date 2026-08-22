@@ -2,6 +2,7 @@
 import { MapPin, Star, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import WishlistButton from '@/components/WishlistButton'
 
 const ServiceCard = ({ service }) => {
     const currency = '₹'
@@ -22,6 +23,9 @@ const ServiceCard = ({ service }) => {
                 <span className="absolute top-2 left-2 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
                     {service.category}
                 </span>
+                <div className="absolute top-2 right-2 z-10">
+                    <WishlistButton itemId={service.id} itemType="service" />
+                </div>
                 <button className="absolute bottom-2 right-2 bg-white/90 hover:bg-blue-600 hover:text-white text-blue-700 text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-md transition-all active:scale-95 border border-blue-200 hover:border-blue-600">
                     GET QUOTE
                 </button>

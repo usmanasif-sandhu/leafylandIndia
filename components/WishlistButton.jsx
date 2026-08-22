@@ -1,9 +1,9 @@
 'use client'
 import { Heart } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { toggleWishlist, setWishlist } from '@/lib/features/wishlist/wishlistSlice'
+import { toggleWishlist } from '@/lib/features/wishlist/wishlistSlice'
 import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 
@@ -29,34 +29,12 @@ export function normalizeWishlistType(itemType) {
 const WishlistButton = ({ itemId, itemType, className = '' }) => {
     const dispatch = useDispatch()
     const router = useRouter()
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
     const wishlist = useSelector((state) => state.wishlist?.items) || []
     const apiType = normalizeWishlistType(itemType)
     const uiType = UI_TYPE[apiType] || itemType
     const isWishlisted = wishlist.some((item) => item.id === itemId && item.type === uiType)
     const [busy, setBusy] = useState(false)
-
-    useEffect(() => {
-        if (status !== 'authenticated') return
-        let cancelled = false
-        fetch('/api/wishlist')
-            .then((r) => (r.ok ? r.json() : []))
-            .then((items) => {
-                if (cancelled || !Array.isArray(items)) return
-                dispatch(
-                    setWishlist(
-                        items.map((i) => ({
-                            id: i.itemId,
-                            type: UI_TYPE[i.itemType] || String(i.itemType).toLowerCase(),
-                        })),
-                    ),
-                )
-            })
-            .catch(() => {})
-        return () => {
-            cancelled = true
-        }
-    }, [status, dispatch])
 
     const onClick = async (e) => {
         e.preventDefault()

@@ -38,8 +38,8 @@ export async function uploadImage(file) {
     if (!file.type?.startsWith('image/')) {
         throw new Error('Only image files are allowed')
     }
-    if (file.size > 1.5 * 1024 * 1024) {
-        throw new Error('Image must be under 1.5 MB')
+    if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Image must be under 5 MB')
     }
     const body = new FormData()
     body.append('file', file)
@@ -50,7 +50,12 @@ export async function uploadImage(file) {
     return data.url
 }
 
-/** @deprecated Prefer uploadImage */
+/** Upload multiple images in parallel. */
+export async function uploadImages(files) {
+    return Promise.all(Array.from(files || []).map((file) => uploadImage(file)))
+}
+
+/** @deprecated Use uploadImage */
 export function fileToDataUrl(file) {
     return uploadImage(file)
 }

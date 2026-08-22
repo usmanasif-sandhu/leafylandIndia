@@ -6,6 +6,7 @@ import { ChevronLeft, MapPin, Star, Clock, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import BookServiceModal from '@/components/BookServiceModal'
 import ReviewsList from '@/components/ReviewsList'
+import WishlistButton from '@/components/WishlistButton'
 
 const ServicePage = () => {
     const { serviceId } = useParams()
@@ -67,7 +68,7 @@ const ServicePage = () => {
 
             <div className="flex max-lg:flex-col gap-8 lg:gap-12">
                 <div className="lg:w-1/2">
-                    <div className="aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden">
+                    <div className="relative aspect-[4/3] bg-slate-100 rounded-2xl overflow-hidden">
                         <Image
                             src={service.images?.[0] || 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=450&fit=crop'}
                             alt={service.name}
@@ -75,6 +76,9 @@ const ServicePage = () => {
                             height={450}
                             className="w-full h-full object-cover"
                         />
+                        <div className="absolute top-4 right-4">
+                            <WishlistButton itemId={service.id} itemType="service" className="shadow-md" />
+                        </div>
                     </div>
                 </div>
 

@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import { UserPlus } from 'lucide-react'
+import toast from 'react-hot-toast'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
+
 const ROLE_FILTERS = ['All', 'Buyer', 'Seller', 'Admin']
 
 const ROLE_STYLES = {
@@ -35,19 +38,57 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState('All')
   const [selectedUser, setSelectedUser] = useState(null)
   const [users, setUsers] = useState([])
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [creating, setCreating] = useState(false)
+  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', password: '', confirmPassword: '' })
 
-  useEffect(() => {
-    fetch('/api/admin/users')
+  const loadUsers = useCallback(() => {
+    return fetch('/api/admin/users')
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setUsers(data) })
   }, [])
 
+  useEffect(() => { loadUsers() }, [loadUsers])
+
   const filteredData = useMemo(() => {
     if (roleFilter === 'All') return users
-    return users.filter(
-      (u) => u.role === roleFilter.toLowerCase()
-    )
+    return users.filter((u) => u.role === roleFilter.toLowerCase())
   }, [roleFilter, users])
+
+  const handleCreateAdmin = async (e) => {
+    e.preventDefault()
+
+    if (newAdmin.password !== newAdmin.confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    setCreating(true)
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newAdmin.name,
+          email: newAdmin.email,
+          password: newAdmin.password,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Could not create admin')
+        return
+      }
+      toast.success(`Admin account created for ${data.email}`)
+      setUsers((prev) => [data, ...prev])
+      setNewAdmin({ name: '', email: '', password: '', confirmPassword: '' })
+      setShowCreateForm(false)
+    } catch {
+      toast.error('Could not create admin')
+    } finally {
+      setCreating(false)
+    }
+  }
 
   const columns = [
     {
@@ -97,7 +138,83 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Users" description="Manage all platform users" />
+      <PageHeader
+        title="Users"
+        description="View platform users. Create new admin accounts only — existing users cannot be promoted."
+        action={
+          <button
+            type="button"
+            onClick={() => setShowCreateForm((v) => !v)}
+            className="inline-flex items-center gap-2 bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-800 transition-colors"
+          >
+            <UserPlus size={16} />
+            Create Admin Account
+          </button>
+        }
+      />
+
+      {showCreateForm && (
+        <form
+          onSubmit={handleCreateAdmin}
+          className="bg-white border border-slate-200 rounded-xl p-5 space-y-4"
+        >
+          <h2 className="text-sm font-bold text-slate-800">Create new admin account</h2>
+          <p className="text-xs text-slate-500">
+            Only create accounts for trusted team members. The email must not already be registered on the platform.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <input
+              type="text"
+              placeholder="Full name"
+              value={newAdmin.name}
+              onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <input
+              type="email"
+              required
+              placeholder="Admin email"
+              value={newAdmin.email}
+              onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="Password (min 6 characters)"
+              value={newAdmin.password}
+              onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="Confirm password"
+              value={newAdmin.confirmPassword}
+              onChange={(e) => setNewAdmin({ ...newAdmin, confirmPassword: e.target.value })}
+              className="border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={creating}
+              className="bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-emerald-800 disabled:opacity-60"
+            >
+              {creating ? 'Creating…' : 'Create admin account'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCreateForm(false)}
+              className="text-sm font-medium text-slate-600 px-4 py-2 rounded-lg hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
 
       <div className="flex items-center gap-3">
         <select
@@ -129,7 +246,7 @@ export default function UsersPage() {
           <div className="space-y-5">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xl font-bold">
-                {selectedUser.name.split(' ').map((n) => n[0]).join('')}
+                {(selectedUser.name || '?').split(' ').map((n) => n[0]).join('')}
               </div>
               <div>
                 <p className="text-lg font-bold text-slate-800">{selectedUser.name}</p>
@@ -139,7 +256,6 @@ export default function UsersPage() {
 
             <div className="space-y-3">
               <DetailRow label="Email" value={selectedUser.email} />
-              <DetailRow label="Phone" value={selectedUser.phone} />
               <DetailRow label="Role" value={selectedUser.role.charAt(0).toUpperCase() + selectedUser.role.slice(1)} />
               <DetailRow label="Join Date" value={formatDate(selectedUser.joinDate)} />
               <DetailRow label="Total Orders" value={selectedUser.totalOrders} />

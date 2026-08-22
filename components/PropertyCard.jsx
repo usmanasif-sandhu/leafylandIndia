@@ -2,6 +2,7 @@
 import { MapPin, Maximize, BedDouble, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import WishlistButton from '@/components/WishlistButton'
 
 const PropertyCard = ({ property }) => {
     const currency = '₹'
@@ -22,6 +23,9 @@ const PropertyCard = ({ property }) => {
                 <span className={`absolute top-2 left-2 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md ${property.listingType === 'SALE' ? 'bg-amber-500' : 'bg-blue-500'}`}>
                     {property.listingType === 'SALE' ? 'FOR SALE' : 'FOR RENT'}
                 </span>
+                <div className="absolute top-2 right-2 z-10">
+                    <WishlistButton itemId={property.id} itemType="property" />
+                </div>
                 <button className="absolute bottom-2 right-2 bg-white/90 hover:bg-amber-500 hover:text-white text-amber-700 text-[11px] font-bold px-3 py-1.5 rounded-lg shadow-md transition-all active:scale-95 border border-amber-200 hover:border-amber-500">
                     ENQUIRE
                 </button>

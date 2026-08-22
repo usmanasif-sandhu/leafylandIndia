@@ -1,21 +1,34 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { XIcon } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { clearCart } from '@/lib/features/cart/cartSlice'
 import AddressPicker from './AddressPicker'
+import { useRazorpayCheckout } from '@/components/RazorpayCheckout'
 
 const OrderSummary = ({ totalPrice, items }) => {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
     const router = useRouter()
     const dispatch = useDispatch()
+    const { data: session } = useSession()
+    const { pay, paying } = useRazorpayCheckout()
 
     const [selectedAddressId, setSelectedAddressId] = useState(null)
     const [couponCodeInput, setCouponCodeInput] = useState('')
     const [coupon, setCoupon] = useState('')
-    const [placing, setPlacing] = useState(false)
+    const [razorpayEnabled, setRazorpayEnabled] = useState(false)
+    const [configLoaded, setConfigLoaded] = useState(false)
+
+    useEffect(() => {
+        fetch('/api/razorpay/config')
+            .then((r) => r.json())
+            .then((d) => setRazorpayEnabled(Boolean(d?.enabled)))
+            .catch(() => setRazorpayEnabled(false))
+            .finally(() => setConfigLoaded(true))
+    }, [])
 
     const handleCouponCode = async (event) => {
         event.preventDefault()
@@ -39,37 +52,29 @@ const OrderSummary = ({ totalPrice, items }) => {
 
     const discounted = coupon ? totalPrice * (1 - coupon.discount / 100) : totalPrice
     const total = discounted
+    const cartItemsPayload = Object.fromEntries((items || []).map((i) => [i.id, i.quantity]))
 
-    const handlePlaceOrder = async (e) => {
+    const handlePay = async (e) => {
         e.preventDefault()
         if (!selectedAddressId) return toast.error('Please select a delivery address')
         if (!items?.length) return toast.error('Your cart is empty')
+        if (!razorpayEnabled) {
+            return toast.error('Online payment is not configured yet. Please try again later.')
+        }
 
-        setPlacing(true)
         try {
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    addressId: selectedAddressId,
-                    paymentMethod: 'COD',
-                    couponCode: coupon ? coupon.code : undefined,
-                    cartItems: Object.fromEntries(
-                        (items || []).map((i) => [i.id, i.quantity]),
-                    ),
-                }),
+            const verified = await pay({
+                addressId: selectedAddressId,
+                couponCode: coupon ? coupon.code : undefined,
+                cartItems: cartItemsPayload,
+                user: session?.user,
             })
-            const data = await res.json()
-            if (!res.ok) {
-                throw new Error(data.error || 'Could not place order')
-            }
             dispatch(clearCart())
-            toast.success('Order placed successfully')
-            router.push('/orders')
+            toast.success('Payment successful')
+            const orderId = verified?.primaryOrderId || verified?.orders?.[0]?.id
+            router.push(orderId ? `/orders/${orderId}/success` : '/orders')
         } catch (err) {
-            toast.error(err.message || 'Could not place order')
-        } finally {
-            setPlacing(false)
+            toast.error(err.message || 'Payment could not be completed')
         }
     }
 
@@ -78,11 +83,36 @@ const OrderSummary = ({ totalPrice, items }) => {
             <h2 className='text-xl font-medium text-slate-600'>Payment Summary</h2>
 
             <p className='text-slate-400 text-xs my-4'>Payment Method</p>
-            <div className='flex gap-2 items-center'>
-                <input type="radio" id="COD" name="payment" checked readOnly className='accent-emerald-700' />
-                <label htmlFor="COD">Cash on Delivery</label>
+            <div className='space-y-2'>
+                <label className='flex gap-2 items-center cursor-pointer'>
+                    <input
+                        type="radio"
+                        name="payment"
+                        checked
+                        readOnly
+                        className='accent-emerald-700'
+                    />
+                    <span>Pay online (Razorpay — UPI, Card, Netbanking)</span>
+                </label>
+                <div className='flex gap-2 items-center opacity-60 cursor-not-allowed select-none'>
+                    <input
+                        type="radio"
+                        name="payment"
+                        disabled
+                        className='accent-emerald-700'
+                    />
+                    <span className='text-slate-500'>Cash on Delivery</span>
+                    <span className='text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full'>
+                        Coming soon
+                    </span>
+                </div>
             </div>
-            <p className='text-xs text-slate-400 mt-2'>Online payments will be available once a payment provider is connected.</p>
+
+            {configLoaded && !razorpayEnabled && (
+                <p className='text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-3'>
+                    Razorpay keys are not configured on the server. Add them to enable checkout.
+                </p>
+            )}
 
             <div className='my-4 py-4 border-y border-slate-200'>
                 <p className='mb-3 text-slate-400 text-xs'>Delivery Address</p>
@@ -99,13 +129,13 @@ const OrderSummary = ({ totalPrice, items }) => {
                     <div className='flex flex-col gap-1 font-medium text-right'>
                         <p>{currency}{totalPrice.toLocaleString()}</p>
                         <p>Free</p>
-                        {coupon && <p>{`-${currency}${(coupon.discount / 100 * totalPrice).toFixed(2)}`}</p>}
+                        {coupon && <p>{`-${currency}${((coupon.discount / 100) * totalPrice).toFixed(2)}`}</p>}
                     </div>
                 </div>
                 {!coupon ? (
-                    <form onSubmit={e => toast.promise(handleCouponCode(e), { loading: 'Checking Coupon...' })} className='flex justify-center gap-3 mt-3'>
+                    <form onSubmit={(e) => toast.promise(handleCouponCode(e), { loading: 'Checking Coupon...' })} className='flex justify-center gap-3 mt-3'>
                         <input onChange={(e) => setCouponCodeInput(e.target.value)} value={couponCodeInput} type="text" placeholder='Coupon Code' className='border border-slate-400 p-1.5 rounded w-full outline-none' />
-                        <button className='bg-emerald-700 text-white px-3 rounded hover:bg-emerald-900 active:scale-95 transition-all'>Apply</button>
+                        <button type="submit" className='bg-emerald-700 text-white px-3 rounded hover:bg-emerald-900 active:scale-95 transition-all'>Apply</button>
                     </form>
                 ) : (
                     <div className='w-full flex items-center justify-center gap-2 text-xs mt-2'>
@@ -121,11 +151,16 @@ const OrderSummary = ({ totalPrice, items }) => {
                 <p className='font-medium text-right'>{currency}{total.toLocaleString()}</p>
             </div>
             <button
-                onClick={e => toast.promise(handlePlaceOrder(e), { loading: 'Placing Order...', success: 'Order placed', error: 'Could not place order' })}
-                disabled={placing}
+                type="button"
+                onClick={(e) => toast.promise(handlePay(e), {
+                    loading: 'Opening payment…',
+                    success: 'Processing…',
+                    error: 'Could not complete checkout',
+                })}
+                disabled={paying || !razorpayEnabled}
                 className='w-full bg-emerald-900 text-white py-2.5 rounded hover:bg-emerald-950 active:scale-95 transition-all disabled:opacity-60'
             >
-                Place Order
+                {paying ? 'Please wait…' : 'Pay Now'}
             </button>
         </div>
     )

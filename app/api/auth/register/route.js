@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { error, json } from '@/lib/api'
+import { sendVerificationEmail } from '@/lib/email-verification'
+import { isEmailConfigured } from '@/lib/email'
 
 export async function POST(req) {
     try {
@@ -28,7 +30,28 @@ export async function POST(req) {
             select: { id: true, name: true, email: true, role: true },
         })
 
-        return json({ user }, 201)
+        let verification = { sent: false, verifyUrl: null }
+        try {
+            verification = await sendVerificationEmail(user.email, user.name)
+        } catch (err) {
+            console.error('Verification email failed', err)
+            await prisma.user.delete({ where: { id: user.id } })
+            return error(
+                isEmailConfigured()
+                    ? 'Account could not be created. Failed to send verification email.'
+                    : 'Email service is not configured. Set SMTP settings on the server.',
+                503,
+            )
+        }
+
+        return json({
+            user,
+            requiresVerification: true,
+            message: 'Account created. Check your email to verify your address before signing in.',
+            ...(process.env.NODE_ENV === 'development' && verification.verifyUrl
+                ? { devVerifyUrl: verification.verifyUrl }
+                : {}),
+        }, 201)
     } catch (e) {
         console.error(e)
         return error('Could not create account', 500)

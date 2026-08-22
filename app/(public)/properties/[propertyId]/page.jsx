@@ -6,6 +6,7 @@ import { ChevronLeft, MapPin, Maximize, BedDouble, CheckCircle, Star, CalendarIc
 import Image from 'next/image'
 import ScheduleVisitModal from '@/components/ScheduleVisitModal'
 import ReviewsList from '@/components/ReviewsList'
+import WishlistButton from '@/components/WishlistButton'
 
 const PropertyPage = () => {
     const { propertyId } = useParams()
@@ -78,6 +79,9 @@ const PropertyPage = () => {
                         <span className={`absolute top-4 left-4 text-white text-xs font-bold px-3 py-1 rounded-lg ${property.listingType === 'SALE' ? 'bg-amber-500' : 'bg-blue-500'}`}>
                             {property.listingType === 'SALE' ? 'FOR SALE' : 'FOR RENT'}
                         </span>
+                        <div className="absolute top-4 right-4">
+                            <WishlistButton itemId={property.id} itemType="property" className="shadow-md" />
+                        </div>
                     </div>
                 </div>
 

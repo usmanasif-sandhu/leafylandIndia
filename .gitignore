@@ -45,3 +45,7 @@ docs/
 /public/uploads/*
 !/public/uploads/.gitkeep
 
+# User uploads (primary storage — set UPLOAD_DIR on VPS to persist outside deploys)
+/uploads/*
+!/uploads/.gitkeep
+

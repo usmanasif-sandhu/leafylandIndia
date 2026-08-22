@@ -6,9 +6,10 @@ import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import {
     User, Package, ShoppingCart, Store, MapPin, LogOut,
-    ChevronRight, Mail, Shield, MessageSquare, Calendar, Home,
+    ChevronRight, Mail, Shield, MessageSquare, Calendar, Home, Heart,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import WishlistSection from '@/components/WishlistSection'
 
 export default function BuyerProfilePage() {
     const { data: session, update } = useSession()
@@ -65,6 +66,7 @@ export default function BuyerProfilePage() {
         { href: '/visits', label: 'Property Visits', desc: 'Scheduled property visits', icon: Home },
         { href: '/messages', label: 'Messages', desc: 'Conversations with sellers', icon: MessageSquare },
         { href: '/cart', label: 'My Cart', desc: 'Items waiting to be checked out', icon: ShoppingCart },
+        { href: '#wishlist', label: 'My Wishlist', desc: 'Saved products, services & properties', icon: Heart },
         {
             href: store?.status === 'approved' ? '/store' : store ? '/create-store' : '/become-seller',
             label: store?.status === 'approved' ? 'Vendor Panel' : store ? 'Store Application' : 'Become a Seller',
@@ -166,6 +168,10 @@ export default function BuyerProfilePage() {
                             </span>
                         </button>
                     </div>
+                </div>
+
+                <div id="wishlist">
+                    <WishlistSection />
                 </div>
 
                 <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">

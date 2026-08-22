@@ -1,6 +1,25 @@
 import { prisma } from '@/lib/prisma'
 import { error, json, requireUser, handleApiError, serializeOrder } from '@/lib/api'
 
+export async function GET(_req, { params }) {
+    try {
+        const user = await requireUser()
+        const { id } = await params
+        const order = await prisma.order.findFirst({
+            where: { id, userId: user.id },
+            include: {
+                store: true,
+                address: true,
+                orderItems: { include: { product: true } },
+            },
+        })
+        if (!order) return error('Order not found', 404)
+        return json(serializeOrder(order))
+    } catch (e) {
+        return handleApiError(e)
+    }
+}
+
 export async function PATCH(req, { params }) {
     try {
         const user = await requireUser()
@@ -18,14 +37,24 @@ export async function PATCH(req, { params }) {
         }
 
         const updated = await prisma.$transaction(async (tx) => {
-            for (const item of order.orderItems) {
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: {
-                        stock: { increment: item.quantity },
-                        inStock: true,
-                    },
-                })
+            const stockWasFulfilled =
+                order.paymentMethod === 'COD' ||
+                (order.checkoutBatchId &&
+                    (await tx.checkoutBatch.findUnique({
+                        where: { id: order.checkoutBatchId },
+                        select: { stockFulfilled: true },
+                    }))?.stockFulfilled)
+
+            if (stockWasFulfilled) {
+                for (const item of order.orderItems) {
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: { increment: item.quantity },
+                            inStock: true,
+                        },
+                    })
+                }
             }
             return tx.order.update({
                 where: { id },

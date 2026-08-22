@@ -25,6 +25,7 @@ model User {
     Address         Address[]
     store           Store?
     buyerOrders     Order[]         @relation("BuyerRelation")
+    checkoutBatches CheckoutBatch[]
     serviceBookings Booking[]       @relation("ServiceBookings")
     wishlist        WishlistItem[]
     serviceRatings  ServiceRating[]
@@ -114,28 +115,67 @@ enum PaymentMethod {
     UPI
     CARD
     WALLET
+    RAZORPAY
+}
+
+enum PaymentStatus {
+    PENDING
+    AUTHORIZED
+    CAPTURED
+    FAILED
+    REFUNDED
+}
+
+// Groups multi-store cart into one Razorpay payment
+model CheckoutBatch {
+    id                String        @id @default(cuid())
+    userId            String
+    addressId         String
+    totalPaise        Int
+    currency          String        @default("INR")
+    paymentStatus     PaymentStatus @default(PENDING)
+    paymentMethod     PaymentMethod @default(RAZORPAY)
+    razorpayOrderId   String?       @unique
+    razorpayPaymentId String?       @unique
+    isCouponUsed      Boolean       @default(false)
+    coupon            Json          @default("{}")
+    stockFulfilled    Boolean       @default(false)
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+
+    user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    address Address  @relation(fields: [addressId], references: [id])
+    orders  Order[]
+}
+
+model RazorpayWebhookEvent {
+    eventId     String   @id
+    processedAt DateTime @default(now())
 }
 
 // Required for creating an Order: total, userId, storeId, addressId, isPaid, paymentMethod, isCouponUsed, coupon (JSON), orderItems (nested)
 model Order {
-    id            String        @id @default(cuid())
-    total         Float
-    status        OrderStatus   @default(ORDER_PLACED)
-    userId        String
-    storeId       String
-    addressId     String?
-    isPaid        Boolean       @default(false)
-    paymentMethod PaymentMethod
-    createdAt     DateTime      @default(now())
-    updatedAt     DateTime      @updatedAt
-    isCouponUsed  Boolean       @default(false)
-    coupon        Json          @default("{}")
-    orderItems    OrderItem[]
+    id              String        @id @default(cuid())
+    total           Float
+    status          OrderStatus   @default(ORDER_PLACED)
+    userId          String
+    storeId         String
+    addressId       String?
+    checkoutBatchId String?
+    isPaid          Boolean       @default(false)
+    paymentStatus   PaymentStatus @default(PENDING)
+    paymentMethod   PaymentMethod
+    createdAt       DateTime      @default(now())
+    updatedAt       DateTime      @updatedAt
+    isCouponUsed    Boolean       @default(false)
+    coupon          Json          @default("{}")
+    orderItems      OrderItem[]
 
     // Relations
-    user    User    @relation("BuyerRelation", fields: [userId], references: [id])
-    store   Store   @relation(fields: [storeId], references: [id])
-    address Address? @relation(fields: [addressId], references: [id])
+    user          User           @relation("BuyerRelation", fields: [userId], references: [id])
+    store         Store          @relation(fields: [storeId], references: [id])
+    address       Address?       @relation(fields: [addressId], references: [id])
+    checkoutBatch CheckoutBatch? @relation(fields: [checkoutBatchId], references: [id], onDelete: SetNull)
 }
 
 // Required for creating an OrderItem: orderId, productId, quantity, price
@@ -191,6 +231,7 @@ model Address {
     // Relations
     Order Order[]
     user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    checkoutBatches CheckoutBatch[]
 }
 
 // Required for creating a Coupon: code, description, discount, forNewUser, isPublic, expiresAt

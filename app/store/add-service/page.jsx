@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { X, Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import PageHeader from '@/components/admin/PageHeader'
-import { uploadImage } from '@/components/store/StoreLogo'
+import { uploadImages } from '@/components/store/StoreLogo'
 
 const serviceCategories = [
     'Landscaping', 'Irrigation', 'Garden Maintenance', 'Tree Care',
@@ -40,7 +40,7 @@ export default function StoreAddService() {
         setLoading(true)
         try {
             if (!images.length) throw new Error('Upload at least one service photo')
-            const imageUrls = await Promise.all(images.map((file) => uploadImage(file)))
+            const imageUrls = await uploadImages(images)
             const res = await fetch('/api/vendor/services', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

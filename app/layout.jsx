@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import StoreProvider from "@/app/StoreProvider";
 import AuthProvider from "@/components/AuthProvider";
 import CartSync from "@/components/CartSync";
+import WishlistSync from "@/components/WishlistSync";
 import "./globals.css";
 
 const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
                     <StoreProvider>
                         <Toaster />
                         <CartSync />
+                        <WishlistSync />
                         {children}
                     </StoreProvider>
                 </AuthProvider>
