@@ -1,10 +1,13 @@
 'use client'
-import { MapPin, Maximize, BedDouble } from 'lucide-react'
+import { MapPin, Maximize, BedDouble, Star } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
 const PropertyCard = ({ property }) => {
     const currency = '₹'
+    const rating = property.rating?.length
+        ? Math.round(property.rating.reduce((acc, r) => acc + r.rating, 0) / property.rating.length)
+        : property.avgRating || 0
 
     return (
         <Link href={`/properties/${property.id}`} className="group block w-52 sm:w-56 flex-shrink-0">
@@ -32,9 +35,11 @@ const PropertyCard = ({ property }) => {
                     <span className="flex items-center gap-0.5 text-[10px] text-slate-500">
                         <Maximize size={9} /> {property.landSize}
                     </span>
-                    <span className="flex items-center gap-0.5 text-[10px] text-slate-500">
-                        <BedDouble size={9} /> {property.listingType}
-                    </span>
+                    {rating > 0 && (
+                        <span className="flex items-center gap-0.5 text-[10px] text-slate-600">
+                            <Star size={9} fill="#059669" className="text-emerald-600" /> {rating}
+                        </span>
+                    )}
                 </div>
                 <p className="text-sm font-bold text-slate-800 mt-1">
                     {currency}{property.price.toLocaleString()}

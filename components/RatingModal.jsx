@@ -1,10 +1,10 @@
 'use client'
 
 import { Star, XIcon } from 'lucide-react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 
-const RatingModal = ({ ratingModal, setRatingModal }) => {
+const RatingModal = ({ ratingModal, setRatingModal, onRated }) => {
     const [rating, setRating] = useState(0)
     const [review, setReview] = useState('')
 
@@ -26,6 +26,7 @@ const RatingModal = ({ ratingModal, setRatingModal }) => {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || 'Could not submit rating')
         toast.success('Thanks for your review')
+        onRated?.(data)
         setRatingModal(null)
     }
 

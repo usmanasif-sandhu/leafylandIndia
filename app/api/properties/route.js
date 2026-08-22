@@ -19,7 +19,10 @@ export async function GET(req) {
                 }
                 : {}),
         },
-        include: { store: { select: { name: true, username: true, logo: true } } },
+        include: {
+            store: { select: { name: true, username: true, logo: true } },
+            rating: { select: { rating: true } },
+        },
         orderBy: { createdAt: 'desc' },
     })
 

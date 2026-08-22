@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { error, json } from '@/lib/api'
+import { avgRating, serializeReview } from '@/lib/reviews'
 
 export async function GET(_req, { params }) {
     const { id } = await params
@@ -7,9 +8,16 @@ export async function GET(_req, { params }) {
         where: { id },
         include: {
             store: { select: { id: true, name: true, username: true, logo: true } },
-            rating: { include: { user: { select: { name: true, image: true } } } },
+            rating: {
+                include: { user: { select: { name: true, image: true } } },
+                orderBy: { createdAt: 'desc' },
+            },
         },
     })
     if (!service) return error('Service not found', 404)
-    return json(service)
+    return json({
+        ...service,
+        avgRating: avgRating(service.rating),
+        reviews: service.rating.map(serializeReview),
+    })
 }

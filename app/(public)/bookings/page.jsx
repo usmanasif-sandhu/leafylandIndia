@@ -3,20 +3,24 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import RateModal from '@/components/RateModal'
 
 export default function BuyerBookingsPage() {
     const [bookings, setBookings] = useState([])
+    const [ratedIds, setRatedIds] = useState(new Set())
     const [loading, setLoading] = useState(true)
     const [ratingFor, setRatingFor] = useState(null)
-    const [score, setScore] = useState(5)
-    const [review, setReview] = useState('')
 
     const load = () => {
-        fetch('/api/bookings')
-            .then(async (r) => {
-                const data = await r.json()
-                if (!r.ok) throw new Error(data.error || 'Failed to load')
-                setBookings(Array.isArray(data) ? data : [])
+        Promise.all([fetch('/api/bookings'), fetch('/api/service-ratings')])
+            .then(async ([bookingsRes, ratingsRes]) => {
+                const bookingsData = await bookingsRes.json()
+                const ratingsData = await ratingsRes.json()
+                if (!bookingsRes.ok) throw new Error(bookingsData.error || 'Failed to load')
+                setBookings(Array.isArray(bookingsData) ? bookingsData : [])
+                if (Array.isArray(ratingsData)) {
+                    setRatedIds(new Set(ratingsData.map((r) => r.bookingId)))
+                }
             })
             .catch((e) => toast.error(e.message))
             .finally(() => setLoading(false))
@@ -26,27 +30,23 @@ export default function BuyerBookingsPage() {
         load()
     }, [])
 
-    const submitRating = async () => {
+    const submitRating = async ({ rating, review }) => {
         if (!ratingFor) return
-        try {
-            const res = await fetch('/api/service-ratings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    serviceId: ratingFor.serviceId,
-                    bookingId: ratingFor.id,
-                    rating: score,
-                    review,
-                }),
-            })
-            const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'Could not rate')
-            toast.success('Review submitted')
-            setRatingFor(null)
-            setReview('')
-        } catch (e) {
-            toast.error(e.message)
-        }
+        const res = await fetch('/api/service-ratings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                serviceId: ratingFor.serviceId,
+                bookingId: ratingFor.id,
+                rating,
+                review,
+            }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Could not rate')
+        toast.success('Review submitted')
+        setRatedIds((prev) => new Set([...prev, ratingFor.id]))
+        setRatingFor(null)
     }
 
     if (loading) return <p className="p-8 text-slate-500">Loading bookings…</p>
@@ -75,7 +75,7 @@ export default function BuyerBookingsPage() {
                                 {b.status}
                             </span>
                         </div>
-                        {b.status === 'COMPLETED' && (
+                        {b.status === 'COMPLETED' && !ratedIds.has(b.id) && (
                             <button
                                 onClick={() => setRatingFor(b)}
                                 className="text-sm text-emerald-700 font-semibold"
@@ -83,43 +83,19 @@ export default function BuyerBookingsPage() {
                                 Rate service
                             </button>
                         )}
+                        {b.status === 'COMPLETED' && ratedIds.has(b.id) && (
+                            <p className="text-xs text-emerald-600 font-medium">Review submitted</p>
+                        )}
                     </div>
                 ))
             )}
 
             {ratingFor && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setRatingFor(null)} />
-                    <div className="relative bg-white rounded-2xl p-6 w-full max-w-md mx-4 space-y-3">
-                        <h3 className="font-semibold text-slate-800">Rate {ratingFor.service?.name}</h3>
-                        <select
-                            value={score}
-                            onChange={(e) => setScore(Number(e.target.value))}
-                            className="w-full border rounded-xl px-3 py-2 text-sm"
-                        >
-                            {[5, 4, 3, 2, 1].map((n) => (
-                                <option key={n} value={n}>
-                                    {n} stars
-                                </option>
-                            ))}
-                        </select>
-                        <textarea
-                            rows={3}
-                            value={review}
-                            onChange={(e) => setReview(e.target.value)}
-                            className="w-full border rounded-xl px-3 py-2 text-sm"
-                            placeholder="Optional review"
-                        />
-                        <div className="flex gap-2 justify-end">
-                            <button onClick={() => setRatingFor(null)} className="px-3 py-2 text-sm bg-slate-100 rounded-xl">
-                                Cancel
-                            </button>
-                            <button onClick={submitRating} className="px-3 py-2 text-sm bg-emerald-700 text-white rounded-xl">
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <RateModal
+                    title={`Rate ${ratingFor.service?.name || 'service'}`}
+                    onClose={() => setRatingFor(null)}
+                    onSubmit={submitRating}
+                />
             )}
         </div>
     )

@@ -8,11 +8,11 @@ export async function GET(req) {
         if (!user) return json([])
 
         const { searchParams } = new URL(req.url)
-        const serviceId = searchParams.get('serviceId')
+        const propertyId = searchParams.get('propertyId')
 
-        const rows = await prisma.serviceRating.findMany({
+        const rows = await prisma.propertyRating.findMany({
             where: {
-                ...(serviceId ? { serviceId } : { userId: user.id }),
+                ...(propertyId ? { propertyId } : { userId: user.id }),
             },
             include: { user: { select: { name: true, image: true } } },
             orderBy: { createdAt: 'desc' },
@@ -20,8 +20,8 @@ export async function GET(req) {
         return json(
             rows.map((r) => ({
                 ...serializeReview(r),
-                serviceId: r.serviceId,
-                bookingId: r.bookingId,
+                propertyId: r.propertyId,
+                visitId: r.visitId,
             })),
         )
     } catch (e) {
@@ -32,45 +32,45 @@ export async function GET(req) {
 export async function POST(req) {
     try {
         const user = await requireUser()
-        const { serviceId, bookingId, rating, review } = await req.json()
-        if (!serviceId || !bookingId || rating == null) {
-            return error('serviceId, bookingId and rating are required')
+        const { propertyId, visitId, rating, review } = await req.json()
+        if (!propertyId || !visitId || rating == null) {
+            return error('propertyId, visitId and rating are required')
         }
         const parsed = parseRatingScore(rating)
         if (!parsed.ok) return error(parsed.error)
 
-        const booking = await prisma.booking.findFirst({
+        const visit = await prisma.visit.findFirst({
             where: {
-                id: bookingId,
+                id: visitId,
                 userId: user.id,
-                serviceId,
+                propertyId,
                 status: 'COMPLETED',
             },
         })
-        if (!booking) return error('You can only rate completed bookings you own', 403)
+        if (!visit) return error('You can only rate completed visits you attended', 403)
 
-        const existing = await prisma.serviceRating.findUnique({
+        const existing = await prisma.propertyRating.findUnique({
             where: {
-                userId_serviceId_bookingId: { userId: user.id, serviceId, bookingId },
+                userId_propertyId_visitId: { userId: user.id, propertyId, visitId },
             },
         })
         if (existing) return error('Already rated', 409)
 
-        const created = await prisma.serviceRating.create({
+        const created = await prisma.propertyRating.create({
             data: {
                 rating: parsed.score,
                 review: typeof review === 'string' ? review.trim() : '',
                 userId: user.id,
-                serviceId,
-                bookingId,
+                propertyId,
+                visitId,
             },
             include: { user: { select: { name: true, image: true } } },
         })
         return json(
             {
                 ...serializeReview(created),
-                serviceId: created.serviceId,
-                bookingId: created.bookingId,
+                propertyId: created.propertyId,
+                visitId: created.visitId,
             },
             201,
         )

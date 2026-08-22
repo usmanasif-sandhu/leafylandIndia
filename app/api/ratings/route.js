@@ -1,5 +1,33 @@
 import { prisma } from '@/lib/prisma'
-import { error, json, requireUser, handleApiError } from '@/lib/api'
+import { error, json, requireUser, handleApiError, getSessionUser } from '@/lib/api'
+import { parseRatingScore, serializeReview } from '@/lib/reviews'
+
+export async function GET(req) {
+    try {
+        const user = await getSessionUser()
+        if (!user) return json([])
+
+        const { searchParams } = new URL(req.url)
+        const productId = searchParams.get('productId')
+
+        const rows = await prisma.rating.findMany({
+            where: {
+                ...(productId ? { productId } : { userId: user.id }),
+            },
+            include: { user: { select: { name: true, image: true } } },
+            orderBy: { createdAt: 'desc' },
+        })
+        return json(
+            rows.map((r) => ({
+                ...serializeReview(r),
+                productId: r.productId,
+                orderId: r.orderId,
+            })),
+        )
+    } catch (e) {
+        return handleApiError(e)
+    }
+}
 
 export async function POST(req) {
     try {
@@ -8,10 +36,8 @@ export async function POST(req) {
         if (!productId || !orderId || rating == null) {
             return error('productId, orderId and rating are required')
         }
-        const score = Number(rating)
-        if (!Number.isInteger(score) || score < 1 || score > 5) {
-            return error('Rating must be an integer from 1 to 5')
-        }
+        const parsed = parseRatingScore(rating)
+        if (!parsed.ok) return error(parsed.error)
 
         const order = await prisma.order.findFirst({
             where: { id: orderId, userId: user.id, status: 'DELIVERED' },
@@ -31,14 +57,15 @@ export async function POST(req) {
 
         const created = await prisma.rating.create({
             data: {
-                rating: score,
+                rating: parsed.score,
                 review: typeof review === 'string' ? review.trim() : '',
                 userId: user.id,
                 productId,
                 orderId,
             },
+            include: { user: { select: { name: true, image: true } } },
         })
-        return json(created, 201)
+        return json(serializeReview(created), 201)
     } catch (e) {
         return handleApiError(e)
     }

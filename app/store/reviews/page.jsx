@@ -73,6 +73,7 @@ export default function VendorReviews() {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-semibold text-slate-700">{review.customer || 'Customer'}</p>
+                                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{review.type}</span>
                                         <div className="flex items-center gap-0.5">
                                             {Array(5).fill('').map((_, i) => (
                                                 <Star key={i} size={10} fill={i < review.rating ? '#f59e0b' : '#e2e8f0'} className={i < review.rating ? 'text-amber-400' : 'text-slate-200'} />
@@ -80,7 +81,7 @@ export default function VendorReviews() {
                                         </div>
                                         <span className="text-xs text-slate-400">{review.date ? new Date(review.date).toLocaleDateString() : ''}</span>
                                     </div>
-                                    <p className="text-xs text-emerald-600 font-medium mt-0.5">{review.product}</p>
+                                    <p className="text-xs text-emerald-600 font-medium mt-0.5">{review.item}</p>
                                     <p className="text-sm text-slate-600 mt-2">{review.review}</p>
                                 </div>
                             </div>

@@ -28,6 +28,7 @@ model User {
     serviceBookings Booking[]       @relation("ServiceBookings")
     wishlist        WishlistItem[]
     serviceRatings  ServiceRating[]
+    propertyRatings PropertyRating[]
     visits          Visit[]
     messages        Message[]
 }
@@ -279,8 +280,9 @@ model Property {
     updatedAt    DateTime    @updatedAt
 
     // Relations
-    store  Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+    store  Store           @relation(fields: [storeId], references: [id], onDelete: Cascade)
     visits Visit[]
+    rating PropertyRating[]
 }
 
 // Property visit request ("Schedule Visit" button)
@@ -366,6 +368,21 @@ model ServiceRating {
     service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
     @@unique([userId, serviceId, bookingId])
+}
+
+model PropertyRating {
+    id         String   @id @default(cuid())
+    rating     Int
+    review     String
+    userId     String
+    propertyId String
+    visitId    String
+    createdAt  DateTime @default(now())
+
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, propertyId, visitId])
 }
 
 // Wishlist across all three marketplace verticals (Product / Property / Service).
