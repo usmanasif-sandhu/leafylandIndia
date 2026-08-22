@@ -6,10 +6,15 @@ export async function GET(req) {
     const q = searchParams.get('search') || ''
     const category = searchParams.get('category')
     const storeId = searchParams.get('storeId')
+    const ids = (searchParams.get('ids') || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
 
     const products = await prisma.product.findMany({
         where: {
             inStock: true,
+            ...(ids.length ? { id: { in: ids } } : {}),
             store: { status: 'approved', isActive: true },
             ...(storeId ? { storeId } : {}),
             ...(category && category !== 'All' ? { category } : {}),
@@ -24,11 +29,18 @@ export async function GET(req) {
         },
         include: {
             store: { select: { name: true, username: true } },
-            rating: true,
-            orderItems: { select: { quantity: true } },
+            // List views only need rating numbers — skip reviews/user/orderItems
+            rating: { select: { rating: true } },
         },
         orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
     })
 
-    return json(products.map(serializeProduct))
+    const body = products.map(serializeProduct)
+    return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+        },
+    })
 }

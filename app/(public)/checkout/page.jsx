@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useSelector } from 'react-redux'
 import { ShoppingBag, ChevronRight } from 'lucide-react'
 import OrderSummary from '@/components/OrderSummary'
+import { cachedJson } from '@/lib/cachedJson'
 
 export default function Checkout() {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
@@ -12,10 +13,16 @@ export default function Checkout() {
     const [products, setProducts] = useState([])
 
     useEffect(() => {
-        fetch('/api/products')
-            .then((r) => r.json())
-            .then((data) => { if (Array.isArray(data)) setProducts(data) })
-    }, [])
+        const ids = Object.keys(cartItems || {})
+        if (!ids.length) {
+            setProducts([])
+            return
+        }
+        let cancelled = false
+        cachedJson(`/api/products?ids=${ids.join(',')}`)
+            .then((data) => { if (!cancelled && Array.isArray(data)) setProducts(data) })
+        return () => { cancelled = true }
+    }, [cartItems])
 
     const cartArray = []
     let totalPrice = 0

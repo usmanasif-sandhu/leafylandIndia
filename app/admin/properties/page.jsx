@@ -5,6 +5,7 @@ import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
+import toast from 'react-hot-toast'
 
 const STATUS_OPTIONS = ['All', 'pending', 'approved', 'rejected']
 
@@ -23,7 +24,8 @@ export default function PropertiesPage() {
   const [statusFilter, setStatusFilter] = useState('All')
   const [selectedProperty, setSelectedProperty] = useState(null)
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true)
     fetch('/api/admin/properties')
       .then(async (res) => {
         if (!res.ok) throw new Error('Failed to load properties')
@@ -32,7 +34,21 @@ export default function PropertiesPage() {
       .then(setProperties)
       .catch((e) => setError(e.message || 'Something went wrong'))
       .finally(() => setLoading(false))
-  }, [])
+  }
+
+  useEffect(() => { load() }, [])
+
+  const updateStatus = async (id, status) => {
+    const res = await fetch('/api/admin/properties', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    })
+    if (!res.ok) return toast.error(`${status === 'approved' ? 'Approve' : 'Reject'} failed`)
+    toast.success(status === 'approved' ? 'Property approved' : 'Property rejected')
+    setProperties((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)))
+    setSelectedProperty((prev) => (prev?.id === id ? { ...prev, status } : prev))
+  }
 
   const filteredData = useMemo(() => {
     if (statusFilter === 'All') return properties
@@ -79,14 +95,35 @@ export default function PropertiesPage() {
     },
     {
       key: 'id',
-      label: 'View',
+      label: 'Actions',
       render: (_val, row) => (
-        <button
-          onClick={() => setSelectedProperty(row)}
-          className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
-        >
-          View
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSelectedProperty(row)}
+            className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
+          >
+            View
+          </button>
+          {(row.status || 'pending') === 'pending' && (
+            <>
+              <button
+                type="button"
+                onClick={() => updateStatus(row.id, 'approved')}
+                className="text-emerald-700 hover:text-emerald-800 text-sm font-medium"
+              >
+                Approve
+              </button>
+              <button
+                type="button"
+                onClick={() => updateStatus(row.id, 'rejected')}
+                className="text-red-600 hover:text-red-700 text-sm font-medium"
+              >
+                Reject
+              </button>
+            </>
+          )}
+        </div>
       ),
     },
   ]
@@ -203,6 +240,25 @@ export default function PropertiesPage() {
                 <StatusBadge status={selectedProperty.status || 'pending'} />
               </div>
             </div>
+
+            {(selectedProperty.status || 'pending') === 'pending' && (
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => updateStatus(selectedProperty.id, 'approved')}
+                  className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors"
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateStatus(selectedProperty.id, 'rejected')}
+                  className="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors"
+                >
+                  Reject
+                </button>
+              </div>
+            )}
           </div>
         )}
       </DetailSlideOver>

@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react'
 import PageHeader from '@/components/admin/PageHeader'
 import DataTable from '@/components/admin/DataTable'
 import DetailSlideOver from '@/components/admin/DetailSlideOver'
+import toast from 'react-hot-toast'
 
 const STATUS_FILTERS = ['All', 'ORDER_PLACED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
 
@@ -84,7 +85,7 @@ export default function OrdersPage() {
       render: (val) => formatDate(val),
     },
     {
-      key: 'id',
+      key: 'actions',
       label: 'View',
       render: (_, row) => (
         <button
@@ -174,6 +175,35 @@ export default function OrdersPage() {
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <span className="text-sm font-semibold text-slate-500">Total</span>
               <span className="text-lg font-bold text-slate-800">{formatCurrency(selectedOrder.total)}</span>
+            </div>
+
+            <div className="pt-2">
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Update status</label>
+              <select
+                value={selectedOrder.status}
+                onChange={async (e) => {
+                  const status = e.target.value
+                  try {
+                    const res = await fetch('/api/admin/orders', {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ id: selectedOrder.id, status }),
+                    })
+                    const data = await res.json()
+                    if (!res.ok) throw new Error(data.error || 'Update failed')
+                    setOrders((prev) => prev.map((o) => (o.id === data.id ? { ...o, ...data } : o)))
+                    setSelectedOrder((prev) => (prev ? { ...prev, ...data } : prev))
+                    toast.success(`Status set to ${status}`)
+                  } catch (err) {
+                    toast.error(err.message)
+                  }
+                }}
+                className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2"
+              >
+                {STATUS_FILTERS.filter((s) => s !== 'All').map((s) => (
+                  <option key={s} value={s}>{ORDER_STATUS[s]?.label || s}</option>
+                ))}
+              </select>
             </div>
           </div>
         )}

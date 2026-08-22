@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -15,9 +16,12 @@ import {
     Settings,
     MessageSquare,
     ExternalLink,
-    AlertTriangle,
     Tag,
     Boxes,
+    Home,
+    Wrench,
+    Calendar,
+    MapPin,
 } from 'lucide-react'
 
 const navSections = [
@@ -36,6 +40,17 @@ const navSections = [
         ],
     },
     {
+        label: 'Listings',
+        items: [
+            { name: 'Properties', href: '/store/properties', icon: Home },
+            { name: 'Add Property', href: '/store/add-property', icon: Plus },
+            { name: 'Services', href: '/store/services', icon: Wrench },
+            { name: 'Add Service', href: '/store/add-service', icon: Plus },
+            { name: 'Bookings', href: '/store/bookings', icon: Calendar },
+            { name: 'Visits', href: '/store/visits', icon: MapPin },
+        ],
+    },
+    {
         label: 'Sales',
         items: [
             { name: 'Orders', href: '/store/orders', icon: ShoppingCart },
@@ -51,22 +66,35 @@ const navSections = [
             { name: 'Payouts', href: '/store/payouts', icon: Wallet },
         ],
     },
-        {
-            label: 'Communication',
-            items: [
-                { name: 'Messages', href: '/store/messages', icon: MessageSquare },
-            ],
-        },
-        {
-            label: 'Account',
-            items: [
-                { name: 'Settings', href: '/store/settings', icon: Settings },
-            ],
-        },
+    {
+        label: 'Communication',
+        items: [
+            { name: 'Messages', href: '/store/messages', icon: MessageSquare },
+        ],
+    },
+    {
+        label: 'Account',
+        items: [
+            { name: 'Settings', href: '/store/settings', icon: Settings },
+        ],
+    },
 ]
 
 const StoreSidebar = ({ isOpen, onClose }) => {
     const pathname = usePathname()
+    const [unreadCount, setUnreadCount] = useState(0)
+
+    useEffect(() => {
+        let cancelled = false
+        fetch('/api/vendor/messages')
+            .then((r) => r.json())
+            .then((data) => {
+                if (cancelled || !Array.isArray(data)) return
+                setUnreadCount(data.filter((m) => !m.read).length)
+            })
+            .catch(() => {})
+        return () => { cancelled = true }
+    }, [pathname])
 
     return (
         <>
@@ -117,9 +145,9 @@ const StoreSidebar = ({ isOpen, onClose }) => {
                                     >
                                         <item.icon size={18} />
                                         <span>{item.name}</span>
-                                        {item.name === 'Messages' && (
-                                            <span className="ml-auto bg-red-500 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-                                                2
+                                        {item.name === 'Messages' && unreadCount > 0 && (
+                                            <span className="ml-auto bg-red-500 text-white text-[9px] font-bold min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+                                                {unreadCount > 99 ? '99+' : unreadCount}
                                             </span>
                                         )}
                                     </Link>

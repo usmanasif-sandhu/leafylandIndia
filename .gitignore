@@ -42,3 +42,6 @@ next-env.d.ts
 
 /app/generated/prisma
 docs/
+/public/uploads/*
+!/public/uploads/.gitkeep
+

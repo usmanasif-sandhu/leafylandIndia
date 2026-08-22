@@ -2,20 +2,30 @@
 import { useEffect, useState } from 'react'
 import { Plus, Star, Pencil } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { useSession } from 'next-auth/react'
 import AddressFormModal from './AddressFormModal'
 
 const AddressPicker = ({ value, onChange }) => {
+    const { status } = useSession()
     const [addresses, setAddresses] = useState([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editing, setEditing] = useState(null)
 
     const load = () => {
+        if (status !== 'authenticated') {
+            setAddresses([])
+            setLoading(false)
+            return
+        }
         setLoading(true)
         fetch('/api/addresses')
-            .then((r) => r.json())
-            .then((data) => {
-                const list = Array.isArray(data) ? data : []
+            .then(async (r) => {
+                if (r.status === 401) return []
+                const data = await r.json()
+                return Array.isArray(data) ? data : []
+            })
+            .then((list) => {
                 setAddresses(list)
                 if (!value && list.length) {
                     const def = list.find((a) => a.isDefault) || list[0]
@@ -26,7 +36,20 @@ const AddressPicker = ({ value, onChange }) => {
             .finally(() => setLoading(false))
     }
 
-    useEffect(() => { load() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    useEffect(() => {
+        if (status === 'loading') return
+        load()
+    }, [status]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    if (status === 'unauthenticated') {
+        return (
+            <p className="text-sm text-slate-500">
+                Please <a href="/login?callbackUrl=/checkout" className="text-emerald-700 font-medium hover:underline">sign in</a> to choose a delivery address.
+            </p>
+        )
+    }
+
+    if (loading || status === 'loading') return <p className="text-sm text-slate-400">Loading addresses…</p>
 
     const setDefault = async (id) => {
         const res = await fetch(`/api/addresses/${id}`, {
@@ -39,8 +62,6 @@ const AddressPicker = ({ value, onChange }) => {
         load()
         onChange?.(id)
     }
-
-    if (loading) return <p className="text-sm text-slate-400">Loading addresses…</p>
 
     if (!addresses.length) {
         return (

@@ -1,26 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { PlusIcon, XIcon } from 'lucide-react'
-import { useSelector, useDispatch } from 'react-redux'
+import { XIcon } from 'lucide-react'
+import { useDispatch } from 'react-redux'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 import { clearCart } from '@/lib/features/cart/cartSlice'
 import AddressPicker from './AddressPicker'
-
-const PAYMENT_METHODS = [
-    { id: 'COD', label: 'Cash on Delivery' },
-    { id: 'STRIPE', label: 'Stripe (Card)' },
-    { id: 'UPI', label: 'UPI' },
-    { id: 'BANK_TRANSFER', label: 'Bank Transfer' },
-    { id: 'WALLET', label: 'Wallet' },
-]
 
 const OrderSummary = ({ totalPrice, items }) => {
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '$'
     const router = useRouter()
     const dispatch = useDispatch()
 
-    const [paymentMethod, setPaymentMethod] = useState('COD')
     const [selectedAddressId, setSelectedAddressId] = useState(null)
     const [couponCodeInput, setCouponCodeInput] = useState('')
     const [coupon, setCoupon] = useState('')
@@ -30,10 +21,11 @@ const OrderSummary = ({ totalPrice, items }) => {
         event.preventDefault()
         const code = couponCodeInput.trim()
         if (!code) return
+        const storeIds = [...new Set((items || []).map((i) => i.storeId).filter(Boolean))]
         const res = await fetch('/api/coupons/validate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, total: totalPrice }),
+            body: JSON.stringify({ code, storeIds }),
         })
         const data = await res.json()
         if (res.ok && data.valid) {
@@ -60,8 +52,11 @@ const OrderSummary = ({ totalPrice, items }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     addressId: selectedAddressId,
-                    paymentMethod,
+                    paymentMethod: 'COD',
                     couponCode: coupon ? coupon.code : undefined,
+                    cartItems: Object.fromEntries(
+                        (items || []).map((i) => [i.id, i.quantity]),
+                    ),
                 }),
             })
             const data = await res.json()
@@ -83,21 +78,11 @@ const OrderSummary = ({ totalPrice, items }) => {
             <h2 className='text-xl font-medium text-slate-600'>Payment Summary</h2>
 
             <p className='text-slate-400 text-xs my-4'>Payment Method</p>
-            <div className='space-y-1'>
-                {PAYMENT_METHODS.map((m) => (
-                    <div key={m.id} className='flex gap-2 items-center'>
-                        <input
-                            type="radio"
-                            id={m.id}
-                            name="payment"
-                            onChange={() => setPaymentMethod(m.id)}
-                            checked={paymentMethod === m.id}
-                            className='accent-emerald-700'
-                        />
-                        <label htmlFor={m.id} className='cursor-pointer'>{m.label}</label>
-                    </div>
-                ))}
+            <div className='flex gap-2 items-center'>
+                <input type="radio" id="COD" name="payment" checked readOnly className='accent-emerald-700' />
+                <label htmlFor="COD">Cash on Delivery</label>
             </div>
+            <p className='text-xs text-slate-400 mt-2'>Online payments will be available once a payment provider is connected.</p>
 
             <div className='my-4 py-4 border-y border-slate-200'>
                 <p className='mb-3 text-slate-400 text-xs'>Delivery Address</p>

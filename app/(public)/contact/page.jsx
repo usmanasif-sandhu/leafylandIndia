@@ -1,16 +1,30 @@
 'use client'
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const ContactPage = () => {
     const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
-    const [submitted, setSubmitted] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        setSubmitted(true)
-        setTimeout(() => setSubmitted(false), 3000)
-        setForm({ name: '', email: '', subject: '', message: '' })
+        setSubmitting(true)
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Could not send')
+            toast.success('Message sent')
+            setForm({ name: '', email: '', subject: '', message: '' })
+        } catch (err) {
+            toast.error(err.message)
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -97,13 +111,11 @@ const ContactPage = () => {
                         </div>
                         <button
                             type="submit"
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 text-sm font-semibold rounded-xl active:scale-95 transition flex items-center gap-2"
+                            disabled={submitting}
+                            className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white px-6 py-2.5 text-sm font-semibold rounded-xl active:scale-95 transition flex items-center gap-2"
                         >
-                            <Send size={14} /> Send Message
+                            <Send size={14} /> {submitting ? 'Sending…' : 'Send Message'}
                         </button>
-                        {submitted && (
-                            <p className="text-sm text-emerald-600 font-medium">Message sent! We'll get back to you soon.</p>
-                        )}
                     </form>
                 </div>
             </div>

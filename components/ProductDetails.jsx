@@ -7,6 +7,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Counter from "./Counter";
 import { useDispatch, useSelector } from "react-redux";
+import WishlistButton from "./WishlistButton";
 
 const ProductDetails = ({ product }) => {
     const productId = product.id;
@@ -96,6 +97,7 @@ const ProductDetails = ({ product }) => {
                     >
                         {!cart[productId] ? 'Add to Cart' : 'View Cart'}
                     </button>
+                    <WishlistButton itemId={product.id} itemType="product" />
                 </div>
 
                 {/* Trust Signals */}

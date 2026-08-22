@@ -10,8 +10,10 @@ export default function CartSync() {
     const { status } = useSession()
     const timer = useRef(null)
     const seeded = useRef(false)
+    const cartRef = useRef(cartItems)
+    cartRef.current = cartItems
 
-    // Seed Redux from DB once the user is authenticated (merge, guest items win)
+    // Seed Redux from DB once when authenticated (guest items win on conflict)
     useEffect(() => {
         if (status !== 'authenticated' || seeded.current) return
         seeded.current = true
@@ -20,14 +22,14 @@ export default function CartSync() {
             .then((db) => {
                 if (db && typeof db === 'object' && Object.keys(db).length) {
                     const merged = { ...db }
-                    for (const [k, v] of Object.entries(cartItems)) {
+                    for (const [k, v] of Object.entries(cartRef.current || {})) {
                         merged[k] = Math.max(Number(merged[k] || 0), Number(v || 0))
                     }
                     dispatch(setCart(merged))
                 }
             })
             .catch(() => {})
-    }, [status, cartItems, dispatch])
+    }, [status, dispatch])
 
     // Persist Redux -> DB on change (debounced) when authenticated
     useEffect(() => {
@@ -39,7 +41,7 @@ export default function CartSync() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(cartItems || {}),
             }).catch(() => {})
-        }, 400)
+        }, 600)
         return () => timer.current && clearTimeout(timer.current)
     }, [cartItems, status])
 

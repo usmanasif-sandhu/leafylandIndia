@@ -5,7 +5,7 @@ import AuthProvider from "@/components/AuthProvider";
 import CartSync from "@/components/CartSync";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"] });
+const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
 
 export const metadata = {
     title: "LeafyLand — Plants, Properties & Landscaping Services",

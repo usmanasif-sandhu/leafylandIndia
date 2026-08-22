@@ -56,7 +56,7 @@ const Navbar = () => {
         : session?.user?.storeId && session?.user?.storeStatus === 'approved'
             ? '/store'
             : session?.user
-                ? '/orders'
+                ? '/profile'
                 : '/login';
 
     useEffect(() => {

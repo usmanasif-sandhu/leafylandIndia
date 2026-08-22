@@ -34,7 +34,15 @@ export default function Orders() {
                             </thead>
                             <tbody>
                                 {orders.map((order) => (
-                                    <OrderItem order={order} key={order.id} />
+                                    <OrderItem
+                                        order={order}
+                                        key={order.id}
+                                        onUpdated={(updated) =>
+                                            setOrders((prev) =>
+                                                prev.map((o) => (o.id === updated.id ? { ...o, ...updated } : o)),
+                                            )
+                                        }
+                                    />
                                 ))}
                             </tbody>
                         </table>
