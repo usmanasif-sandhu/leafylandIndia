@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { error, json, handleApiError } from '@/lib/api'
+import { isEmailConfigured } from '@/lib/email'
 
 export async function POST(req) {
     try {
@@ -19,6 +20,9 @@ export async function POST(req) {
         if (!ok) return error('Invalid email or password', 401)
 
         if (!user.emailVerified) {
+            if (!isEmailConfigured()) {
+                return json({ status: 'ok', emailBypass: true })
+            }
             return json({ status: 'email_not_verified', email: user.email })
         }
 

@@ -23,8 +23,13 @@ export async function POST(req) {
             return error('This account uses Google sign-in. Sign in with Google instead.', 400)
         }
 
-        if (!isEmailConfigured() && process.env.NODE_ENV !== 'development') {
-            return error('Email service is not configured. Contact support.', 503)
+        if (!isEmailConfigured()) {
+            const verification = await sendVerificationEmail(user.email, user.name)
+            return json({
+                emailNotConfigured: true,
+                verifyUrl: verification.verifyUrl,
+                message: 'Email isn’t configured on this server. Use the link below to verify your address.',
+            })
         }
 
         await sendVerificationEmail(user.email, user.name)
@@ -56,8 +61,13 @@ export async function PUT(req) {
             return json({ message: 'Email is already verified. You can sign in.' })
         }
 
-        if (!isEmailConfigured() && process.env.NODE_ENV !== 'development') {
-            return error('Email service is not configured. Contact support.', 503)
+        if (!isEmailConfigured()) {
+            const verification = await sendVerificationEmail(user.email, user.name)
+            return json({
+                emailNotConfigured: true,
+                verifyUrl: verification.verifyUrl,
+                message: 'Email isn’t configured on this server. Use the link below to verify your address.',
+            })
         }
 
         await sendVerificationEmail(user.email, user.name)

@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -13,14 +13,18 @@ function VerifyEmailContent() {
     const router = useRouter()
     const token = searchParams.get('token')
     const emailParam = searchParams.get('email') || ''
+    const verifyUrlParam = searchParams.get('verifyUrl') || ''
 
     const [email, setEmail] = useState(emailParam)
     const [status, setStatus] = useState(token ? 'verifying' : 'pending')
     const [message, setMessage] = useState('')
     const [resending, setResending] = useState(false)
+    const [manualVerifyUrl, setManualVerifyUrl] = useState(verifyUrlParam)
 
+    const verifiedRef = useRef(false)
     useEffect(() => {
-        if (!token) return
+        if (!token || verifiedRef.current) return
+        verifiedRef.current = true
 
         fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`)
             .then(async (r) => {
@@ -53,6 +57,7 @@ function VerifyEmailContent() {
             })
             const data = await res.json()
             if (!res.ok) throw new Error(data.error || 'Could not resend email')
+            if (data.verifyUrl) setManualVerifyUrl(data.verifyUrl)
             toast.success(data.message || 'Verification email sent')
         } catch (err) {
             toast.error(err.message || 'Could not resend email')
@@ -100,8 +105,19 @@ function VerifyEmailContent() {
                     {(status === 'pending' || status === 'error') && (
                         <>
                             <p className="text-sm text-slate-600 text-center">
-                                We sent a verification link to your email. Open it to activate your account.
+                                {manualVerifyUrl
+                                    ? 'Email isn’t configured on this server, so the link can’t be sent by email. Verify your address with the link below.'
+                                    : 'We sent a verification link to your email. Open it to activate your account.'}
                             </p>
+
+                            {manualVerifyUrl && (
+                                <a
+                                    href={manualVerifyUrl}
+                                    className="flex items-center justify-center w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm"
+                                >
+                                    Verify email address
+                                </a>
+                            )}
 
                             <form onSubmit={handleResend} className="space-y-3">
                                 <label className="text-xs font-medium text-slate-600 block">Resend verification email</label>

@@ -2,7 +2,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { assets } from '@/assets/assets'
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
@@ -24,6 +24,7 @@ const AUTH_ERROR_MESSAGES = {
 
 function LoginForm() {
     const searchParams = useSearchParams()
+    const router = useRouter()
     const callbackUrl = searchParams.get('callbackUrl') || '/auth/continue'
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -67,11 +68,14 @@ function LoginForm() {
                 const data = await res.json()
                 if (!res.ok) throw new Error(data.error || 'Could not create account')
 
-                if (data.devVerifyUrl) {
-                    console.info('[dev] Verification link:', data.devVerifyUrl)
+                if (data.verifyUrl) {
+                    console.info('Verification link:', data.verifyUrl)
+                    window.location.assign(
+                        `/verify-email?email=${encodeURIComponent(email)}&verifyUrl=${encodeURIComponent(data.verifyUrl)}`,
+                    )
+                } else {
+                    window.location.assign(`/verify-email?email=${encodeURIComponent(email)}`)
                 }
-
-                window.location.assign(`/verify-email?email=${encodeURIComponent(email)}`)
                 return
             }
 
@@ -102,7 +106,7 @@ function LoginForm() {
                         : 'Sign-in failed. Try again, or create the account on this site first.',
                 )
             }
-            window.location.assign(safeCallbackUrl)
+            router.push(safeCallbackUrl)
         } catch (err) {
             setFormError(err.message)
             toast.error(err.message)

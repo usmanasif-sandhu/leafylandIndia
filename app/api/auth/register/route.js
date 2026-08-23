@@ -36,21 +36,18 @@ export async function POST(req) {
         } catch (err) {
             console.error('Verification email failed', err)
             await prisma.user.delete({ where: { id: user.id } })
-            return error(
-                isEmailConfigured()
-                    ? 'Account could not be created. Failed to send verification email.'
-                    : 'Email service is not configured. Set SMTP settings on the server.',
-                503,
-            )
+            return error('Account could not be created. Failed to send verification email.', 503)
         }
 
+        const emailConfigured = isEmailConfigured()
         return json({
             user,
             requiresVerification: true,
-            message: 'Account created. Check your email to verify your address before signing in.',
-            ...(process.env.NODE_ENV === 'development' && verification.verifyUrl
-                ? { devVerifyUrl: verification.verifyUrl }
-                : {}),
+            emailConfigured,
+            message: emailConfigured
+                ? 'Account created. Check your email to verify your address before signing in.'
+                : 'Account created. Email isn’t configured on this server, so verify your address using the link below.',
+            ...(verification.verifyUrl ? { verifyUrl: verification.verifyUrl } : {}),
         }, 201)
     } catch (e) {
         console.error(e)
