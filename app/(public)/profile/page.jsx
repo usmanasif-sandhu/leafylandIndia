@@ -10,9 +10,11 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import WishlistSection from '@/components/WishlistSection'
+import ConfirmLogoutModal from '@/components/ConfirmLogoutModal'
 
 export default function BuyerProfilePage() {
     const { data: session, update } = useSession()
+    const [showLogout, setShowLogout] = useState(false)
     const [profile, setProfile] = useState(null)
     const [name, setName] = useState('')
     const [saving, setSaving] = useState(false)
@@ -156,7 +158,7 @@ export default function BuyerProfilePage() {
 
                         <button
                             type="button"
-                            onClick={() => signOut({ callbackUrl: '/' })}
+                            onClick={() => setShowLogout(true)}
                             className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 transition-colors text-left mt-2"
                         >
                             <span className="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
@@ -167,6 +169,8 @@ export default function BuyerProfilePage() {
                                 <span className="block text-xs text-slate-500">Sign out of your account</span>
                             </span>
                         </button>
+
+                        <ConfirmLogoutModal open={showLogout} onClose={() => setShowLogout(false)} />
                     </div>
                 </div>
 

@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from "react"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { LogOut, Menu, Search } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell";
+import ConfirmLogoutModal from "@/components/ConfirmLogoutModal";
 
 const routeTitles = {
     "/admin": "Dashboard",
@@ -18,6 +20,7 @@ const routeTitles = {
 }
 
 const AdminNavbar = ({ onMenuToggle }) => {
+    const [showLogout, setShowLogout] = useState(false)
     const pathname = usePathname()
     const { data: session } = useSession()
     const title = routeTitles[pathname] || "Dashboard"
@@ -61,7 +64,7 @@ const AdminNavbar = ({ onMenuToggle }) => {
                     </span>
                     <button
                         type="button"
-                        onClick={() => signOut({ callbackUrl: "/" })}
+                        onClick={() => setShowLogout(true)}
                         className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:text-red-600 hover:bg-red-50 transition-colors"
                     >
                         <LogOut size={16} />
@@ -69,6 +72,8 @@ const AdminNavbar = ({ onMenuToggle }) => {
                     </button>
                 </div>
             </div>
+
+            <ConfirmLogoutModal open={showLogout} onClose={() => setShowLogout(false)} />
         </header>
     )
 }

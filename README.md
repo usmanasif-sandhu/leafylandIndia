@@ -1,85 +1,132 @@
 <div align="center">
-  <h1><img src="https://gocart-gs.vercel.app/favicon.ico" width="20" height="20" alt="GoCart Favicon">
-   GoCart</h1>
-  <p>
-    An open-source multi-vendor e-commerce platform built with Next.js and Tailwind CSS.
-  </p>
-  <p>
-    <a href="https://github.com/GreatStackDev/goCart/blob/main/LICENSE.md"><img src="https://img.shields.io/github/license/GreatStackDev/goCart?style=for-the-badge" alt="License"></a>
-    <a href="https://github.com/GreatStackDev/goCart/pulls"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge" alt="PRs Welcome"></a>
-    <a href="https://github.com/GreatStackDev/goCart/issues"><img src="https://img.shields.io/github/issues/GreatStackDev/goCart?style=for-the-badge" alt="GitHub issues"></a>
-  </p>
+  <h1><img src="/favicon.svg" width="22" height="22" alt="LeafyLand logo" /> LeafyLand</h1>
+  <p>A multi-vendor marketplace for plants, gardening products, land &amp; farmhouses, and professional landscaping services.</p>
 </div>
 
 ---
 
-## 📖 Table of Contents
+## Overview
 
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
+LeafyLand is a full-stack, multi-vendor commerce platform built on Next.js (App Router). It lets independent sellers list physical products (plants, garden supplies), Properties (land, farmhouses), and Services (landscaping, maintenance), while customers browse, cart, and check out in one place. Vendors manage their own catalogue and orders from a dedicated dashboard, and platform admins oversee stores, commissions, and vendor payouts from an admin panel.
 
----
+> [!NOTE]
+> Vendor settlements run in **Manual** mode by default: an admin releases a payout and records the bank reference / UTR. Once RazorpayX is enabled, payouts are initiated through the RazorpayX Payouts API with webhook-driven status updates.
 
 ## Features
 
-- **Multi-Vendor Architecture:** Allows multiple vendors to register, manage their own products, and sell on a single platform.
-- **Customer-Facing Storefront:** A beautiful and responsive user interface for customers to browse and purchase products.
-- **Vendor Dashboards:** Dedicated dashboards for vendors to manage products, view sales analytics, and track orders.
-- **Admin Panel:** A comprehensive dashboard for platform administrators to oversee vendors, products, and commissions.
+- **Multi-vendor marketplace** — sellers onboard stores, manage catalogue, and sell under a shared storefront.
+- **Product catalogue** — plants and gardening products with images, categories, inventory, and coupons.
+- **Properties** — list land and farmhouses as property listings.
+- **Services & bookings** — landscaping and maintenance services with booking requests and site visits.
+- **Customer experience** — search, cart, wishlist, address book, checkout, order tracking, and reviews.
+- **Vendor dashboard** — products, properties, services, bookings, visits, orders, customers, analytics, and a Wallet with payout history.
+- **Admin panel** — stores, approvals, users, orders, payouts (release with commission override + UTR), products, properties, services, and coupons.
+- **Auth & roles** — email/password (with verification) and Google OAuth, with `BUYER` / vendor / `ADMIN` roles.
+- **Notifications** — in-app notification bell for admins and vendors.
+- **Settlements** — per-order earnings unlock 7 days after capture; admins release payouts (manual UTR or RazorpayX).
 
-## 🛠️ Tech Stack <a name="-tech-stack"></a>
+## Tech Stack
 
-- **Framework:** Next.js
-- **Styling:** Tailwind CSS
-- **UI Components:** Lucide React for icons
-- **State Management:** Redux Toolkit
+| Area        | Choice                                                        |
+| ----------- | ------------------------------------------------------------- |
+| Framework   | Next.js 16 (App Router, React 19, Turbopack)                  |
+| Styling     | Tailwind CSS v4                                               |
+| State       | Redux Toolkit (cart/wishlist)                                 |
+| Auth        | Auth.js (NextAuth v5) — Credentials + Google OAuth            |
+| Database    | PostgreSQL (Neon) via Prisma 7 + `@prisma/adapter-pg`         |
+| Payments    | Razorpay (checkout) + RazorpayX (payouts)                     |
+| Email       | Nodemailer (SMTP)                                             |
+| Charts      | Recharts                                                      |
+| Icons       | lucide-react                                                  |
+| Images      | sharp (server-side processing)                               |
 
-## 🚀 Getting Started <a name="-getting-started"></a>
+## Project Structure
 
-First, install the dependencies. We recommend using `npm` for this project.
+```
+app/
+  (public)/        Storefront, auth, profile, cart, checkout, orders
+  admin/           Admin panel (stores, orders, payouts, users, ...)
+  store/           Vendor dashboard (products, properties, services, payouts)
+  api/             Route handlers (auth, admin, vendor, razorpay, notifications)
+components/        Shared UI (navbars, modals, tables, ...)
+lib/               Server logic (prisma, auth, payouts, razorpayx, notify)
+prisma/            Schema, migrations, seed
+scripts/           Build/DB helpers (e.g. repair-migrations)
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18.18+ (or 20+)
+- A PostgreSQL database (Neon or any Postgres; a connection string is required)
+
+### 1. Install dependencies
 
 ```bash
 npm install
 ```
 
-Then, run the development server:
+### 2. Configure environment
+
+Copy `.env.example` to `.env` and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+Key variables: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`, `ADMIN_EMAILS`, Razorpay keys, and SMTP credentials. See [Configuration](#configuration) below.
+
+### 3. Set up the database
+
+```bash
+npm run db:generate   # generate Prisma client
+npm run db:deploy     # apply migrations (or db:migrate for local dev)
+npm run db:seed       # optional demo data
+```
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The admin area is at `/admin` (the first `ADMIN_EMAILS` user becomes an admin on sign-in).
 
-You can start editing the page by modifying `app/(public)/page.js`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Outfit](https://vercel.com/font), a new font family for Vercel.
+| Script             | Description                                  |
+| ------------------ | -------------------------------------------- |
+| `npm run dev`      | Start the dev server (Turbopack)             |
+| `npm run build`    | Generate client, apply migrations, build     |
+| `npm run start`    | Start the production server                  |
+| `npm run lint`     | Lint the project                             |
+| `npm run db:generate` | Generate the Prisma client                |
+| `npm run db:migrate` | Create/apply a Prisma migration            |
+| `npm run db:deploy`  | Apply migrations in production             |
+| `npm run db:studio`  | Open Prisma Studio                        |
+| `npm run db:seed`    | Seed demo data                            |
+| `npm test`         | Run tests                                   |
 
----
+## Configuration
 
-## 🤝 Contributing <a name="-contributing"></a>
+| Variable                     | Purpose                                                |
+| ---------------------------- | ------------------------------------------------------ |
+| `DATABASE_URL`               | Postgres connection string (pooled)                    |
+| `DIRECT_URL`                 | Direct (non-pooled) Postgres URL for migrations        |
+| `AUTH_SECRET`                | Auth.js session secret                                 |
+| `AUTH_URL`                   | Public site URL (no trailing slash)                    |
+| `ADMIN_EMAILS`               | Comma-separated emails promoted to admin on sign-in    |
+| `AUTH_GOOGLE_ID` / `_SECRET` | Google OAuth (optional)                               |
+| `RAZORPAY_KEY_ID` / `_SECRET`| Razorpay API keys (test or live)                      |
+| `RAZORPAYX_ENABLED`         | Enable RazorpayX payouts (`false` = manual mode)       |
+| `RAZORPAYX_ACCOUNT_NUMBER`  | RazorpayX account number for payouts                   |
+| `SMTP_*`                     | Email transport for signup verification & notifications |
+| `NEXT_PUBLIC_CURRENCY_SYMBOL` | Display currency symbol (default `₹`)                |
 
-We welcome contributions! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for more details on how to get started.
+> [!IMPORTANT]
+> In production set `AUTH_SECRET`, `AUTH_URL`, `ADMIN_EMAILS`, SMTP, and Razorpay keys. Image uploads can be persisted to a host directory (see `.env.example`) so they survive redeploys.
 
----
+## License
 
-## 📜 License <a name="-license"></a>
-
-This project is licensed under the MIT License. See the [LICENSE.md](./LICENSE.md) file for details.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+LeafyLand is proprietary software. See the repository settings for licensing terms.

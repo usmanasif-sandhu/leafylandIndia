@@ -1,8 +1,8 @@
 import StoreLayout from "@/components/store/StoreLayout";
 
 export const metadata = {
-    title: "GoCart. - Store Dashboard",
-    description: "GoCart. - Store Dashboard",
+    title: "LeafyLand — Vendor Dashboard",
+    description: "LeafyLand vendor dashboard for products, orders and payouts.",
 };
 
 export default function RootAdminLayout({ children }) {
