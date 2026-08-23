@@ -32,6 +32,7 @@ model User {
     propertyRatings PropertyRating[]
     visits          Visit[]
     messages        Message[]
+    notifications   Notification[]
 }
 
 model Account {
@@ -142,6 +143,7 @@ model CheckoutBatch {
     stockFulfilled    Boolean       @default(false)
     createdAt         DateTime      @default(now())
     updatedAt         DateTime      @updatedAt
+    capturedAt        DateTime?
 
     user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     address Address  @relation(fields: [addressId], references: [id])
@@ -170,6 +172,7 @@ model Order {
     isCouponUsed    Boolean       @default(false)
     coupon          Json          @default("{}")
     orderItems      OrderItem[]
+    earning         Earning?
 
     // Relations
     user          User           @relation("BuyerRelation", fields: [userId], references: [id])
@@ -277,6 +280,8 @@ model Store {
     Booking  Booking[]
     Coupon   Coupon[]
     Message  Message[]
+    earnings Earning[]
+    payouts  Payout[]
     user     User       @relation(fields: [userId], references: [id])
 }
 
@@ -455,4 +460,60 @@ model ContactInquiry {
     message   String
     status    String   @default("NEW")
     createdAt DateTime @default(now())
+}
+
+// Vendor earning created when a checkout batch payment is captured.
+// commissionRate is snapshotted so later Store.commissionRate edits never rewrite history.
+model Earning {
+    id              String    @id @default(cuid())
+    orderId         String    @unique
+    storeId         String
+    grossPaise      Int
+    commissionRate  Float
+    commissionPaise Int
+    status          String    @default("DUE") // DUE | PROCESSING | PAID
+    eligibleAt      DateTime
+    notifiedAt      DateTime?
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
+
+    order  Order   @relation(fields: [orderId], references: [id])
+    store  Store   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+    payout Payout? @relation(fields: [payoutId], references: [id])
+    payoutId String?
+}
+
+// One vendor settlement per admin release action.
+model Payout {
+    id                 String    @id @default(cuid())
+    storeId            String
+    status             String    @default("PROCESSING") // PROCESSING | PROCESSED | FAILED
+    grossPaise         Int
+    commissionPaise    Int
+    commissionOverride Boolean   @default(false)
+    netPaise           Int
+    method             String    @default("RAZORPAYX") // RAZORPAYX | MANUAL
+    razorpayPayoutId   String?   @unique
+    fundAccountId      String?
+    reference          String?
+    failureReason      String?
+    processedAt        DateTime?
+    createdAt          DateTime  @default(now())
+    updatedAt          DateTime  @updatedAt
+
+    store    Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+    earnings Earning[]
+}
+
+model Notification {
+    id        String    @id @default(cuid())
+    userId    String
+    type      String // PAYOUT_DUE | PAYOUT_RELEASED | PAYOUT_PAID | PAYOUT_FAILED
+    title     String
+    body      String
+    link      String?
+    readAt    DateTime?
+    createdAt DateTime  @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
