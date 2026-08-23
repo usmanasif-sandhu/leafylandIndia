@@ -14,6 +14,7 @@ import {
     Tag,
     ExternalLink,
     Leaf,
+    Wallet,
 } from "lucide-react"
 
 const navItems = [
@@ -22,6 +23,7 @@ const navItems = [
     { name: "Approvals", href: "/admin/approve", icon: CheckCircle },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
+    { name: "Payouts", href: "/admin/payouts", icon: Wallet },
     { name: "Products", href: "/admin/products", icon: Package },
     { name: "Properties", href: "/admin/properties", icon: Home },
     { name: "Services", href: "/admin/services", icon: Wrench },
