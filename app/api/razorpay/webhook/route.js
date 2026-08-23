@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { json, error } from '@/lib/api'
 import { verifyWebhookSignature, isRazorpayConfigured } from '@/lib/razorpay'
 import { findBatchByRazorpayOrderId, fulfillCheckoutBatch } from '@/lib/payments/fulfill'
+import { markPayoutProcessed, markPayoutFailed } from '@/lib/payments/release'
 
 export const runtime = 'nodejs'
 
@@ -44,6 +45,16 @@ async function processPaymentFailed(payload) {
     })
 }
 
+async function processPayoutEvent(payload, eventType) {
+    const entity = payload?.payout?.entity
+    if (!entity?.id) return
+    if (eventType === 'payout.processed') {
+        await markPayoutProcessed(entity.id, entity)
+    } else if (['payout.failed', 'payout.rejected', 'payout.reversed', 'payout.cancelled'].includes(eventType)) {
+        await markPayoutFailed(entity.id, entity.failure_reason || eventType)
+    }
+}
+
 export async function POST(req) {
     if (!isRazorpayConfigured()) {
         return error('Not configured', 503)
@@ -84,6 +95,8 @@ export async function POST(req) {
             await processPaymentCaptured(payload.payload)
         } else if (eventType === 'payment.failed') {
             await processPaymentFailed(payload.payload)
+        } else if (eventType.startsWith('payout.')) {
+            await processPayoutEvent(payload.payload, eventType)
         }
     } catch (e) {
         console.error('Webhook handler error', e?.message || e)
