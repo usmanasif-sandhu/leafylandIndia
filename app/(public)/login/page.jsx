@@ -68,14 +68,10 @@ function LoginForm() {
                 const data = await res.json()
                 if (!res.ok) throw new Error(data.error || 'Could not create account')
 
-                if (data.verifyUrl) {
-                    console.info('Verification link:', data.verifyUrl)
-                    window.location.assign(
-                        `/verify-email?email=${encodeURIComponent(email)}&verifyUrl=${encodeURIComponent(data.verifyUrl)}`,
-                    )
-                } else {
-                    window.location.assign(`/verify-email?email=${encodeURIComponent(email)}`)
+                if (data.devVerifyUrl) {
+                    console.info('[dev] Verification link:', data.devVerifyUrl)
                 }
+                window.location.assign(`/verify-email?email=${encodeURIComponent(email)}`)
                 return
             }
 
