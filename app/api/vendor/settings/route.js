@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { json, requireStore, handleApiError, error } from '@/lib/api'
 import { sanitizeImageUrl } from '@/lib/images'
 
-const extraKeys = ['city', 'website', 'businessHours', 'gstNumber', 'panNumber', 'bankAccount', 'ifscCode', 'upiId', 'shippingPolicy', 'returnPolicy']
+const extraKeys = ['city', 'website', 'businessHours', 'gstNumber', 'panNumber', 'bankAccount', 'ifscCode', 'upiId', 'accountName', 'shippingPolicy', 'returnPolicy']
 
 function flatten(store) {
     const extra = store.settings && typeof store.settings === 'object' && !Array.isArray(store.settings)
