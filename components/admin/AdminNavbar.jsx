@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { LogOut, Menu, Search } from "lucide-react"
+import NotificationBell from "@/components/NotificationBell";
 
 const routeTitles = {
     "/admin": "Dashboard",
@@ -48,6 +49,8 @@ const AdminNavbar = ({ onMenuToggle }) => {
                         className="bg-transparent outline-none flex-1 text-slate-700 placeholder:text-slate-400"
                     />
                 </div>
+
+                <NotificationBell />
 
                 <div className="flex items-center gap-2">
                     <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold">

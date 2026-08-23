@@ -1,5 +1,6 @@
 'use client'
-import { Menu, Bell, LogOut } from 'lucide-react'
+import { Menu, LogOut } from 'lucide-react'
+import NotificationBell from '@/components/NotificationBell'
 import Link from 'next/link'
 import Image from 'next/image'
 import { signOut } from 'next-auth/react'
@@ -25,9 +26,7 @@ const StoreNavbar = ({ onMenuToggle, storeInfo }) => {
 
             {/* Right */}
             <div className="flex items-center gap-3">
-                <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors">
-                    <Bell size={18} />
-                </button>
+                <NotificationBell />
                 <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
                     <StoreLogo src={storeInfo?.logo} name={storeInfo?.name} className="w-8 h-8 rounded-full text-xs" />
                     <div className="hidden sm:block">
