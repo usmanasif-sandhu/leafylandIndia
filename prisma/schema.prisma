@@ -96,6 +96,18 @@ model Product {
     rating     Rating[]
 }
 
+model Category {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    type      String   @default("leafy") // "leafy" | "marketplace"
+    order     Int      @default(0)
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+
+    @@index([type])
+    @@index([active])
+}
+
 enum UserRole {
     BUYER
     ADMIN

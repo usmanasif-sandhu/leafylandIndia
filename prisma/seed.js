@@ -118,6 +118,19 @@ async function main() {
         },
     })
 
+    // Seed the navbar category list (LeafyLand + Marketplace) so the strip is
+    // populated. Display labels differ from product category strings; they map
+    // to product categories via the dropdown links in CategoriesStrip.
+    const leafyCats = ['Plants', 'Garden Tools', 'Irrigation', 'Farmhouses', 'Landscaping', 'Fertilizers', 'Pots']
+    const marketCats = ['Electronics', 'Mobile Phones', 'Laptops', 'Fashion', 'Home & Kitchen', 'Sports & Outdoors', 'Books & Stationery', 'Toys & Games', 'Beauty & Personal Care', 'Automotive']
+    const catDefaults = [
+        ...leafyCats.map((name, i) => ({ name, type: 'leafy', order: i })),
+        ...marketCats.map((name, i) => ({ name, type: 'marketplace', order: leafyCats.length + i })),
+    ]
+    for (const c of catDefaults) {
+        await prisma.category.upsert({ where: { name: c.name }, create: c, update: {} })
+    }
+
     console.log('Seeded users:')
     console.log('  admin@leafyland.com / LeafyLand123!')
     console.log('  seller@leafyland.com / LeafyLand123!')
