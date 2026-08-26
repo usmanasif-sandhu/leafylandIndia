@@ -4,17 +4,7 @@ import { Upload, X, Plus, Image as ImageIcon } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import PageHeader from '@/components/admin/PageHeader'
 import { uploadImages } from '@/components/store/StoreLogo'
-
-const leafyCategories = [
-    'Big Plant', 'Bulbs', 'Fruit Plant', 'Gardening', 'Indoor Greenary',
-    'Planters', 'Plants', 'Seeds', 'Soil & Fertilizers',
-]
-
-const marketplaceCategories = [
-    'Electronics', 'Mobile Phones', 'Laptops', 'Fashion',
-    'Home & Kitchen', 'Sports & Outdoors', 'Books & Stationery',
-    'Toys & Games', 'Beauty & Personal Care', 'Automotive',
-]
+import { LEAFY_CATEGORIES, MARKETPLACE_CATEGORIES } from '@/lib/categories'
 
 export default function StoreAddProduct() {
     const [images, setImages] = useState([])
@@ -22,7 +12,6 @@ export default function StoreAddProduct() {
         name: '', description: '', mrp: '', price: '', category: '', stock: '10',
     })
     const [loading, setLoading] = useState(false)
-    const [showComingSoon, setShowComingSoon] = useState(false)
 
     const onChangeHandler = (e) => {
         setProductInfo({ ...productInfo, [e.target.name]: e.target.value })
@@ -122,24 +111,17 @@ export default function StoreAddProduct() {
                         <div>
                             <label className="block text-xs font-medium text-slate-500 mb-1.5">Category</label>
                             <select
-                                onChange={(e) => {
-                                    const val = e.target.value
-                                    if (val && marketplaceCategories.includes(val)) {
-                                        setShowComingSoon(true)
-                                        return
-                                    }
-                                    setProductInfo({ ...productInfo, category: val })
-                                }}
+                                onChange={(e) => setProductInfo({ ...productInfo, category: e.target.value })}
                                 value={productInfo.category}
                                 required
                                 className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm px-4 py-2.5 focus:border-emerald-500 outline-none transition"
                             >
                                 <option value="">Select a category</option>
                                 <optgroup label="🌿 LeafyLand Categories">
-                                    {leafyCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    {LEAFY_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </optgroup>
-                                <optgroup label="🛒 Marketplace (Coming Soon)">
-                                    {marketplaceCategories.map(c => <option key={c} value={c} disabled>{c} — Coming Soon</option>)}
+                                <optgroup label="🛒 Marketplace">
+                                    {MARKETPLACE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                 </optgroup>
                             </select>
                         </div>
@@ -182,24 +164,7 @@ export default function StoreAddProduct() {
                 </div>
             </div>
 
-            {/* Coming Soon Modal */}
-            {showComingSoon && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowComingSoon(false)} />
-                    <div className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full mx-4 p-8 text-center">
-                        <div className="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                            <span className="text-3xl">🔜</span>
-                        </div>
-                        <h2 className="text-2xl font-extrabold text-slate-800 mb-2">Coming Soon</h2>
-                        <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                            This category is part of our upcoming marketplace expansion. Only LeafyLand-approved categories are available for listing in Phase 1.
-                        </p>
-                        <button onClick={() => setShowComingSoon(false)} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl transition-colors">
-                            Got it
-                        </button>
-                    </div>
-                </div>
-            )}
+
         </div>
     )
 }

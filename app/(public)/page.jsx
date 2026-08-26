@@ -5,8 +5,8 @@ import Carousel from "@/components/Carousel";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import PropertyCard from "@/components/PropertyCard";
-import ComingSoonModal from "@/components/ComingSoonModal";
 import { cachedJson } from '@/lib/cachedJson'
+import { isMarketplaceCategory } from '@/lib/categories'
 import { ShieldCheck, Truck, Leaf, Star, ChevronRight, Droplets, Scissors, Sparkles, Recycle, Flower2, Wrench, Package, Home as HomeIcon, AlertTriangle, RefreshCw, Building, Paintbrush, Hammer, Droplet, Camera, Trash2, Zap, Compass, Bot, CalendarCheck, BadgeCheck, Sprout, TreePine } from "lucide-react";
 import Link from "next/link";
 
@@ -39,7 +39,7 @@ const serviceIcons = {
 
 export default function Home() {
     const [activeCategory, setActiveCategory] = useState('All')
-    const [comingSoonCategory, setComingSoonCategory] = useState(null)
+
     const [products, setProducts] = useState([])
     const [services, setServices] = useState([])
     const [properties, setProperties] = useState([])
@@ -60,12 +60,12 @@ export default function Home() {
     }, [])
 
     // LeafyLand core items (prioritized)
-    const leafyProducts = products.filter(p => !p.marketplace)
+    const leafyProducts = products.filter(p => !isMarketplaceCategory(p.category))
     const leafyProperties = properties.filter(p => !p.marketplace)
     const leafyServices = services.filter(s => !s.marketplace)
 
     // General marketplace items
-    const marketplaceProducts = products.filter(p => p.marketplace)
+    const marketplaceProducts = products.filter(p => isMarketplaceCategory(p.category))
     const marketplaceProperties = properties.filter(p => p.marketplace)
     const marketplaceServices = services.filter(s => s.marketplace)
 
@@ -112,12 +112,7 @@ export default function Home() {
 
     return (
         <div className="bg-slate-50/50">
-            <ComingSoonModal
-                isOpen={!!comingSoonCategory}
-                onClose={() => setComingSoonCategory(null)}
-                category={comingSoonCategory}
-            />
-            <CategoriesStrip activeCategory={activeCategory} onSelect={setActiveCategory} onComingSoon={setComingSoonCategory} />
+            <CategoriesStrip activeCategory={activeCategory} onSelect={setActiveCategory} />
 
             {/* Carousel */}
             {showSection(false) && (

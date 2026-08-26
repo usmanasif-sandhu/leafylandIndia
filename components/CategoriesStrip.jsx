@@ -74,7 +74,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Mobile', sub: 'Phones & tablets', icon: Smartphone, color: 'bg-[#f3e5f5]', iconColor: 'text-purple-600',
+        name: 'Mobile Phones', sub: 'Phones & tablets', icon: Smartphone, color: 'bg-[#f3e5f5]', iconColor: 'text-purple-600',
         marketplace: true,
         subcategories: [
             { name: 'iPhones', href: '/products?category=Mobile+Phones' },
@@ -101,7 +101,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Home', sub: 'Kitchen & decor', icon: Sofa, color: 'bg-[#e0f2f1]', iconColor: 'text-teal-600',
+        name: 'Home & Kitchen', sub: 'Kitchen & decor', icon: Sofa, color: 'bg-[#e0f2f1]', iconColor: 'text-teal-600',
         marketplace: true,
         subcategories: [
             { name: 'Kitchen Appliances', href: '/products?category=Home+%26+Kitchen' },
@@ -110,7 +110,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Sports', sub: 'Fitness & outdoor', icon: Dumbbell, color: 'bg-[#fce4ec]', iconColor: 'text-pink-600',
+        name: 'Sports & Outdoors', sub: 'Fitness & outdoor', icon: Dumbbell, color: 'bg-[#fce4ec]', iconColor: 'text-pink-600',
         marketplace: true,
         subcategories: [
             { name: 'Yoga & Fitness', href: '/products?category=Sports+%26+Outdoors' },
@@ -119,7 +119,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Books', sub: 'Stationery & reading', icon: BookOpen, color: 'bg-[#fff8e1]', iconColor: 'text-amber-600',
+        name: 'Books & Stationery', sub: 'Stationery & reading', icon: BookOpen, color: 'bg-[#fff8e1]', iconColor: 'text-amber-600',
         marketplace: true,
         subcategories: [
             { name: 'Bestsellers', href: '/products?category=Books+%26+Stationery' },
@@ -128,7 +128,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Toys', sub: 'Games & play', icon: Gamepad2, color: 'bg-[#e8f5e9]', iconColor: 'text-green-600',
+        name: 'Toys & Games', sub: 'Games & play', icon: Gamepad2, color: 'bg-[#e8f5e9]', iconColor: 'text-green-600',
         marketplace: true,
         subcategories: [
             { name: 'LEGO', href: '/products?category=Toys+%26+Games' },
@@ -137,7 +137,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Beauty', sub: 'Care & grooming', icon: Sparkles, color: 'bg-[#fce4ec]', iconColor: 'text-rose-600',
+        name: 'Beauty & Personal Care', sub: 'Care & grooming', icon: Sparkles, color: 'bg-[#fce4ec]', iconColor: 'text-rose-600',
         marketplace: true,
         subcategories: [
             { name: 'Skincare', href: '/products?category=Beauty+%26+Personal+Care' },
@@ -146,7 +146,7 @@ const mainCategories = [
         ]
     },
     {
-        name: 'Auto', sub: 'Car & bike', icon: Car, color: 'bg-[#e3f2fd]', iconColor: 'text-blue-600',
+        name: 'Automotive', sub: 'Car & bike', icon: Car, color: 'bg-[#e3f2fd]', iconColor: 'text-blue-600',
         marketplace: true,
         subcategories: [
             { name: 'Car Accessories', href: '/products?category=Automotive' },
@@ -156,7 +156,7 @@ const mainCategories = [
     },
 ]
 
-const CategoriesStrip = ({ activeCategory, onSelect, onComingSoon }) => {
+const CategoriesStrip = ({ activeCategory, onSelect }) => {
     const [openDropdown, setOpenDropdown] = useState(null)
     const [hoveredCard, setHoveredCard] = useState(null)
     const dropdownRef = useRef(null)
@@ -173,10 +173,6 @@ const CategoriesStrip = ({ activeCategory, onSelect, onComingSoon }) => {
 
     const handleCardClick = (cat, e) => {
         e.stopPropagation()
-        if (cat.marketplace && onComingSoon) {
-            onComingSoon(cat.name)
-            return
-        }
         if (openDropdown === cat.name) {
             setOpenDropdown(null)
         } else {
@@ -210,9 +206,7 @@ const CategoriesStrip = ({ activeCategory, onSelect, onComingSoon }) => {
                                     <div className="min-w-0">
                                         <div className="flex items-center gap-1.5">
                                             <p className={`text-xs font-bold leading-tight ${active ? 'text-white' : 'text-slate-800'}`}>{cat.name}</p>
-                                            {cat.marketplace && !active && (
-                                                <span className="text-[8px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full leading-none">SOON</span>
-                                            )}
+
                                         </div>
                                         <p className={`text-[10px] leading-tight ${active ? 'text-white/70' : 'text-slate-500'}`}>{cat.sub}</p>
                                     </div>

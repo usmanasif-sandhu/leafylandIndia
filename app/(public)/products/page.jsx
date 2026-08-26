@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
 import { Search, X, Leaf, Store } from 'lucide-react'
 import { cachedJson } from '@/lib/cachedJson'
+import { isMarketplaceCategory } from '@/lib/categories'
 
 function ProductsContent() {
     const searchParams = useSearchParams()
@@ -51,12 +52,12 @@ function ProductsContent() {
 
     // Pin LeafyLand items at top, marketplace below
     const filtered = [
-        ...allFiltered.filter(p => !p.marketplace),
-        ...allFiltered.filter(p => p.marketplace),
+        ...allFiltered.filter(p => !isMarketplaceCategory(p.category)),
+        ...allFiltered.filter(p => isMarketplaceCategory(p.category)),
     ]
 
-    const leafyCount = filtered.filter(p => !p.marketplace).length
-    const marketplaceCount = filtered.filter(p => p.marketplace).length
+    const leafyCount = filtered.filter(p => !isMarketplaceCategory(p.category)).length
+    const marketplaceCount = filtered.filter(p => isMarketplaceCategory(p.category)).length
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
@@ -127,7 +128,7 @@ function ProductsContent() {
                                 <div className="flex-1 h-px bg-emerald-100" />
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-                                {filtered.filter(p => !p.marketplace).map(product => (
+                                {filtered.filter(p => !isMarketplaceCategory(p.category)).map(product => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
                             </div>
@@ -144,7 +145,7 @@ function ProductsContent() {
                                 <div className="flex-1 h-px bg-blue-100" />
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-                                {filtered.filter(p => p.marketplace).map(product => (
+                                {filtered.filter(p => isMarketplaceCategory(p.category)).map(product => (
                                     <ProductCard key={product.id} product={product} />
                                 ))}
                             </div>
