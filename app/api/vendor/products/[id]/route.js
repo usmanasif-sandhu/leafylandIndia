@@ -37,8 +37,25 @@ export async function DELETE(_req, { params }) {
     try {
         const { store } = await requireStore()
         const { id } = await params
-        const existing = await prisma.product.findFirst({ where: { id, storeId: store.id } })
+        const existing = await prisma.product.findFirst({
+            where: { id, storeId: store.id },
+            include: { _count: { select: { orderItems: true } } },
+        })
         if (!existing) return error('Product not found', 404)
+
+        // Products that appear in past orders cannot be hard-deleted (FK on OrderItem).
+        if (existing._count.orderItems > 0) {
+            await prisma.product.update({
+                where: { id },
+                data: { inStock: false, stock: 0 },
+            })
+            return json({
+                ok: true,
+                softDeleted: true,
+                message: 'Product is in past orders, so it was marked out of stock instead of deleted.',
+            })
+        }
+
         await prisma.product.delete({ where: { id } })
         return json({ ok: true })
     } catch (e) {
