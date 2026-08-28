@@ -2,7 +2,7 @@
 import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductCard from "@/components/ProductCard"
-import { Search, X, Leaf, Store } from 'lucide-react'
+import { Search, Leaf, Store, Package } from 'lucide-react'
 import { cachedJson } from '@/lib/cachedJson'
 import { isMarketplaceCategory } from '@/lib/categories'
 
@@ -37,8 +37,9 @@ function ProductsContent() {
 
     const categories = useMemo(() => {
         const set = new Set(products.map((p) => p.category).filter(Boolean))
+        if (urlCategory && urlCategory !== 'All') set.add(urlCategory)
         return ['All', ...Array.from(set)]
-    }, [products])
+    }, [products, urlCategory])
 
     const allFiltered = products.filter(p => {
         const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())
@@ -58,16 +59,28 @@ function ProductsContent() {
 
     const leafyCount = filtered.filter(p => !isMarketplaceCategory(p.category)).length
     const marketplaceCount = filtered.filter(p => isMarketplaceCategory(p.category)).length
+    const pageTitle = selectedCategory !== 'All' ? selectedCategory : 'Products'
+    const emptyMessage = selectedCategory !== 'All'
+        ? `No products found in ${selectedCategory}`
+        : search
+            ? 'No products found matching your search.'
+            : 'No products found.'
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 min-h-[60vh]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
             <div className="mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Products</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{pageTitle}</h1>
                 <p className="text-sm text-slate-500 mt-1">
-                    {leafyCount > 0 && <span className="text-emerald-600 font-medium">{leafyCount} LeafyLand</span>}
-                    {leafyCount > 0 && marketplaceCount > 0 && <span> + </span>}
-                    {marketplaceCount > 0 && <span className="text-blue-600 font-medium">{marketplaceCount} Marketplace</span>}
-                    {' '}products found
+                    {filtered.length === 0 ? (
+                        emptyMessage
+                    ) : (
+                        <>
+                            {leafyCount > 0 && <span className="text-emerald-600 font-medium">{leafyCount} LeafyLand</span>}
+                            {leafyCount > 0 && marketplaceCount > 0 && <span> + </span>}
+                            {marketplaceCount > 0 && <span className="text-blue-600 font-medium">{marketplaceCount} Marketplace</span>}
+                            {' '}products found
+                        </>
+                    )}
                 </p>
             </div>
 
@@ -110,9 +123,14 @@ function ProductsContent() {
             </div>
 
             {filtered.length === 0 ? (
-                <div className="text-center py-20">
-                    <p className="text-slate-500 text-sm">No products found matching your criteria.</p>
-                    <button onClick={() => { setSearch(''); setSelectedCategory('All') }} className="mt-3 text-emerald-600 text-sm font-medium hover:underline">
+                <div className="rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-20 text-center">
+                    <Package size={36} className="mx-auto text-slate-300 mb-3" />
+                    <p className="text-sm sm:text-base font-medium text-slate-700">{emptyMessage}</p>
+                    <p className="text-xs text-slate-500 mt-1.5">Try another category or clear your filters.</p>
+                    <button
+                        onClick={() => { setSearch(''); setSelectedCategory('All') }}
+                        className="mt-4 text-emerald-600 text-sm font-semibold hover:underline"
+                    >
                         Clear filters
                     </button>
                 </div>
@@ -158,7 +176,7 @@ function ProductsContent() {
 }
 
 const ProductsPage = () => (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="flex-1 min-h-[50vh]" />}>
         <ProductsContent />
     </Suspense>
 )

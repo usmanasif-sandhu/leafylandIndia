@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { usePathname } from "next/navigation"
-import { signOut, useSession } from "next-auth/react"
+import { useSession } from "next-auth/react"
 import { LogOut, Menu, Search } from "lucide-react"
 import NotificationBell from "@/components/NotificationBell";
 import ConfirmLogoutModal from "@/components/ConfirmLogoutModal";

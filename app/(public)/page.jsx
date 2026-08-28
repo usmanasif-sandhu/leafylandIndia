@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useState } from 'react'
-import CategoriesStrip from "@/components/CategoriesStrip";
 import Carousel from "@/components/Carousel";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
@@ -38,8 +37,6 @@ const serviceIcons = {
 }
 
 export default function Home() {
-    const [activeCategory, setActiveCategory] = useState('All')
-
     const [products, setProducts] = useState([])
     const [services, setServices] = useState([])
     const [properties, setProperties] = useState([])
@@ -96,44 +93,24 @@ export default function Home() {
     const soilFertilizers = products.filter(p => p.category === 'Soil & Fertilizers').slice(0, 8)
     const bulbs = products.filter(p => p.category === 'Bulbs').slice(0, 8)
 
-    const showSection = (categoryMatch) => {
-        if (activeCategory === 'All') return true
-        return categoryMatch
-    }
-
-    // Main category groupings
-    const isPlants = activeCategory === 'Plants'
-    const isGardenTools = activeCategory === 'Garden Tools'
-    const isIrrigation = activeCategory === 'Irrigation'
-    const isFarmhouses = activeCategory === 'Farmhouses'
-    const isLandscaping = activeCategory === 'Landscaping'
-    const isFertilizers = activeCategory === 'Fertilizers'
-    const isPots = activeCategory === 'Pots'
-
     return (
-        <div className="bg-slate-50/50">
-            <CategoriesStrip activeCategory={activeCategory} onSelect={setActiveCategory} />
-
+        <div className="bg-slate-50/50 flex-1 flex flex-col">
             {/* Carousel */}
-            {showSection(false) && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-2">
-                    <Carousel />
-                </div>
-            )}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-2 w-full">
+                <Carousel />
+            </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex-1">
                 {/* Popular Plants */}
-                {showSection(isPlants) && (
-                    <FeaturedSection
-                        title="Popular Plants"
-                        items={featuredProducts.length > 0 ? featuredProducts : allProducts}
-                        viewAllLink="/products"
-                        renderItem={(product) => <ProductCard product={product} />}
-                    />
-                )}
+                <FeaturedSection
+                    title="Popular Plants"
+                    items={featuredProducts.length > 0 ? featuredProducts : allProducts}
+                    viewAllLink="/products"
+                    renderItem={(product) => <ProductCard product={product} />}
+                />
 
                 {/* Indoor Greenary */}
-                {showSection(isPlants) && indoorGreenary.length > 0 && (
+                {indoorGreenary.length > 0 && (
                     <FeaturedSection
                         title="Indoor Greenary"
                         items={indoorGreenary}
@@ -143,7 +120,7 @@ export default function Home() {
                 )}
 
                 {/* Big Plant */}
-                {showSection(isPlants) && bigPlants.length > 0 && (
+                {bigPlants.length > 0 && (
                     <FeaturedSection
                         title="Big Plants"
                         items={bigPlants}
@@ -153,7 +130,7 @@ export default function Home() {
                 )}
 
                 {/* Plants (Outdoor) */}
-                {showSection(isPlants) && plants.length > 0 && (
+                {plants.length > 0 && (
                     <FeaturedSection
                         title="Outdoor Plants"
                         items={plants}
@@ -163,7 +140,7 @@ export default function Home() {
                 )}
 
                 {/* Fruit Plant */}
-                {showSection(isPlants) && fruitPlants.length > 0 && (
+                {fruitPlants.length > 0 && (
                     <FeaturedSection
                         title="Fruit Plants"
                         items={fruitPlants}
@@ -173,7 +150,7 @@ export default function Home() {
                 )}
 
                 {/* Bulbs */}
-                {showSection(isPlants) && bulbs.length > 0 && (
+                {bulbs.length > 0 && (
                     <FeaturedSection
                         title="Bulbs"
                         items={bulbs}
@@ -183,7 +160,7 @@ export default function Home() {
                 )}
 
                 {/* Seeds */}
-                {showSection(isPlants) && seeds.length > 0 && (
+                {seeds.length > 0 && (
                     <FeaturedSection
                         title="Seeds"
                         items={seeds}
@@ -193,7 +170,7 @@ export default function Home() {
                 )}
 
                 {/* Daily Needs Services */}
-                {showSection(isLandscaping) && dailyServices.length > 0 && (
+                {dailyServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -225,7 +202,7 @@ export default function Home() {
                 )}
 
                 {/* Home Services */}
-                {showSection(isLandscaping) && homeServices.length > 0 && (
+                {homeServices.length > 0 && (
                     <section className="py-5">
                         <div className="flex items-center justify-between mb-3">
                             <div>
@@ -257,7 +234,7 @@ export default function Home() {
                 )}
 
                 {/* Planters */}
-                {showSection(isPots) && planters.length > 0 && (
+                {planters.length > 0 && (
                     <FeaturedSection
                         title="Planters"
                         items={planters}
@@ -267,7 +244,7 @@ export default function Home() {
                 )}
 
                 {/* Soil & Fertilizers */}
-                {showSection(isFertilizers) && soilFertilizers.length > 0 && (
+                {soilFertilizers.length > 0 && (
                     <FeaturedSection
                         title="Soil & Fertilizers"
                         items={soilFertilizers}
@@ -277,7 +254,7 @@ export default function Home() {
                 )}
 
                 {/* Gardening Tools */}
-                {showSection(isGardenTools || isIrrigation) && gardening.length > 0 && (
+                {gardening.length > 0 && (
                     <FeaturedSection
                         title="Gardening Tools"
                         items={gardening}
@@ -287,7 +264,7 @@ export default function Home() {
                 )}
 
                 {/* Farmhouses & Land */}
-                {showSection(isFarmhouses) && (
+                {featuredProperties.length > 0 && (
                     <FeaturedSection
                         title="Farmhouses & Land"
                         items={featuredProperties}
@@ -297,8 +274,7 @@ export default function Home() {
                 )}
 
                 {/* ═══ MARKETPLACE SECTIONS ═══ */}
-                {activeCategory === 'All' && (
-                    <>
+                <>
                         {/* Divider */}
                         <div className="flex items-center gap-4 my-6">
                             <div className="flex-1 h-px bg-slate-200" />
@@ -406,12 +382,10 @@ export default function Home() {
                             />
                         )}
                     </>
-                )}
             </div>
 
             {/* Expert Options */}
-            {activeCategory === 'All' && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
                     <div className="mb-4 sm:mb-5">
                         <h2 className="text-lg sm:text-xl font-bold text-slate-800">Expert Services</h2>
                         <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
@@ -448,11 +422,9 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            )}
 
             {/* Why LeafyLand — trust signals */}
-            {activeCategory === 'All' && (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 my-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 my-8">
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {[
                             { icon: ShieldCheck, label: 'Vetted Vendors', sub: 'Quality checked', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
@@ -468,7 +440,6 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            )}
         </div>
     );
 }

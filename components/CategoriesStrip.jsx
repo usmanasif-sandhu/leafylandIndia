@@ -199,7 +199,7 @@ const CategoriesStrip = ({ activeCategory, onSelect }) => {
     }
 
     return (
-        <div className="sticky top-14 sm:top-16 z-40 glass-categories" ref={dropdownRef}>
+        <div className="sticky top-14 sm:top-16 lg:top-[6.75rem] z-40 glass-categories" ref={dropdownRef}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-1 sm:py-2 relative">
                     {categories.map((cat, i) => {
