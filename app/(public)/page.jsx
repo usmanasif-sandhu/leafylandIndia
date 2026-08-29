@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Carousel from "@/components/Carousel";
+import ExploreCategories from "@/components/ExploreCategories";
 import FeaturedSection from "@/components/FeaturedSection";
 import ProductCard from "@/components/ProductCard";
 import PropertyCard from "@/components/PropertyCard";
@@ -98,6 +99,10 @@ export default function Home() {
             {/* Carousel */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-2 w-full">
                 <Carousel />
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-4 w-full">
+                <ExploreCategories />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full flex-1">

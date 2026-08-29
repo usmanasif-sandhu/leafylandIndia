@@ -26,7 +26,7 @@ export function normalizeWishlistType(itemType) {
     return TYPE_MAP[itemType] || null
 }
 
-const WishlistButton = ({ itemId, itemType, className = '' }) => {
+const WishlistButton = ({ itemId, itemType, className = '', activeClassName = 'text-red-500 fill-red-500' }) => {
     const dispatch = useDispatch()
     const router = useRouter()
     const { data: session } = useSession()
@@ -72,7 +72,7 @@ const WishlistButton = ({ itemId, itemType, className = '' }) => {
             className={`p-2 rounded-full bg-white/80 hover:bg-white transition ${className}`}
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-            <Heart size={18} className={isWishlisted ? 'text-red-500 fill-red-500' : 'text-slate-500'} />
+            <Heart size={18} className={isWishlisted ? activeClassName : 'text-slate-500'} />
         </button>
     )
 }
