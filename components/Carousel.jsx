@@ -44,16 +44,17 @@ const slides = [
         cta: 'Shop marketplace',
         href: '/shop',
         image: '/bgs4.png',
+        wide: true,
     },
 ]
 
-function HeroSlide({ badge, title, subtitle, cta, href, image }) {
+function HeroSlide({ badge, title, subtitle, cta, href, image, wide }) {
     return (
         <div className="relative w-full h-full overflow-hidden">
             <img src={image} alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
-            <div className="absolute inset-0" />
+            <div className="absolute left-0 top-0 h-full w-[60%] bg-gradient-to-r from-white/70 via-white/60 to-transparent" />
             <div className="relative z-10 h-full flex items-center px-5 sm:px-8 md:px-12 lg:px-14">
-                <div className="max-w-md sm:max-w-lg md:max-w-xl">
+                <div className={wide ? 'max-w-[50%] sm:max-w-[55%] md:max-w-[60%] lg:max-w-xl' : 'max-w-[45%] sm:max-w-[50%] md:max-w-[55%] lg:max-w-lg'}>
                     <p
                         className="text-[9px] sm:text-[11px] font-semibold uppercase tracking-[0.14em]"
                         style={{ color: BRAND.green }}
