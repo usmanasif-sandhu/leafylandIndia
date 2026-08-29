@@ -16,7 +16,7 @@ const slides = [
         subtitle: 'Plants, seeds, planters, tools & soil — curated for home gardeners.',
         cta: 'Shop gardening',
         href: '/products',
-        image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1400&h=420&fit=crop',
+        image: '/bgs1.png',
     },
     {
         id: 2,
@@ -25,7 +25,7 @@ const slides = [
         subtitle: 'Landscaping, plant care, irrigation & trusted home services.',
         cta: 'Browse services',
         href: '/services',
-        image: 'https://images.unsplash.com/photo-1592417817097-1252478754470?w=1400&h=420&fit=crop',
+        image: '/bgs2.png',
     },
     {
         id: 3,
@@ -34,7 +34,7 @@ const slides = [
         subtitle: 'Discover farmhouses, agricultural land & property listings across India.',
         cta: 'Explore properties',
         href: '/properties',
-        image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&h=420&fit=crop',
+        image: '/bgs3.png',
     },
     {
         id: 4,
@@ -43,7 +43,7 @@ const slides = [
         subtitle: 'Classifieds and marketplace finds — from gadgets to sports gear.',
         cta: 'Shop marketplace',
         href: '/shop',
-        image: 'https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1400&h=420&fit=crop',
+        image: '/bgs4.png',
     },
 ]
 
@@ -51,7 +51,7 @@ function HeroSlide({ badge, title, subtitle, cta, href, image }) {
     return (
         <div className="relative w-full h-full overflow-hidden">
             <img src={image} alt="" className="absolute inset-0 w-full h-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/25 sm:via-white/70 sm:to-transparent" />
+            <div className="absolute inset-0" />
             <div className="relative z-10 h-full flex items-center px-5 sm:px-8 md:px-12 lg:px-14">
                 <div className="max-w-md sm:max-w-lg md:max-w-xl">
                     <p
